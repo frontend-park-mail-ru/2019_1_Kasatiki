@@ -1,0 +1,20 @@
+	'rakhimgaliev56@gmail.com': {
+		email: 'rakhimgaliev56@gmail.com',
+		password: 'password',
+		age: 18,
+		score: 322,
+	},
+
+	'solovevgel0@gmail.com': {
+		email: 'solovevgel0@gmail.com',
+		password: 'password',
+		age: 20,
+		score: 228,
+	},
+
+	'asd@gmail.com': {
+		email: 'sadfasdf0@gmail.com',
+		password: 'password',
+		age: 21561,
+		score: 12,
+	};

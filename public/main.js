@@ -1,14 +1,5 @@
 console.log("Server started");
 
-const menuItems = {
-	signup: 'Регистрация',
-	login: 'Логин',
-	game: 'Играть',
-	leaderboard: 'Таблица лидеров',
-	about: 'О приложении',
-	profile: 'Профайл',
-};
-
 const users = {
 	'a.ostapenko@corp.mail.ru': {
 		email: 'a.ostapenko@corp.mail.ru',
@@ -111,7 +102,7 @@ function createForm(object, sectionName, className, formAction) {
 	object.append(form);
 }
 
-function createinput(object, name, type, placeholder, className) {
+function createInput(object, name, type, placeholder, className) {
 	const input = document.createElement('input');
 
 	input.name = name;
@@ -124,6 +115,15 @@ function createinput(object, name, type, placeholder, className) {
 
 // Основные функции, отвечают за логику работы фронта/генерирование контента и тд
 function createMenu() {
+	const menuItems = {
+		signup: 'Регистрация',
+		login: 'Логин',
+		game: 'Играть',
+		leaderboard: 'Таблица лидеров',
+		about: 'О приложении',
+		profile: 'Профайл',
+	};
+
 	main.innerHTML = '';
 	createTitle('ВСЕМ МОИМ БРАТЬЯМ САЛАААААААААААААААААМ');
 
@@ -175,7 +175,7 @@ function createLogin() {
 	];
 
 	inputs.forEach(function (item) {
-		createinput(form, 
+		createInput(form, 
 			item.name,
 			item.type, 
 			item.placeholder, 
@@ -185,10 +185,10 @@ function createLogin() {
 
 	signInSection.appendChild(form);
 
-	createForm(menu, 'loginForm', 'loginForm form', 'login');
-	createForm(menu, 'passForm', 'passForm form', 'pass');
-	createButton(menu, 'submit', 'submit btn', 'Submit');
-	createButton(menu, 'menu', 'menu btn', 'Back');
+	// createInput(menu, 'loginForm', 'text', 'email', 'emailForm form');
+	// createInput(menu, 'passForm', 'text', 'pass', 'passForm form');
+	// createButton(menu, 'submit', 'submit btn', 'Submit');
+	// createButton(menu, 'menu', 'menu btn', 'Back');
 
 	form.addEventListener('submit', function(event) {
 		event.preventDefault();
@@ -253,7 +253,7 @@ function createSignup() {
 	];
 
 	inputs.forEach(function (item) {
-		createinput(form,
+		createInput(form,
 			item.name,
 			item.type, 
 			item.placeholder, 
@@ -330,6 +330,8 @@ function createProfile(me) {
 	}
 
 	main.appendChild(profileSection);
+	createButton(profileSection, 'menu', 'btn', 'Back');
+	
 }
 
 function createGame() {
@@ -358,7 +360,7 @@ function createGame() {
 	createButton(menu, 'menu', 'btn', 'Back');
 }
 
-function createLeaderboard() {
+function createLeaderboard(users) {
 	main.innerHTML = '';
 	createTitle('Leaderboard');
 
@@ -384,8 +386,6 @@ function createLeaderboard() {
 		table.border = 1;
 		table.cellSpacing = table.cellPadding = 0;
 
-		console.log('Перед forEach');
-
 		for (let key in users) {
 			const email = users[key].email;
 			const age = users[key].age;
@@ -409,22 +409,15 @@ function createLeaderboard() {
 			tbody.appendChild(tr);
 
 			leaderboard.appendChild(table);
+			main.appendChild(leaderboard);
 		};
+	} else {
+		console.log('data loading, please wait');
+		ajax( (xhr) => {
+			const users = JSON.parse(xhr.responseText);
+			createLeaderboard(users);
+		}, 'GET', '/users');
 	};
-	main.appendChild(leaderboard);
-
-	// else {
-	// 	const em = document.createElement('em');
-	// 	em.textContent = 'Loading';
-	// 	leaderboard.appendChild(em);
-
-	// 	ajax(function (xhr) {
-	// 		const users = JSON.parse(xhr.responseText);
-	// 		application.innerHTML = '';
-	// 		createLeaderboard(users);
-	// 	}, 'GET', '/users');
-	// }
-
 	createButton(leaderboard, 'menu', 'btn', 'Back');
 }
 
@@ -445,7 +438,9 @@ const functions = {
 	login: createLogin,
 	game: createGame,
 	leaderboard: createLeaderboard,
+	profile: createProfile,
 	// about: createAbout,
+
 
 	// Other functions
 	title: createTitle,

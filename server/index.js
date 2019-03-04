@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const express = require('express');
 const body = require('body-parser');
 const cookie = require('cookie-parser');
@@ -7,7 +8,6 @@ const morgan = require('morgan');
 const uuid = require('uuid/v4');
 const path = require('path');
 const app = express();
-
 
 app.use(morgan('dev'));
 app.use(express.static(path.resolve(__dirname, '..', 'public')));
@@ -22,7 +22,22 @@ const users = {
 		age: 18,
 		score: 322,
 	},
+
+	'solovevgel0@gmail.com': {
+		email: 'solovevgel0@gmail.com',
+		password: 'password',
+		age: 20,
+		score: 228,
+	},
+
+	'asd@gmail.com': {
+		email: 'sadfasdf0@gmail.com',
+		password: 'password',
+		age: 21561,
+		score: 12,
+	},
 };
+
 const ids = {};
 
 app.post('/signup', function (req, res) {
@@ -86,15 +101,39 @@ app.get('/me', function (req, res) {
 });
 
 app.get('/users', function (req, res) {
+
+	// const db = fs.readFile('./server/data_base.txt', {encoding: 'utf8'}, (err, users) => {
+		
+	// 	if (err) {
+	// 		console.log(err);
+	// 		return;
+	// 	}
+
+	// 	console.log ('obj:',Object.values(users));
+
+	// 	const scorelist = Object.values(users)
+	// 	.sort((l, r) => r.score - l.score)
+	// 	.map(user => {
+	// 		return {
+	// 			email: user.email,
+	// 			age: user.age,
+	// 			score: user.score,
+	// 		}
+	// 	});
+
+	// 	res.json(scorelist);
+	// 	res.json('one: 2');
+	// });
+
 	const scorelist = Object.values(users)
-		.sort((l, r) => r.score - l.score)
-		.map(user => {
-			return {
-				email: user.email,
-				age: user.age,
-				score: user.score,
-			}
-		});
+	.sort((l, r) => r.score - l.score)
+	.map(user => {
+		return {
+			email: user.email,
+			age: user.age,
+			score: user.score,
+		}
+	});
 
 	res.json(scorelist);
 });
