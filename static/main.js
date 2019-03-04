@@ -125,7 +125,7 @@ function createMenu() {
 	};
 
 	main.innerHTML = '';
-	createTitle('ВСЕМ МОИМ БРАТЬЯМ САЛАААААААААААААААААМ');
+	createTitle('Main menu');
 
 	const menu = document.createElement('div');
 	menu.className = 'menu';
