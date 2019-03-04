@@ -10,7 +10,7 @@ const path = require('path');
 const app = express();
 
 app.use(morgan('dev'));
-app.use(express.static(path.resolve(__dirname, '..', 'public')));
+app.use(express.static(path.resolve(__dirname, '..', 'static')));
 app.use(body.json());
 app.use(cookie());
 
@@ -109,20 +109,27 @@ app.get('/users', function (req, res) {
 	// 		return;
 	// 	}
 
-	// 	console.log ('obj:',Object.values(users));
+	// 	console.log (users);
 
-	// 	const scorelist = Object.values(users)
-	// 	.sort((l, r) => r.score - l.score)
-	// 	.map(user => {
+	// 	const splitUsers = users.split('\n');
+	// 	splitUsers.forEach(element => {
+	// 		console.log(element);
+	// 	});
+
+	// 	let res = splitUsers.map( (element, idx, splitUsers) => {
+	// 		element = element.split(' ');
 	// 		return {
-	// 			email: user.email,
-	// 			age: user.age,
-	// 			score: user.score,
+	// 			login : againSplit[0],
+	// 			email : againSplit[1],
+	// 			pass : againSplit[2],
+	// 			age : againSplit[3],
+	// 			score : againSplit[4],
 	// 		}
 	// 	});
 
-	// 	res.json(scorelist);
-	// 	res.json('one: 2');
+	// 	console.log(res);
+
+	// 	res.json(res);
 	// });
 
 	const scorelist = Object.values(users)
