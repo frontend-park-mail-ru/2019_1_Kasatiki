@@ -1,3 +1,8 @@
+'use strict'
+
+import {boardComponent} from './components/board/board.js';
+const {AjaxModule} = window;
+
 console.log("Server started");
 
 const users = {
@@ -25,14 +30,36 @@ const users = {
 		age: 21,
 		score: 72,
 	},
+	'aaa@mail.ru' : {
+		email: 'aaa@mail.ru',
+		password: '1',
+		age: 1,
+		score: 1,
+	}
 };
 
-// const users = {
-// 	firstUser: "Fread",
-// 	secondUser: "Jhon"
-// };
+const a = { users: [
+		{
+			email: 'email1',
+			age: 21,
+			score: 228,
+		},
+		{
+			email: 'email2',
+			age: 22,
+			score: 228,
+		},
+		{
+			email: 'email3',
+			age: 23,
+			score: 228,
+		}
+	]
+}
+
 
 // Разименовывем необходимые элементы DOM'a
+
 const app = document.getElementById("application");
 
 const header = document.createElement('div');
@@ -48,29 +75,6 @@ main.className = "main";
 app.appendChild(main);
 
 // Вызывается функциями login, signUp и тд для общения с сервером
-function ajax (callback, method, path, body) {
-	const xhr = new XMLHttpRequest();
-	xhr.open(method, path, true);
-	xhr.withCredentials = true;
-
-	if (body) {
-		xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-	}
-
-	xhr.onreadystatechange = function () {
-		if (xhr.readyState !== 4) {
-			return;
-		}
-
-		callback(xhr);
-	};
-
-	if (body) {
-		xhr.send(JSON.stringify(body));
-	} else {
-		xhr.send();
-	}
-}
 
 // Вспомогательные функции (их и будем писать/исправлять/дополнять)
 function createTitle(text) {
@@ -113,6 +117,10 @@ function createInput(object, name, type, placeholder, className) {
 	object.appendChild(input);
 }
 
+function createPaginator(parentObject) {
+
+}
+
 // Основные функции, отвечают за логику работы фронта/генерирование контента и тд
 function createMenu() {
 	const menuItems = {
@@ -130,13 +138,6 @@ function createMenu() {
 	const menu = document.createElement('div');
 	menu.className = 'menu';
 	main.appendChild(menu);
-
-	const menuStyle = document.createElement('link');
-	menuStyle.rel = 'stylesheet'
-	menuStyle.href = 'styles/menu.css';
-
-	// poka hz kak eto
-	header.appendChild(menuStyle);
 
 	Object.keys(menuItems).forEach( (key, value) => {
 		createButton(menu, key, 'btn', menuItems[key]);
@@ -185,23 +186,22 @@ function createLogin() {
 
 	signInSection.appendChild(form);
 
-	// createInput(menu, 'loginForm', 'text', 'email', 'emailForm form');
-	// createInput(menu, 'passForm', 'text', 'pass', 'passForm form');
-	// createButton(menu, 'submit', 'submit btn', 'Submit');
-	// createButton(menu, 'menu', 'menu btn', 'Back');
-
 	form.addEventListener('submit', function(event) {
 		event.preventDefault();
 
 		const email = form.elements[ 'email' ].value;
 		const password = form.elements[ 'password' ].value;
 
-		ajax(function(xhr) {
-			main.innerHTML = '';
-			createProfile();
-		}, 'POST', '/login', {
-			email: email,
-			password: password
+		AjaxModule.doPost({
+			callback() {
+				main.innerHTML = '';
+				createProfile();
+			},
+			path : '/login',
+			body : {
+				email: email,
+				password: password,
+			},
 		});
 	});
 
@@ -277,13 +277,17 @@ function createSignup() {
 			return;
 		}
 
-		ajax(function (xhr) {
-			main.innerHTML = '';
-			createProfile();
-		}, 'POST', '/signup', {
-			email: email,
-			age: age,
-			password: password
+		AjaxModule.doPost({
+			callback() {
+				main.innerHTML = '';
+				createProfile();
+			},
+			path : '/signup',
+			body : {
+				email: email,
+				age: age,
+				password: password
+			},
 		});
 	});
 
@@ -315,18 +319,21 @@ function createProfile(me) {
 
 		profileSection.appendChild(menu);
 	} else {
-		ajax(function(xhr) {
-			if (!xhr.responseText) {
-				alert('Unauthorized');
-				main.innerHTML = '';
-				createMenu();
-				return;
-			}
+		AjaxModule.doGet({
+			callback(xhr) {
+				if (!xhr.responseText) {
+					alert('Unauthorized');
+					main.innerHTML = '';
+					createMenu();
+					return;
+				}
 
-			const user = JSON.parse(xhr.responseText);
-			main.innerHTML = '';
-			createProfile(user);;
-		}, 'GET', '/me')
+				const user = JSON.parse(xhr.responseText);
+				main.innerHTML = '';
+				createProfile(user);;
+			},
+			path : '/me',
+		});
 	}
 
 	main.appendChild(profileSection);
@@ -369,55 +376,23 @@ function createLeaderboard(users) {
 	leaderboard.className = 'menu';
 
 	if (users) {
-		const table = document.createElement('table');
-		table.className = 'leadersTable'
-		const thead = document.createElement('thead');
-		thead.innerHTML = `
-		<tr>
-			<th>Email</th>
-			<th>Age</th>
-			<th>Score</th>
-		</th>
-		`;
-		const tbody = document.createElement('tbody');
-
-		table.appendChild(thead);
-		table.appendChild(tbody);
-		table.border = 1;
-		table.cellSpacing = table.cellPadding = 0;
-
-		for (let key in users) {
-			const email = users[key].email;
-			const age = users[key].age;
-			const score = users[key].score;
-
-			console.log(email, age, score);
-
-			const tr = document.createElement('tr');
-			const tdEmail = document.createElement('td');
-			const tdAge = document.createElement('td');
-			const tdScore = document.createElement('td');
-
-			tdEmail.textContent = email;
-			tdAge.textContent = age;
-			tdScore.textContent = score;
-
-			tr.appendChild(tdEmail);
-			tr.appendChild(tdAge);
-			tr.appendChild(tdScore);
-
-			tbody.appendChild(tr);
-
-			leaderboard.appendChild(table);
-			main.appendChild(leaderboard);
-		};
+		const board = new boardComponent({parentElement : leaderboard});
+		board.data = JSON.parse(JSON.stringify(users));
+		board.render(users); 
 	} else {
 		console.log('data loading, please wait');
-		ajax( (xhr) => {
-			const users = JSON.parse(xhr.responseText);
-			createLeaderboard(users);
-		}, 'GET', '/users');
+
+		AjaxModule.doGet({	
+			callback(xhr) {
+				const user = JSON.parse(xhr.responseText);
+				main.innerHTML = '';
+				createLeaderboard(a);
+			},
+			path : '/users',
+		});
 	};
+
+	main.appendChild(leaderboard);
 	createButton(leaderboard, 'menu', 'btn', 'Back');
 }
 

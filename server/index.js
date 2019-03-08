@@ -15,27 +15,34 @@ app.use(body.json());
 app.use(cookie());
 
 
-const users = {
-	'rakhimgaliev56@gmail.com': {
+const users = { user : [
+	{
 		email: 'rakhimgaliev56@gmail.com',
 		password: 'password',
 		age: 18,
 		score: 322,
 	},
 
-	'solovevgel0@gmail.com': {
+	{
 		email: 'solovevgel0@gmail.com',
 		password: 'password',
 		age: 20,
 		score: 228,
 	},
 
-	'asd@gmail.com': {
+	{
 		email: 'sadfasdf0@gmail.com',
 		password: 'password',
 		age: 21561,
 		score: 12,
 	},
+	{
+		email: 'aaa@mail.ru',
+		password: '1',
+		age: 1,
+		score: 1,
+	}
+	]
 };
 
 const ids = {};

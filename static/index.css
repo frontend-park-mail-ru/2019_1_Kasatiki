@@ -1,3 +1,27 @@
+@import url('components/board/board.css');
+
+.title {	
+	align-content: center;
+	margin: 150px;
+}
+
+.myHeared {
+	align-content: center;
+	
+}
+
+body {
+	position: relative;
+    background-image: url(/img/bg.jpg);
+    background-position: center;
+	background-repeat: no-repeat;
+}
+
+html {
+	height: 100%;
+	overflow: hidden;
+}
+
 .menu {
     align-content: center;
     width: 400px;
@@ -53,9 +77,4 @@
 .leadersTable { 
     width: 350px;
     margin: 0 auto auto auto;
-}
-
-.leadersTable:first-child {
-    background-color: rgb(2, 224, 224);
-    color: rgb(160, 119, 235);
 }
