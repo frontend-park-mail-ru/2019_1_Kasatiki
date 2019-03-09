@@ -1,6 +1,5 @@
 'use strict';
 
-const fs = require('fs');
 const express = require('express');
 const body = require('body-parser');
 const cookie = require('cookie-parser');
@@ -15,39 +14,84 @@ app.use(body.json());
 app.use(cookie());
 
 
-const users = { user : [
-	{
-		email: 'rakhimgaliev56@gmail.com',
-		password: 'password',
-		age: 18,
-		score: 322,
-	},
+// const users = { 
+// 	'a.ostapenko@corp.mail.ru': {
+// 		email: 'a.ostapenko@corp.mail.ru',
+// 		password: 'password',
+// 		age: 21,
+// 		score: 72,
+// 	},
+// 	'd.dorofeev@corp.mail.ru': {
+// 		email: 'd.dorofeev@corp.mail.ru',
+// 		password: 'password',
+// 		age: 21,
+// 		score: 100500,
+// 	},
+// 	's.volodin@corp.mail.ru': {
+// 		email: 'marina.titova@corp.mail.ru',
+// 		password: 'password',
+// 		age: 21,
+// 		score: 72,
+// 	},
+// 	'a.tyuldyukov@corp.mail.ru': {
+// 		email: 'a.tyuldyukov@corp.mail.ru',
+// 		password: 'password',
+// 		age: 21,
+// 		score: 72,
+// 	},
+// 	'aaa@mail.ru': {
+// 		email: 'aaa@mail.ru',
+// 		password: 'e',
+// 		age: 21,
+// 		score: 72,		
+// 	}
+// };
 
+const users = [
 	{
-		email: 'solovevgel0@gmail.com',
-		password: 'password',
-		age: 20,
-		score: 228,
+		"ID":"2",
+		"nickname":"tony",
+		"email":"trendpusher@hydra.com",
+		"password":"qwerty",
+		"Points":-100,
+		"Age":22,
+		"ImgUrl":"test",
+		"Region":"Moscow",
+		"About":"В правой алейкум",
 	},
-
 	{
-		email: 'sadfasdf0@gmail.com',
-		password: 'password',
-		age: 21561,
-		score: 12,
+		"ID":"1",
+		"nickname":"evv",
+		"email":"onetaker@gmail.com",
+		"password":"evv",
+		"Points":100,
+		"Age":23,"ImgUrl":"test",
+		"Region":"Voronezh",
+		"About":"В левой руке салам",
 	},
-	{
-		email: 'aaa@mail.ru',
-		password: '1',
-		age: 1,
-		score: 1,
-	}
-	]
-};
+];
 
+// const users = [
+// 		{
+// 			email: 'email1',
+// 			age: 21,
+// 			score: 228,
+// 		},
+// 		{
+// 			email: 'email2',
+// 			age: 22,
+// 			score: 228,
+// 		},
+// 		{
+// 			email: 'email3',
+// 			age: 23,
+// 			score: 228,
+// 		}
+// 	]
 const ids = {};
 
 app.post('/signup', function (req, res) {
+	console.log('post: signup');
 	const password = req.body.password;
 	const email = req.body.email;
 	const age = req.body.age;
@@ -74,6 +118,7 @@ app.post('/signup', function (req, res) {
 });
 
 app.post('/login', function (req, res) {
+	console.log('post: /login');
 	const email = req.body.email;
 	const password = req.body.password;
 
@@ -96,6 +141,7 @@ app.post('/login', function (req, res) {
 });
 
 app.get('/me', function (req, res) {
+	console.log('get: /me');
 	const id = req.cookies['sessionid'];
 	const email = ids[id];
 	if (!email || !users[email]) {
@@ -107,46 +153,12 @@ app.get('/me', function (req, res) {
 	res.json(users[email]);
 });
 
-app.get('/users', function (req, res) {
-
-	// const db = fs.readFile('./server/data_base.txt', {encoding: 'utf8'}, (err, users) => {
-		
-	// 	if (err) {
-	// 		console.log(err);
-	// 		return;
-	// 	}
-
-	// 	console.log (users);
-
-	// 	const splitUsers = users.split('\n');
-	// 	splitUsers.forEach(element => {
-	// 		console.log(element);
-	// 	});
-
-	// 	let res = splitUsers.map( (element, idx, splitUsers) => {
-	// 		element = element.split(' ');
-	// 		return {
-	// 			login : againSplit[0],
-	// 			email : againSplit[1],
-	// 			pass : againSplit[2],
-	// 			age : againSplit[3],
-	// 			score : againSplit[4],
-	// 		}
-	// 	});
-
-	// 	console.log(res);
-
-	// 	res.json(res);
-	// });
-
+app.get('/users', function (req, res) {	
+	console.log('get: /users');
 	const scorelist = Object.values(users)
-	.sort((l, r) => r.score - l.score)
+	.sort((l, r) => r.Points - l.Points)
 	.map(user => {
-		return {
-			email: user.email,
-			age: user.age,
-			score: user.score,
-		}
+		return user;
 	});
 
 	res.json(scorelist);

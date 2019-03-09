@@ -1,66 +1,19 @@
 'use strict'
 
+import {LoginComponent} from './components/login/login.js';
+import {SignUpComponent} from './components/signup/signup.js';
+import {paginationComponent} from './components/pagination/pagination.js';
 import {boardComponent} from './components/board/board.js';
+import {helperComponent} from './components/helper/helper.js';
+
 const {AjaxModule} = window;
 
 console.log("Server started");
 
-const users = {
-	'a.ostapenko@corp.mail.ru': {
-		email: 'a.ostapenko@corp.mail.ru',
-		password: 'password',
-		age: 21,
-		score: 72,
-	},
-	'd.dorofeev@corp.mail.ru': {
-		email: 'd.dorofeev@corp.mail.ru',
-		password: 'password',
-		age: 21,
-		score: 100500,
-	},
-	's.volodin@corp.mail.ru': {
-		email: 'marina.titova@corp.mail.ru',
-		password: 'password',
-		age: 21,
-		score: 72,
-	},
-	'a.tyuldyukov@corp.mail.ru': {
-		email: 'a.tyuldyukov@corp.mail.ru',
-		password: 'password',
-		age: 21,
-		score: 72,
-	},
-	'aaa@mail.ru' : {
-		email: 'aaa@mail.ru',
-		password: '1',
-		age: 1,
-		score: 1,
-	}
-};
-
-const a = { users: [
-		{
-			email: 'email1',
-			age: 21,
-			score: 228,
-		},
-		{
-			email: 'email2',
-			age: 22,
-			score: 228,
-		},
-		{
-			email: 'email3',
-			age: 23,
-			score: 228,
-		}
-	]
-}
-
-
 // Разименовывем необходимые элементы DOM'a
 
 const app = document.getElementById("application");
+const helper = new helperComponent();
 
 const header = document.createElement('div');
 header.dataset.section = "header";
@@ -74,51 +27,27 @@ const main = document.createElement('div');
 main.className = "main";
 app.appendChild(main);
 
-// Вызывается функциями login, signUp и тд для общения с сервером
-
-// Вспомогательные функции (их и будем писать/исправлять/дополнять)
-function createTitle(text) {
-	const title = document.createElement('div');
-	title.className = 'title';
-	const title_txt = document.createElement('h1');
-	title_txt.textContent = text;
-
-	main.appendChild(title)
-	title.appendChild(title_txt);
+// Валидация данных в форме
+function validateNickname(nickname = "") {
+	return /^[a-zA-z]{1}[a-zA-Z1-9]{2,20}$/.test(nickname);
 }
 
-// Объеект, к которому добавится кнопка; sectionName, className, Текст кнопки
-function createButton(object, sectionName, className, textContent) {
-	const btn = document.createElement('button');
-	btn.dataset.section = sectionName;
-	btn.textContent = sectionName;
-	btn.className = className;
-	btn.textContent = textContent;
-	object.appendChild(btn);
+function validateEmail(email = "") {
+	return /^[0-9a-z-\.]+\@[0-9a-z-]{2,}\.[a-z]{2,}$/.test(email);
 }
 
-function createForm(object, sectionName, className, formAction) {
-	const form = document.createElement('input');
-	form.dataset.section = sectionName;
-	form.placeholder = formAction;
-	form.className = className;
-	form.action = formAction;
-	object.append(form);
+function validateLogin(login = "") {
+	if (login.search(/@/i) !== -1) {
+		return validateEmail(login);
+	}
+	return validateNickname(login);
 }
 
-function createInput(object, name, type, placeholder, className) {
-	const input = document.createElement('input');
-
-	input.name = name;
-	input.type = type;
-	input.placeholder = placeholder;
-	input.className = className;
-
-	object.appendChild(input);
-}
-
-function createPaginator(parentObject) {
-
+function validatePassword(password = "") {
+	if (password.length < 3 || password.length > 20) {
+		return false;
+	}
+	return /^[a-zA-Z](.[a-zA-Z0-9_-]*)$/.test(password);
 }
 
 // Основные функции, отвечают за логику работы фронта/генерирование контента и тд
@@ -128,95 +57,124 @@ function createMenu() {
 		login: 'Логин',
 		game: 'Играть',
 		leaderboard: 'Таблица лидеров',
-		about: 'О приложении',
+		// about: 'О приложении',
 		profile: 'Профайл',
 	};
 
 	main.innerHTML = '';
-	createTitle('Main menu');
 
 	const menu = document.createElement('div');
 	menu.className = 'menu';
 	main.appendChild(menu);
 
+	helper.createTitle(menu, 'Main menu');
 	Object.keys(menuItems).forEach( (key, value) => {
-		createButton(menu, key, 'btn', menuItems[key]);
+		helper.createButton(menu, key, 'btn', menuItems[key]);
 	});
 }
 
 function createLogin() {
 	main.innerHTML = '';
 
-	createTitle('Login');
+	helper.createTitle(main, 'Login');
 
-	const signInSection = document.createElement('section');
+	const signInSection = document.createElement('div');
 	signInSection.className = 'menu';
 	signInSection.dataset.sectionName = 'login';
 
-	const form = document.createElement('form');
-
-	const inputs = [
-		{
-			name: 'email',
-			type: 'email',
-			placeholder: 'Email',
-			className: 'loginForm form'
-		},
-		{
-			name: 'password',
-			type: 'password',
-			placeholder: 'Password',
-			className: 'passForm form'
-		},
-		{
-			name: 'submit',
-			type: 'submit',
-			className: 'submit btn'
-		}
-	];
-
-	inputs.forEach(function (item) {
-		createInput(form, 
-			item.name,
-			item.type, 
-			item.placeholder, 
-			item.className
-		);
+	const login = new LoginComponent({
+		el: signInSection,
 	});
+	login.render();
 
-	signInSection.appendChild(form);
+	const form = signInSection.childNodes[1];
+	// Нужно научиться достовать по ключу form
 
-	form.addEventListener('submit', function(event) {
+	form.addEventListener('submit', function (event) {
 		event.preventDefault();
 
-		const email = form.elements[ 'email' ].value;
-		const password = form.elements[ 'password' ].value;
+		const fieldsName = [
+			'nickname',
+			'password',
+		]
+		
+		const validationFunction = {
+			nickname: validateLogin,
+			password: validatePassword,
+		}
+
+		let validationError = false;
+		fieldsName.forEach(function(fieldName) {
+			const field = form.elements[fieldName];
+			field.className = "login_input";
+
+			if (!validationFunction[ fieldName ]( field.value )) {
+				field.className = "login_input login_bad_input";
+				validationError = true;
+			} else {
+				field.className = "login_input login_good_input";
+			}
+		});
+
+		if (validationError) {
+			return;
+		}
+
+		// const nickname = form.elements[ 'nickname' ].value;
+		// const password = form.elements[ 'password' ].value;
+
+		// let nicknameField = form.elements[ 'nickname' ];
+		// let passwordField = form.elements[ 'password' ];
+
+		// nicknameField.className = "login_input";
+		// passwordField.className = "login_input";
+
+		// if (!validateLogin(nickname)) {
+		// 	nicknameField.className = "login_input login_bad_input";
+		// 	return;
+		// } else {
+		// 	nicknameField.className = "login_input login_good_input";
+		// }
+
+		// if (!validatePassword(password)) {
+		// 	passwordField.className = "login_input login_bad_input";
+		// 	return;
+		// } else {
+		// 	passwordField.className = "login_input login_good_input";
+		// }
 
 		AjaxModule.doPost({
-			callback() {
-				main.innerHTML = '';
-				createProfile();
+			callback(xhr) {
+				const answer = JSON.parse(xhr.responseText);
+				if (typeof(answer['Error']) === "undefined") {
+					main.innerHTML = '';
+					console.log(answer);
+					main.innerHTML = JSON.stringify(answer);
+					console.log("OK");
+				} else {
+					alert(answer['Error']);
+					console.log("WTF?");
+				}
 			},
-			path : '/login',
-			body : {
-				email: email,
-				password: password,
+			path: '/login',
+			body: {
+				nickname: form.elements[ 'nickname' ].value,
+				password: form.elements[ 'password' ].value,
 			},
 		});
 	});
 
 	main.appendChild(signInSection);
-	createButton(form, 'menu', 'menu btn', 'Назад');
 }
 
 function createSignup() {
 	main.innerHTML = '';
 
-	createTitle('Sign Up');
-
 	const signUpSection = document.createElement('section');
 	signUpSection.className = 'menu';	
 	signUpSection.dataset.sectionName = 'sign_up';
+
+	helper.createTitle(signUpSection, 'Sign Up');
 
 	const form = document.createElement('form');
 
@@ -253,7 +211,7 @@ function createSignup() {
 	];
 
 	inputs.forEach(function (item) {
-		createInput(form,
+		helper.createInput(form,
 			item.name,
 			item.type, 
 			item.placeholder, 
@@ -300,7 +258,7 @@ function createProfile(me) {
 	profileSection.className = 'menu';
 	profileSection.dataset.section = 'profile';
 
-	createTitle("Profile");
+	helper.createTitle(profileSection, "Profile");
 
 	if (me) {
 		const menu = document.createElement('div');
@@ -316,6 +274,9 @@ function createProfile(me) {
 		menu.appendChild(div1);
 		menu.appendChild(div2);
 		menu.appendChild(div3);
+
+		createButton(menu, 'edit', 'edit btn', 'Изменить');
+		createButton(menu, 'menu', 'btn', 'Назад');
 
 		profileSection.appendChild(menu);
 	} else {
@@ -337,7 +298,6 @@ function createProfile(me) {
 	}
 
 	main.appendChild(profileSection);
-	createButton(profileSection, 'menu', 'btn', 'Back');
 	
 }
 
@@ -369,16 +329,22 @@ function createGame() {
 
 function createLeaderboard(users) {
 	main.innerHTML = '';
-	createTitle('Leaderboard');
 
 	const leaderboard = document.createElement('div');
 	leaderboard.dataset.section = 'leaderboard';
 	leaderboard.className = 'menu';
+	helper.createTitle(leaderboard, 'Leaderboard');
 
 	if (users) {
+		const paginator = new paginationComponent({parentElement : leaderboard,
+													usersPerPage : 10,
+													totalPages : 7,
+													});
 		const board = new boardComponent({parentElement : leaderboard});
 		board.data = JSON.parse(JSON.stringify(users));
+
 		board.render(users); 
+		paginator.renderPaginator(7);
 	} else {
 		console.log('data loading, please wait');
 
@@ -386,14 +352,13 @@ function createLeaderboard(users) {
 			callback(xhr) {
 				const user = JSON.parse(xhr.responseText);
 				main.innerHTML = '';
-				createLeaderboard(a);
+				createLeaderboard(user);
 			},
 			path : '/users',
 		});
 	};
 
 	main.appendChild(leaderboard);
-	createButton(leaderboard, 'menu', 'btn', 'Back');
 }
 
 function createAbout() {
@@ -418,7 +383,7 @@ const functions = {
 
 
 	// Other functions
-	title: createTitle,
+	title: helper.createTitle,
 };
 
 // Обработчик всех евентов в DOM'е

@@ -14,3 +14,8 @@ tbody .tr {
     transform: scale(1.0);
     transition: 0.2s linear;
 }
+
+.leadersTable { 
+    width: 350px;
+    margin: 0 auto auto auto;
+}
