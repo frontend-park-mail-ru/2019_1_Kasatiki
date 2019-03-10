@@ -3,6 +3,7 @@
 @import url('components/helper/helper.css');
 @import url('components/login/login.css');
 @import url('components/signup/signup.css');
+@import url('components/profile/profile.css');
 
 .myHeared {
 	align-content: center;

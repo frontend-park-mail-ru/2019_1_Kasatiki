@@ -29,7 +29,7 @@ export class LoginComponent {
                     class="login_input"
                     title="Пароль должен состоять только из 3-20 латинских букв, цифр и символов пунктуации.">
                 <input name="submit" type="submit" class="login_btn">
-                <button data-section="menu" class="login_btn">menu</button>
+                <button data-section="menu" class="btn">Назад</button>
             </form>
         `;
 

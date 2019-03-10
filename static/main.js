@@ -5,10 +5,22 @@ import {SignUpComponent} from './components/signup/signup.js';
 import {paginationComponent} from './components/pagination/pagination.js';
 import {boardComponent} from './components/board/board.js';
 import {helperComponent} from './components/helper/helper.js';
+import {profileComponent} from './components/profile/profile.js'
 
 const {AjaxModule} = window;
 
+var adress = '127.0.0.1:8080';
+
 console.log("Server started");
+
+const menuItems = {
+	signup: 'Регистрация',
+	login: 'Логин',
+	game: 'Играть',
+	leaderboard: 'Таблица лидеров',
+	// about: 'О приложении',
+	profile: 'Профайл',
+};
 
 // Разименовывем необходимые элементы DOM'a
 
@@ -52,14 +64,6 @@ function validatePassword(password = "") {
 
 // Основные функции, отвечают за логику работы фронта/генерирование контента и тд
 function createMenu() {
-	const menuItems = {
-		signup: 'Регистрация',
-		login: 'Логин',
-		game: 'Играть',
-		leaderboard: 'Таблица лидеров',
-		// about: 'О приложении',
-		profile: 'Профайл',
-	};
 
 	main.innerHTML = '';
 
@@ -76,11 +80,13 @@ function createMenu() {
 function createLogin() {
 	main.innerHTML = '';
 
-	helper.createTitle(main, 'Login');
+	// createTitle('Login');
 
 	const signInSection = document.createElement('div');
 	signInSection.className = 'menu';
 	signInSection.dataset.sectionName = 'login';
+
+	const profile = new profileComponent(main);
 
 	const login = new LoginComponent({
 		el: signInSection,
@@ -149,8 +155,10 @@ function createLogin() {
 				if (typeof(answer['Error']) === "undefined") {
 					main.innerHTML = '';
 					console.log(answer);
-					main.innerHTML = JSON.stringify(answer);
 					console.log("OK");
+					console.log(form.elements[ 'nickname' ].value);
+
+					profile.createProfile(form.elements[ 'nickname' ].value);
 				} else {
 					alert(answer['Error']);
 					console.log("WTF?");
@@ -170,87 +178,87 @@ function createLogin() {
 function createSignup() {
 	main.innerHTML = '';
 
+	createTitle('Sign Up');
+
 	const signUpSection = document.createElement('section');
 	signUpSection.className = 'menu';	
 	signUpSection.dataset.sectionName = 'sign_up';
 
-	helper.createTitle(signUpSection, 'Sign Up');
-
-	const form = document.createElement('form');
-
-	const inputs = [
-		{
-			name: 'email',
-			type: 'email',
-			placeholder: 'Email',
-			className: 'loginForm form'
-		},
-		{
-			name: 'age',
-			type: 'number',
-			placeholder: 'Your Age',
-			className: 'ageForm form'
-		},
-		{
-			name: 'password',
-			type: 'password',
-			placeholder: 'Password',
-			className: 'passForm form'
-		},
-		{
-			name: 'password_repeat',
-			type: 'password',
-			placeholder: 'Repeat Password',
-			className: 'passForm form'
-		},
-		{
-			name: 'submit',
-			type: 'submit',
-			className: 'submit btn'
-		}
-	];
-
-	inputs.forEach(function (item) {
-		helper.createInput(form,
-			item.name,
-			item.type, 
-			item.placeholder, 
-			item.className
-		);
+	const signUp = new SignUpComponent({
+		el: signUpSection,
 	});
+	signUp.render();
 
-	signUpSection.appendChild(form);
+	const form = signUpSection.childNodes[1];
+	console.log(signUpSection.childNodes);
 
 	form.addEventListener('submit', function (event) {
 		event.preventDefault();
 
 		const email = form.elements[ 'email' ].value;
-		const age = parseInt(form.elements[ 'age' ].value);
+		const nickname = form.elements[ 'nickname' ].value;
 		const password = form.elements[ 'password' ].value;
-		const password_repeat = form.elements[ 'password_repeat' ].value;
+		const password_repeat = form.elements[ 'password_repeat' ];
 
-		if (password !== password_repeat) {
-			alert('Passwords is not equals');
+		const fieldsName = [
+			'email',
+			'nickname',
+			'password',
+		]
+		
+		const validationFunction = {
+			email: validateEmail,
+			nickname: validateLogin,
+			password: validatePassword,
+		}
 
+		let validationError = false;
+		fieldsName.forEach(function(fieldName) {
+			const field = form.elements[fieldName];
+			field.className = "signup_input";
+
+			if (!validationFunction[ fieldName ]( field.value )) {
+				field.className = "signup_input signup_bad_input";
+				validationError = true;
+			} else {
+				field.className = "signup_input signup_good_input";
+			}
+		});
+
+		if (password !== form.elements[ 'password_repeat' ].value) {
+			form.elements[ 'password_repeat' ].className = "signup_input signup_bad_input";
+			validationError = true;
+		} else {
+			form.elements[ 'password_repeat' ].className = "signup_input signup_good_input";
+		}
+
+		if (validationError) {
 			return;
 		}
 
 		AjaxModule.doPost({
-			callback() {
-				main.innerHTML = '';
-				createProfile();
+			callback(xhr) {
+				const answer = JSON.parse(xhr.responseText);
+				if (typeof(answer['Error']) === "undefined") {
+					main.innerHTML = '';
+					console.log(answer);
+					main.innerHTML = JSON.stringify(answer);
+					console.log("OK");
+				} else {
+					alert(answer['Error']);
+					console.log("WTF?");
+				}
 			},
-			path : '/signup',
-			body : {
+			path: '/signup',
+			body: {
+				nickname: nickname,
 				email: email,
-				age: age,
 				password: password
-			},
+			}
 		});
 	});
 
 	main.appendChild(signUpSection);
-	createButton(form, 'menu', 'menu btn', 'Назад');
 }
 
 function createProfile(me) {
@@ -337,7 +345,7 @@ function createLeaderboard(users) {
 
 	if (users) {
 		const paginator = new paginationComponent({parentElement : leaderboard,
-													usersPerPage : 10,
+													usersPerPage : 1,
 													totalPages : 7,
 													});
 		const board = new boardComponent({parentElement : leaderboard});
@@ -354,7 +362,7 @@ function createLeaderboard(users) {
 				main.innerHTML = '';
 				createLeaderboard(user);
 			},
-			path : '/users',
+			path : '/leaderboard',
 		});
 	};
 
@@ -391,13 +399,17 @@ app.addEventListener('click', (evt) => {
 
 	const target = evt.target;
 
+	// console.log('click on ', target, 'datasec: ', target.dataset.section);
+
 	// Если target является кнопкой 
 	if (target instanceof HTMLButtonElement) {
-		// Убираем все стандартные обработчики	
-		evt.preventDefault();
+		// if (target.dataset.section instanceof menuItems.keys) {
+			// Убираем все стандартные обработчики	
+			evt.preventDefault();
 
-		const section = target.dataset.section;
+			const section = target.dataset.section;
 
-		functions[section]();
+			functions[section]();
+		// }
 	};
 });

@@ -39,6 +39,7 @@ export class SignUpComponent {
                     type="submit"
                     placeholder="undefined"
                     class="signup_btn">
+                    
                 <button data-section="menu" class="signup_btn">menu</button>
             </form>
         `;

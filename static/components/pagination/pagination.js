@@ -44,12 +44,13 @@ export class paginationComponent {
 
     }
 
-    _getPrivPage() {
+    _getPrevPage() {
         if (this._pagesDict._currentPage > 1)
             this._pagesDict._currentPage --;
 
+        const offset = this._pagesDict._currentPage*this._usersPerPage;
+
         const board = new boardComponent({parentElement : this._parentElement});
-        const parent = this._parentElement;
 
         const that = this;
 
@@ -60,7 +61,7 @@ export class paginationComponent {
                 board.render(res);
                 that.renderPaginator();
             },
-            path : '/users?offset=' + that._currentPage*that.__usersPerPage,
+            path : '/leaderboard?offset=' + offset,
         });
     }
 
@@ -69,9 +70,9 @@ export class paginationComponent {
             this._pagesDict._currentPage ++;
 
         const offset = this._pagesDict._currentPage*this._usersPerPage;
+        console.log(offset);
 
         const board = new boardComponent({parentElement : this._parentElement});
-        const parent = this._parentElement;
 
         const that = this;
 
@@ -82,7 +83,7 @@ export class paginationComponent {
                 board.render(res);
                 that.renderPaginator();
             },
-            path : '/users?offset=' + offset,
+            path : '/leaderboard?offset=' + offset,
         });
     }
 
@@ -91,11 +92,10 @@ export class paginationComponent {
         const templateScript = `
             <div class="paginatorBox">
                 <p class="prev"><</p>
-                {{_currentPage}}
                 <p class="next">></p>
             </div>
 
-            <button data-section="menu" class="btn">Back</button>
+            <button data-section="menu" class="btn">Назад</button>
         `;
 
 
@@ -111,14 +111,15 @@ export class paginationComponent {
 
         nextButton.addEventListener('click', () => {
             pageBox.innerHTML = '';
-            const response = this._getNextPage();
+            this._getNextPage();
             this.renderPaginator();
         });
 
 
         prevButton.addEventListener('click', () => {
             pageBox.innerHTML = '';
-            this._getPrivPage();
+            this._getPrevPage();
+            this.renderPaginator();
         });
 
     };

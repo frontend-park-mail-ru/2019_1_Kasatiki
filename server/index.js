@@ -13,40 +13,6 @@ app.use(express.static(path.resolve(__dirname, '..', 'static')));
 app.use(body.json());
 app.use(cookie());
 
-
-// const users = { 
-// 	'a.ostapenko@corp.mail.ru': {
-// 		email: 'a.ostapenko@corp.mail.ru',
-// 		password: 'password',
-// 		age: 21,
-// 		score: 72,
-// 	},
-// 	'd.dorofeev@corp.mail.ru': {
-// 		email: 'd.dorofeev@corp.mail.ru',
-// 		password: 'password',
-// 		age: 21,
-// 		score: 100500,
-// 	},
-// 	's.volodin@corp.mail.ru': {
-// 		email: 'marina.titova@corp.mail.ru',
-// 		password: 'password',
-// 		age: 21,
-// 		score: 72,
-// 	},
-// 	'a.tyuldyukov@corp.mail.ru': {
-// 		email: 'a.tyuldyukov@corp.mail.ru',
-// 		password: 'password',
-// 		age: 21,
-// 		score: 72,
-// 	},
-// 	'aaa@mail.ru': {
-// 		email: 'aaa@mail.ru',
-// 		password: 'e',
-// 		age: 21,
-// 		score: 72,		
-// 	}
-// };
-
 const users = [
 	{
 		"ID":"2",
