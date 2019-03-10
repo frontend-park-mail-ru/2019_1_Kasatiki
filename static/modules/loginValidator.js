@@ -2,6 +2,9 @@ const {AjaxModule} = window;
 
 (function() {
 
+	const noop = () => null;
+
+
     class ValidModule {
 
         validUser() {
@@ -13,8 +16,8 @@ const {AjaxModule} = window;
                 path : '/isauth',
             });
         }
-        
-    }
+
+    };
 
 	window.ValidModule = new ValidModule();
 })();

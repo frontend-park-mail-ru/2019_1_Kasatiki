@@ -161,6 +161,7 @@ func isAuth (w http.ResponseWriter, r *http.Request) {
 }
 
 func editUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Edit User")
 	//Checking cookie
 	cookie, err := r.Cookie("session_id")
 	// fmt.Println(cookie.Path)
@@ -173,10 +174,10 @@ func editUser(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&modUser)
 	// Getting claims from current cookie
 	claims := checkAuth(cookie)
-
+	fmt.Println(users)
 	// Finding user from claims in users and changing old data to modified data
 	for _, user := range users {
-		if user.ID == claims["nickname"].(string) {
+		if user.Nickname == claims["nickname"].(string) {
 			u := &user
 			if modUser.Nickname != "" {
 				u.Nickname = modUser.Nickname
@@ -199,6 +200,7 @@ func editUser(w http.ResponseWriter, r *http.Request) {
 			if modUser.ImgUrl != "" {
 				u.ImgUrl = modUser.ImgUrl
 			}
+			fmt.Println(*u)
 			json.NewEncoder(w).Encode(*u)
 			break
 		}
@@ -271,10 +273,6 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Hello world")
-}
-
 
 func upload(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(32 << 20)
@@ -307,7 +305,7 @@ func main() {
 	reciever := mux.NewRouter()
 	// GET  ( get exists data )
 	reciever.HandleFunc("/users/{Nickname}", getUser).Methods("GET")
-	reciever.HandleFunc("/users/me", getMe).Methods("GET")
+	reciever.HandleFunc("/me", getMe).Methods("GET")
 	reciever.HandleFunc("/leaderboard", getLeaderboard).Methods("GET")
 	reciever.HandleFunc("/isauth", isAuth).Methods("GET")
 	//reciever.HandleFunc("/edit", editUser).Methods("GET")

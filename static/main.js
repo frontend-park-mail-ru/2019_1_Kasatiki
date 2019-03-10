@@ -8,16 +8,38 @@ import {helperComponent} from './components/helper/helper.js';
 import {profileComponent} from './components/profile/profile.js'
 
 const {AjaxModule} = window;
+const {ValidModule} = window;
+
+function setStatus(status, value) {
+	status = value;
+}
+
+// var authStatus;
+
+// AjaxModule.fooFoo({reper: 'veka'}, {crack: 'crack'});
 
 var authStatus = false;
 
-// authStatus =  AjaxModule.doGet({	
-// 	callback(xhr) {
-// 		const res = JSON.parse(xhr.responseText);
-// 		return res.is_auth;
-// 	},
-// 	path : '/isauth',
-// });
+// function auth(value) {
+// 	return value
+// }
+
+// function authCheck () {
+// 	let promise = new Promise( function(resolve) {
+// 		AjaxModule.doGet({	
+// 			callback(xhr) {
+// 				const res = JSON.parse(xhr.responseText);
+// 				resolve(res);
+// 			},
+// 			path : '/isauth',
+// 		});
+// 	});
+// 	return promise;
+// }
+
+// authStatus = authCheck().then(res => { return res.is_auth });
+
+
 
 console.log('auth', authStatus);
 
@@ -288,7 +310,7 @@ function createProfile() {
 			profile.render(authStatus ,user);
 			console.log(user);
 		},
-		path : '/users/meeeee',
+		path : '/me',
 	});
 }
 

@@ -106,7 +106,7 @@ export class profileComponent {
                     user.editCheck = false;
     
                     const inputs = that._parentElement.querySelectorAll('.inputs');
-                    console.log(inputs);
+                    // console.log(inputs);
     
                     let req = {};
     
@@ -128,12 +128,14 @@ export class profileComponent {
                     if (Object.keys(req).length == 0) {
                         req.error = 'empty'
                     }
+
+                    console.log(req);
                     
                     AjaxModule.doPost({
                         callback(xhr) {
                             const answer = JSON.parse(xhr.responseText);
-                            //console.log('answer:', answer,'nickname:',user[nickname]);
-                            that.render(answer);
+                            // console.log('answer:', answer,'nickname:',user[nickname]);
+                            that.render(authStatus, answer);
                         },
                         path: '/users/' + user.nickname,
                         body: req,
@@ -197,7 +199,7 @@ export class profileComponent {
                     console.log("WTF?");
                 }
             },
-            path: "/users/" + nickname,	
+            path: "/me",	
         });
     }
 }
