@@ -31,6 +31,9 @@ export class profileComponent {
                             <div class="avatar">
                                 <img src="https://cdn.iconscout.com/icon/free/png-256/avatar-372-456324.png" alt="avatar">
                             </div>
+                            <div class="change">
+                                <input name="myFile" type="file" accept="image/*" class="avatar_change">
+                            </div>
                             <div class="about">
                                 <input class="inputs" type="text" name="About" value="{{About}}">
                             </div>
@@ -101,7 +104,9 @@ export class profileComponent {
             if (user.editCheck) {
                 let submit = this._parentElement.querySelector(".sub_btn");
                 let back = this._parentElement.querySelector(".back_btn");
-    
+                let imgFile = this._parentElement.querySelector(".avatar_change");
+               
+
                 submit.addEventListener('click', () => {
                     user.editCheck = false;
     
@@ -109,6 +114,14 @@ export class profileComponent {
                     // console.log(inputs);
     
                     let req = {};
+
+                    let imageForm = new FormData();
+                    var uploadFile = imgFile.files[0];
+                    imageForm.append('avatar', uploadFile);
+
+                    console.log(imageForm);
+
+                    req.avatar = imageForm;
     
                     inputs.forEach(element => {
                         // console.log(element.value, user[element.name]);

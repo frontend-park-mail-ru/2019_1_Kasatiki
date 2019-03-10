@@ -10,15 +10,11 @@ import {profileComponent} from './components/profile/profile.js'
 const {AjaxModule} = window;
 const {ValidModule} = window;
 
-function setStatus(status, value) {
-	status = value;
-}
-
 // var authStatus;
 
 // AjaxModule.fooFoo({reper: 'veka'}, {crack: 'crack'});
 
-var authStatus = false;
+var authStatus = true;
 
 // function auth(value) {
 // 	return value
@@ -41,7 +37,7 @@ var authStatus = false;
 
 
 
-console.log('auth', authStatus);
+// console.log('auth', authStatus);
 
 // if (authStatus) {
 // 	console.log('authorizer');
@@ -274,12 +270,8 @@ function createSignup() {
 				const answer = JSON.parse(xhr.responseText);
 				if (typeof(answer['Error']) === "undefined") {
 					main.innerHTML = '';
-					console.log(answer);
-					main.innerHTML = JSON.stringify(answer);
-					console.log("OK");
 				} else {
 					alert(answer['Error']);
-					console.log("WTF?");
 				}
 			},
 			path: '/signup',
