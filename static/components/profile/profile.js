@@ -9,11 +9,11 @@ export class profileComponent {
     }
 
     get data() {
-        return this._userData;
+        return this._parentElement;
     }
 
-    set data(userData = []) {
-        this._userData = userData;
+    set data(obj) {
+        this._parentElement = obj;
     }
 
     render(user) {
@@ -96,6 +96,7 @@ export class profileComponent {
         `;
         let template = Handlebars.compile(templateScript);
         this._parentElement.innerHTML += template(user); 
+        console.log('parent:',this._parentElement);
         if (user.editCheck) {
             let submit = this._parentElement.querySelector(".sub_btn");
             let back = this._parentElement.querySelector(".back_btn");
@@ -126,8 +127,6 @@ export class profileComponent {
                 if (Object.keys(req).length == 0) {
                     req.error = 'empty'
                 }
-
-                console.log(req);
                 
                 AjaxModule.doPost({
                     callback(xhr) {

@@ -2,5 +2,3 @@ node_modules
 package-lock.json
 *tmpl.js
 .vscode/launch.json
-conf
-*main.go

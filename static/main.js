@@ -8,6 +8,19 @@ import {helperComponent} from './components/helper/helper.js';
 import {profileComponent} from './components/profile/profile.js'
 
 const {AjaxModule} = window;
+const {validModule} = window;
+
+const auth = AjaxModule.doGet({	
+	callback(xhr) {
+		const res = JSON.parse(xhr.responseText);
+		return res.is_auth;
+	},
+	path : '/isauth',
+});
+
+if (auth) {
+	console.log('authorizer');
+} else console.log('unauthorized');
 
 var adress = '127.0.0.1:8080';
 
@@ -260,7 +273,16 @@ function createSignup() {
 }
 
 function createProfile() {
-
+	const profile = new profileComponent(main);
+	
+	AjaxModule.doGet({	
+		callback(xhr) {
+			const user = JSON.parse(xhr.responseText);
+			main.innerHTML = '';
+			profile.render(user);
+		},
+		path : '/user/me',
+	});
 }
 
 function createGame() {
