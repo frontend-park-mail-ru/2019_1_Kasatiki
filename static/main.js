@@ -8,19 +8,22 @@ import {helperComponent} from './components/helper/helper.js';
 import {profileComponent} from './components/profile/profile.js'
 
 const {AjaxModule} = window;
-const {validModule} = window;
 
-const auth = AjaxModule.doGet({	
-	callback(xhr) {
-		const res = JSON.parse(xhr.responseText);
-		return res.is_auth;
-	},
-	path : '/isauth',
-});
+var authStatus = false;
 
-if (auth) {
-	console.log('authorizer');
-} else console.log('unauthorized');
+// authStatus =  AjaxModule.doGet({	
+// 	callback(xhr) {
+// 		const res = JSON.parse(xhr.responseText);
+// 		return res.is_auth;
+// 	},
+// 	path : '/isauth',
+// });
+
+console.log('auth', authStatus);
+
+// if (authStatus) {
+// 	console.log('authorizer');
+// } else console.log('unauthorized');
 
 var adress = '127.0.0.1:8080';
 
@@ -92,8 +95,6 @@ function createMenu() {
 function createLogin() {
 	main.innerHTML = '';
 
-	// createTitle('Login');
-
 	const signInSection = document.createElement('div');
 	signInSection.className = 'menu';
 	signInSection.dataset.sectionName = 'login';
@@ -101,11 +102,9 @@ function createLogin() {
 	main.appendChild(signInSection);
 
 	const profile = new profileComponent(signInSection);
+	const login = new LoginComponent({el: signInSection});
 
-	const login = new LoginComponent({
-		el: signInSection,
-	});
-	login.render();
+	login.render(authStatus);
 
 	const form = signInSection.childNodes[1];
 	// Нужно научиться достовать по ключу form
@@ -124,6 +123,7 @@ function createLogin() {
 		}
 
 		let validationError = false;
+		authStatus = true;
 		fieldsName.forEach(function(fieldName) {
 			const field = form.elements[fieldName];
 			field.className = "login_input";
@@ -172,7 +172,7 @@ function createLogin() {
 					console.log("OK");
 					console.log(form.elements[ 'nickname' ].value);
 
-					profile.createProfile(form.elements[ 'nickname' ].value);
+					profile.createProfile(authStatus,form.elements[ 'nickname' ].value);
 				} else {
 					alert(answer['Error']);
 					console.log("WTF?");
@@ -273,15 +273,22 @@ function createSignup() {
 }
 
 function createProfile() {
-	const profile = new profileComponent(main);
+
+	const badProfile = document.createElement('div');
+	badProfile.className = 'menu';
+	badProfile.dataset.sectionName = 'profile';
+
+	main.appendChild(badProfile);
+
+	const profile = new profileComponent(badProfile);
 	
 	AjaxModule.doGet({	
 		callback(xhr) {
 			const user = JSON.parse(xhr.responseText);
-			main.innerHTML = '';
-			profile.render(user);
+			profile.render(authStatus ,user);
+			console.log(user);
 		},
-		path : '/user/me',
+		path : '/users/meeeee',
 	});
 }
 

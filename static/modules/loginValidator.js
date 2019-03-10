@@ -2,7 +2,8 @@ const {AjaxModule} = window;
 
 (function() {
 
-    class validModule {
+    class ValidModule {
+
         validUser() {
             AjaxModule.doGet({	
                 callback(xhr) {
@@ -12,7 +13,8 @@ const {AjaxModule} = window;
                 path : '/isauth',
             });
         }
+        
     }
 
-    window.validModule = new validModule();
-})();   
+	window.ValidModule = new ValidModule();
+})();

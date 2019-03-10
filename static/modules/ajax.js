@@ -56,7 +56,7 @@
 				method: 'POST',
 			});
 		}
+		
 	}
-
 	window.AjaxModule = new AjaxModule();
 })();
