@@ -2,6 +2,11 @@
 
 Frontend course (Spring 2019)
 
+## How to run
+- npm install
+- go run main.go
+- localhost:8080
+
 ## Our team
 - Elfimov Vladimir [@evvfebruary](https://github.com/evvfebruary) (fullstack)
 - Solovyev Oleg [@Gel0bmstu](https://github.com/Gel0bmstu) (fullstack)
