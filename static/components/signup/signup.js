@@ -15,6 +15,8 @@ export class SignUpComponent {
 
     render() {
         var templateScript = `
+            <h1>Sign Up</h1>
+
             <form>
                 <input
                     name="nickname"
@@ -40,7 +42,7 @@ export class SignUpComponent {
                     placeholder="undefined"
                     class="signup_btn">
                     
-                <button data-section="menu" class="signup_btn">menu</button>
+                <button data-section="menu" class="signup_btn">Назад</button>
             </form>
         `;
 

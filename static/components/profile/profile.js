@@ -17,27 +17,28 @@ export class profileComponent {
     }
 
     render(user) {
+        const that = this;
         this._parentElement.innerHTML = '';
         const templateScript = `
-        {{#if this._editCheck}}
+        {{#if editCheck}}
         <div class="profile">
             <div class="userSection">
                 <div class="userCart">
                     <div class="nickname">
-                        <input type="text" name="nickname" value="{{nickname}}">
+                        <input class="inputs" type="text" name="nickname" value="{{nickname}}">
                     </div>
                     <div class="avatar">
                         <img src="https://cdn.iconscout.com/icon/free/png-256/avatar-372-456324.png" alt="avatar">
                     </div>
                     <div class="about">
-                        {{About}}
+                        <input class="inputs" type="text" name="About" value="{{About}}">
                     </div>
                     <div class="mainInfo">
-                        points: {{Points}} region: {{Region}}
+                        {{Points}}
                     </div>
                     <div class="buttonSection">
-                        <p class="edit_btn">Изменить</p>
-                        <button data-section="menu" class="btn">Назад</button>
+                        <button class="sub_btn">Сохранить</button>
+                        <button class="back_btn">Отмена</button>
                     </div>
                     <div class="social">
                         <a href="">vk</a>
@@ -48,12 +49,11 @@ export class profileComponent {
                     </div>
                 </div>
                 <div class="fullInfo">
-                    <div class="id">{{ID}}</div>
-                    <div class="region">{{Region}}</div>
-                    <div class="emailDiv">{{email}}</div>
-                    <div class="age">{{Age}}</div>
+                    <div class="id">id: {{ID}}</div>
+                    <div class="region"><input class="inputs" type="text" name="Region" value="{{Region}}"></div>
+                    <div class="emailDiv"><input class="inputs" type="text" name="email" value="{{email}}"></div>
+                    <div class="age"><input type="text" class="inputs" name="Age" value="{{Age}}"></div>
                 </div>
-                <p type="submit" class="submit_btn">post</p>
             </div>
         </div>
         {{else}}
@@ -70,11 +70,11 @@ export class profileComponent {
                         {{About}}
                     </div>
                     <div class="mainInfo">
-                        points: {{Points}} region: {{Region}}
+                        points: {{Points}}
                     </div>
                     <div class="buttonSection">
-                        <button>Изменить</button>
-                        <button data-section="menu" class="btn">Назад</button>
+                        <button class="edit_btn">Изменить</button>
+                        <button data-section="menu" class="back_btn">Назад</button>
                     </div>
                     <div class="social">
                         <a href="">vk</a>
@@ -85,35 +85,77 @@ export class profileComponent {
                     </div>
                 </div>
                 <div class="fullInfo">
-                    <div class="id">{{ID}}</div>
-                    <div class="region">{{Region}}</div>
-                    <div class="emailDiv">{{email}}</div>
-                    <div class="age">{{Age}}</div>
+                    <div class="id">id: {{ID}}</div>
+                    <div class="region">region: {{Region}}</div>
+                    <div class="emailDiv">email: {{email}}</div>
+                    <div class="age">age: {{Age}}</div>
                 </div>
-                <p type="submit" class="submit_btn">post</p>
             </div>
         </div>
         {{/if}}
         `;
         let template = Handlebars.compile(templateScript);
         this._parentElement.innerHTML += template(user); 
-        // if (this._editCheck) {
-        //     let edit = this._parentElement.querySelector(".edit_btn");
+        if (user.editCheck) {
+            let submit = this._parentElement.querySelector(".sub_btn");
+            let back = this._parentElement.querySelector(".back_btn");
 
-        //     edit.addEventListener('click', () => {
-        //         this._editCheck = true;
-        //         render(user);
-        //     })
-        // } else {
-        //     let edit = this._parentElement.querySelector(".edit_btn");
+            submit.addEventListener('click', () => {
+                user.editCheck = false;
 
-        //     edit.addEventListener('click', () => {
-        //         this._editCheck = true;
-        //         render(user);
-        //     })
-        // }
-        let submint = this._parentElement.querySelector(".submit_btn");
-        submint.addEventListener('click', () => {
+                const inputs = that._parentElement.querySelectorAll('.inputs');
+                console.log(inputs);
+
+                let req = {};
+
+                inputs.forEach(element => {
+                    // console.log(element.value, user[element.name]);
+                    if (element.value != user[element.name]) {
+                        if (element.name === 'Age') {
+                            console.log(typeof(element.value));
+                            const age = parseInt(element.value);
+                            console.log(typeof(element.value));
+                            req[element.name] = age;
+                        } else {
+                            req[element.name] = element.value;
+                            console.log(typeof(element.value));
+                        }
+                    }
+                });
+
+                if (Object.keys(req).length == 0) {
+                    req.error = 'empty'
+                }
+
+                console.log(req);
+                
+                AjaxModule.doPost({
+                    callback(xhr) {
+                        const answer = JSON.parse(xhr.responseText);
+                        //console.log('answer:', answer,'nickname:',user[nickname]);
+                        that.render(answer);
+                    },
+                    path: '/users/' + user.nickname,
+                    body: req,
+                });
+            });
+
+            back.addEventListener('click', () => {
+                user.editCheck = false;
+                console.log(user.editCheck);   
+                that.render(user);
+            })
+        } else {
+            let edit = this._parentElement.querySelector(".edit_btn");
+
+            edit.addEventListener('click', () => {
+                user.editCheck = true;
+                console.log('in false: ',that._editCheck);   
+                that.render(user);
+            })
+        }
+        const avatar = this._parentElement.querySelector(".avatar");
+        avatar.addEventListener('click', () => {
             AjaxModule.doPost({
                 callback(xhr) {
                     const answer = JSON.parse(xhr.responseText);
@@ -127,8 +169,6 @@ export class profileComponent {
             });
         })
     }
-
-
 
     createProfile(nickname) {
         const that = this;

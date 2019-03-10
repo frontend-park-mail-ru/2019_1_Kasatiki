@@ -13,15 +13,6 @@ var adress = '127.0.0.1:8080';
 
 console.log("Server started");
 
-const menuItems = {
-	signup: 'Регистрация',
-	login: 'Логин',
-	game: 'Играть',
-	leaderboard: 'Таблица лидеров',
-	// about: 'О приложении',
-	profile: 'Профайл',
-};
-
 // Разименовывем необходимые элементы DOM'a
 
 const app = document.getElementById("application");
@@ -64,6 +55,14 @@ function validatePassword(password = "") {
 
 // Основные функции, отвечают за логику работы фронта/генерирование контента и тд
 function createMenu() {
+	const menuItems = {
+		signup: 'Регистрация',
+		login: 'Логин',
+		game: 'Играть',
+		leaderboard: 'Таблица лидеров',
+		// about: 'О приложении',
+		profile: 'Профайл',
+	};
 
 	main.innerHTML = '';
 
@@ -86,7 +85,9 @@ function createLogin() {
 	signInSection.className = 'menu';
 	signInSection.dataset.sectionName = 'login';
 
-	const profile = new profileComponent(main);
+	main.appendChild(signInSection);
+
+	const profile = new profileComponent(signInSection);
 
 	const login = new LoginComponent({
 		el: signInSection,
@@ -172,13 +173,10 @@ function createLogin() {
 		});
 	});
 
-	main.appendChild(signInSection);
 }
 
 function createSignup() {
 	main.innerHTML = '';
-
-	createTitle('Sign Up');
 
 	const signUpSection = document.createElement('section');
 	signUpSection.className = 'menu';	
@@ -261,52 +259,8 @@ function createSignup() {
 	main.appendChild(signUpSection);
 }
 
-function createProfile(me) {
-	const profileSection = document.createElement('section');
-	profileSection.className = 'menu';
-	profileSection.dataset.section = 'profile';
+function createProfile() {
 
-	helper.createTitle(profileSection, "Profile");
-
-	if (me) {
-		const menu = document.createElement('div');
-		menu.className = 'menu';
-
-		const div1 = document.createElement('div');
-		div1.textContent = `Email ${me.email}`;
-		const div2 = document.createElement('div');
-		div2.textContent = `Age ${me.age}`;
-		const div3 = document.createElement('div');
-		div3.textContent = `Score ${me.score}`;
-		
-		menu.appendChild(div1);
-		menu.appendChild(div2);
-		menu.appendChild(div3);
-
-		createButton(menu, 'edit', 'edit btn', 'Изменить');
-		createButton(menu, 'menu', 'btn', 'Назад');
-
-		profileSection.appendChild(menu);
-	} else {
-		AjaxModule.doGet({
-			callback(xhr) {
-				if (!xhr.responseText) {
-					alert('Unauthorized');
-					main.innerHTML = '';
-					createMenu();
-					return;
-				}
-
-				const user = JSON.parse(xhr.responseText);
-				main.innerHTML = '';
-				createProfile(user);;
-			},
-			path : '/me',
-		});
-	}
-
-	main.appendChild(profileSection);
-	
 }
 
 function createGame() {
@@ -403,13 +357,13 @@ app.addEventListener('click', (evt) => {
 
 	// Если target является кнопкой 
 	if (target instanceof HTMLButtonElement) {
-		// if (target.dataset.section instanceof menuItems.keys) {
+		if (target.dataset.section in functions) {
 			// Убираем все стандартные обработчики	
 			evt.preventDefault();
 
 			const section = target.dataset.section;
 
 			functions[section]();
-		// }
+		}
 	};
 });
