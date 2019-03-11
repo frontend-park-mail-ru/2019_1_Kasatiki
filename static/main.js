@@ -101,24 +101,24 @@ function createLogin() {
 	main.appendChild(signInSection);
 
 	const profile = new profileComponent(signInSection);
-	const login = new loginComponent(signInSection);
+	const login = new loginComponent({el: signInSection});
 
 	login.render(authValid.status);
 
 	// ToDo, Tmrln: зачем алерты? оч мешает
 	let id = -1;
 	const signInChildNodes = signInSection.childNodes;
+	console.log(signInSection);
 	for (let i = 0; i < signInChildNodes.length; i++) {
 		if ("login-form".localeCompare(signInChildNodes[i].id) === 0) {
 			id = i;
 		}
 	}
 	if (id === -1) {
-		alert("form id changed!!!");
+		console.log("form id changed!!!");
 		return;
 	}
 	const form = signInChildNodes[id];
-	// Нужно научиться достовать по ключу form
 
 	// ToDo, Tmrln: у меня логика лежит в компонентах, не знаю, на сколько это правильно
 	// 				(скорее всего неправильно :^( )
@@ -198,6 +198,7 @@ function createSignup() {
 	signUpSection.className = 'menu';	
 	signUpSection.dataset.section = 'sign_up';
 
+	const profile = new profileComponent(signUpSection);
 	const signUp = new SignUpComponent({
 		el: signUpSection,
 	});
@@ -224,7 +225,6 @@ function createSignup() {
 		const email = form.elements[ 'email' ].value;
 		const nickname = form.elements[ 'nickname' ].value;
 		const password = form.elements[ 'password' ].value;
-		const password_repeat = form.elements[ 'password_repeat' ];
 
 		const fieldsName = [
 			'email',
@@ -267,15 +267,15 @@ function createSignup() {
 
 		AjaxModule.doPost({
 			callback(xhr) {
-				const answer = JSON.parse(xhr.responseText);
+				const responseAnswer = xhr.responseText;
+				const answer = JSON.stringify(responseAnswer);
+
 				if (typeof(answer['Error']) === "undefined") {
 					main.innerHTML = '';
-					console.log(answer);
-					main.innerHTML = JSON.stringify(answer);
+					createMenu();					
 					console.log("OK");
 				} else {
 					alert(answer['Error']);
-					console.log("WTF?");
 				}
 			},
 			path: '/signup',
@@ -341,8 +341,10 @@ function createGame() {
 	createButton(menu, 'menu', 'btn', 'Back');
 }
 
-function createLeaderboard(users) {
+function createLeaderboard(users) {	
 	main.innerHTML = '';
+
+	AjaxModule.token = 'dadaad';
 
 	// Создаем родительский блок
 	const leaderboard = document.createElement('div');

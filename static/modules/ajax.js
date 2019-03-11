@@ -11,6 +11,10 @@
 			const xhr = new XMLHttpRequest();
 			xhr.open(method, path, true);
 			xhr.withCredentials = true;
+			if (this._csrfToken !== undefined) {
+				xhr.setRequestHeader('X-CSRF-Token', this._csrfToken);
+			}
+
 
 			if (body) {
 				xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
@@ -29,6 +33,10 @@
 			} else {
 				xhr.send();
 			}
+		}
+
+		set token(tokenValue) {
+			this._csrfToken = tokenValue;
 		}
 
 		doGet({

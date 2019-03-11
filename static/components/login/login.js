@@ -25,7 +25,7 @@ export class loginComponent {
             // ToDo, Tmrln: Тут надо что-то делать: либо у <form> ставить атрибуты action="/login", method="post" (потом будут проблемы с переадресацией),
             //              либо делать <div class="menu"> (обрати внимание на адресную строку, туда печатается гет запрос с формы - это вообще не круто)
             var templateScript = `
-                <form class="menu">
+                <form id="login-form">
                     <h1>Login</h1>
                     <input
                         name="nickname"
