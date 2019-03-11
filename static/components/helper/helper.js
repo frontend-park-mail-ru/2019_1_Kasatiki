@@ -16,7 +16,7 @@ export class helperComponent {
         const template = Handlebars.compile(templateScript);
         // console.log(template);
         object.innerHTML += template(optionsDict); 
-    };
+    }
 
     createButton(object, sectionName, className, textContent) {
         const optionsDict = {
@@ -33,7 +33,7 @@ export class helperComponent {
         const template = Handlebars.compile(templateScript);
         // console.log(template);
         object.innerHTML += template(optionsDict); 
-    };
+    }
 
     createTitle(parentObject, text) {
         const optionsDict = {

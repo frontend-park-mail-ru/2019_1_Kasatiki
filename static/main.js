@@ -11,9 +11,7 @@ import {ValidModule} from './modules/loginValidator.js';
 const {AjaxModule} = window;
 var authValid = new ValidModule();
 
-authValid.validUser();
-
-authValid.status = true;
+authValid.status = false;
 
 console.log("client started");
 
@@ -380,7 +378,7 @@ function createLeaderboard(users) {
 			},
 			path : '/leaderboard',
 		});
-	};
+	}
 
 	main.appendChild(leaderboard);
 }
@@ -428,5 +426,5 @@ app.addEventListener('click', (evt) => {
 
 			functions[section]();
 		}
-	};
+	}
 });

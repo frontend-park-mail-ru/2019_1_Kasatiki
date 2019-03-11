@@ -57,4 +57,4 @@ export class ValidModule {
         return this._authStatus;
     }
 
-};
+}

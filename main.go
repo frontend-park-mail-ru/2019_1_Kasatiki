@@ -137,7 +137,7 @@ func checkAuth(cookie *http.Cookie) jwt.MapClaims {
 func isAuth(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		w.Write([]byte("=("))
+		w.Write([]byte("{}"))
 		return
 	}
 
@@ -156,7 +156,7 @@ func editUser(w http.ResponseWriter, r *http.Request) {
 	//Checking cookie
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		w.Write([]byte("=("))
+		w.Write([]byte("{}"))
 		return
 	}
 	// Taking JSON of modified user from edit form
@@ -226,7 +226,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 func getMe(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		w.Write([]byte("=("))
+		w.Write([]byte("{}"))
 		return
 	}
 	claims := checkAuth(cookie)
@@ -269,7 +269,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	// Tacking cookie of current user
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		w.Write([]byte("=("))
+		w.Write([]byte("{}"))
 		return
 	}
 	claims := checkAuth(cookie)
