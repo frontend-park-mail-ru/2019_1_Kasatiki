@@ -1,64 +1,26 @@
 'use strict'
 
-import {LoginComponent} from './components/login/login.js';
+import {loginComponent} from './components/login/login.js';
 import {SignUpComponent} from './components/signup/signup.js';
 import {paginationComponent} from './components/pagination/pagination.js';
 import {boardComponent} from './components/board/board.js';
 import {helperComponent} from './components/helper/helper.js';
-import {profileComponent} from './components/profile/profile.js'
+import {profileComponent} from './components/profile/profile.js';
+import {ValidModule} from './modules/loginValidator.js';
 
 const {AjaxModule} = window;
-const {ValidModule} = window;
+var authValid = new ValidModule();
 
-// var authStatus;
+authValid.validUser();
 
-// AjaxModule.fooFoo({reper: 'veka'}, {crack: 'crack'});
+authValid.status = true;
 
-var authStatus = true;
-
-// function auth(value) {
-// 	return value
-// }
-
-// function authCheck () {
-// 	let promise = new Promise( function(resolve) {
-// 		AjaxModule.doGet({	
-// 			callback(xhr) {
-// 				const res = JSON.parse(xhr.responseText);
-// 				resolve(res);
-// 			},
-// 			path : '/isauth',
-// 		});
-// 	});
-// 	return promise;
-// }
-
-// authStatus = authCheck().then(res => { return res.is_auth });
-
-
-
-// console.log('auth', authStatus);
-
-// if (authStatus) {
-// 	console.log('authorizer');
-// } else console.log('unauthorized');
-
-var adress = '127.0.0.1:8080';
-
-console.log("Server started");
+console.log("client started");
 
 // Разименовывем необходимые элементы DOM'a
 
 const app = document.getElementById("application");
 const helper = new helperComponent();
-
-const header = document.createElement('div');
-header.dataset.section = "header";
-app.appendChild(header);
-
-const side = document.createElement('div');
-side.dataset.section = "sidebar";
-app.appendChild(side);
 
 const main = document.createElement('div');
 main.className = "main";
@@ -89,14 +51,28 @@ function validatePassword(password = "") {
 
 // Основные функции, отвечают за логику работы фронта/генерирование контента и тд
 function createMenu() {
-	const menuItems = {
-		signup: 'Регистрация',
-		login: 'Логин',
-		game: 'Играть',
-		leaderboard: 'Таблица лидеров',
-		// about: 'О приложении',
-		profile: 'Профайл',
-	};
+	
+	console.log('auth status: ', authValid.status);
+	
+	// Разное меню для залогиненых/разлогиненых пользователей
+	if (authValid.status) {
+		var menuItems = {
+			game: 'Играть',
+			leaderboard: 'Таблица лидеров',
+			// about: 'О приложении',
+			profile: 'Профайл',
+			logout: 'Выйти',
+		};
+	} else {
+		var menuItems = {
+			signup: 'Регистрация',
+			login: 'Логин',
+			game: 'Играть',
+			leaderboard: 'Таблица лидеров',
+			// about: 'О приложении',
+			profile: 'Профайл',
+		};
+	}
 
 	main.innerHTML = '';
 
@@ -104,30 +80,52 @@ function createMenu() {
 	menu.className = 'menu';
 	main.appendChild(menu);
 
+	// Добаляем название блока
 	helper.createTitle(menu, 'Main menu');
-	Object.keys(menuItems).forEach( (key, value) => {
+
+	// Создаем кнопки
+	Object.keys(menuItems).forEach( (key) => {
 		helper.createButton(menu, key, 'btn', menuItems[key]);
 	});
 }
 
+// ToDo: Tmrln: нужно поправить
 function createLogin() {
+	// ToDo, Tmrln: написать (если нужно) пояснения к блоку
 	main.innerHTML = '';
 
 	const signInSection = document.createElement('div');
 	signInSection.className = 'menu';
-	signInSection.dataset.sectionName = 'login';
+	signInSection.dataset.section = 'login';
 
 	main.appendChild(signInSection);
 
 	const profile = new profileComponent(signInSection);
-	const login = new LoginComponent({el: signInSection});
+	const login = new loginComponent(signInSection);
 
-	login.render(authStatus);
+	login.render(authValid.status);
 
-	const form = signInSection.childNodes[1];
+	// ToDo, Tmrln: зачем алерты? оч мешает
+	let id = -1;
+	const signInChildNodes = signInSection.childNodes;
+	for (let i = 0; i < signInChildNodes.length; i++) {
+		if ("login-form".localeCompare(signInChildNodes[i].id) === 0) {
+			id = i;
+		}
+	}
+	if (id === -1) {
+		alert("form id changed!!!");
+		return;
+	}
+	const form = signInChildNodes[id];
 	// Нужно научиться достовать по ключу form
 
+	// ToDo, Tmrln: у меня логика лежит в компонентах, не знаю, на сколько это правильно
+	// 				(скорее всего неправильно :^( )
 	form.addEventListener('submit', function (event) {
+		// ToDo, Tmrln: Вот это вообще непонятно, ты пользуешься сабмитом с формы, при этом удаляешь все ее 
+		//				первичные обработчики, при этом ты не можешь сделать из-за этого редирект на /me, 
+		// 				нужно 100% менять (можно взять мой старый коммит)
 		event.preventDefault();
 
 		const fieldsName = [
@@ -135,13 +133,15 @@ function createLogin() {
 			'password',
 		]
 		
+		// ToDo, Tmrln: обработчики не работают: при регистрации пароль менее 3 символов не пускает,
+		// 				однако, при логине пароли в 1 символ проходят 
 		const validationFunction = {
 			nickname: validateLogin,
 			password: validatePassword,
 		}
 
 		let validationError = false;
-		authStatus = true;
+		authValid.status = true;
 		fieldsName.forEach(function(fieldName) {
 			const field = form.elements[fieldName];
 			field.className = "login_input";
@@ -158,28 +158,8 @@ function createLogin() {
 			return;
 		}
 
-		// const nickname = form.elements[ 'nickname' ].value;
-		// const password = form.elements[ 'password' ].value;
 
-		// let nicknameField = form.elements[ 'nickname' ];
-		// let passwordField = form.elements[ 'password' ];
-
-		// nicknameField.className = "login_input";
-		// passwordField.className = "login_input";
-
-		// if (!validateLogin(nickname)) {
-		// 	nicknameField.className = "login_input login_bad_input";
-		// 	return;
-		// } else {
-		// 	nicknameField.className = "login_input login_good_input";
-		// }
-
-		// if (!validatePassword(password)) {
-		// 	passwordField.className = "login_input login_bad_input";
-		// 	return;
-		// } else {
-		// 	passwordField.className = "login_input login_good_input";
-		// }
+		console.log('changed:',authValid.status);
 
 		AjaxModule.doPost({
 			callback(xhr) {
@@ -190,7 +170,12 @@ function createLogin() {
 					console.log("OK");
 					console.log(form.elements[ 'nickname' ].value);
 
-					profile.createProfile(authStatus,form.elements[ 'nickname' ].value);
+					// вызываю сетер
+					authValid.status = true;
+
+
+					// Мы отказались от никнейма втроым аргументом и теперь делаем запрос на me
+					profile.createProfile(authValid.status);
 				} else {
 					alert(answer['Error']);
 					console.log("WTF?");
@@ -211,15 +196,27 @@ function createSignup() {
 
 	const signUpSection = document.createElement('section');
 	signUpSection.className = 'menu';	
-	signUpSection.dataset.sectionName = 'sign_up';
+	signUpSection.dataset.section = 'sign_up';
 
 	const signUp = new SignUpComponent({
 		el: signUpSection,
 	});
+
 	signUp.render();
 
-	const form = signUpSection.childNodes[1];
-	console.log(signUpSection.childNodes);
+	let id = -1;
+	const signUpChildNodes = signUpSection.childNodes;
+	for (let i = 0; i < signUpChildNodes.length; i++) {
+		if ("signup-form".localeCompare(signUpChildNodes[i].id) === 0) {
+			id = i;
+		}
+	}
+	if (id === -1) {
+		alert("form id changed!!!");
+		return;
+	}
+
+	const form = signUpChildNodes[id];
 
 	form.addEventListener('submit', function (event) {
 		event.preventDefault();
@@ -234,7 +231,10 @@ function createSignup() {
 			'nickname',
 			'password',
 		]
+
 		
+		// ToDo, Tmrln: обработчики не работают: при регистрации пароль менее 3 символов не пускает,
+		// 				однако, при логине пароли в 1 символ проходят 
 		const validationFunction = {
 			email: validateEmail,
 			nickname: validateLogin,
@@ -270,8 +270,12 @@ function createSignup() {
 				const answer = JSON.parse(xhr.responseText);
 				if (typeof(answer['Error']) === "undefined") {
 					main.innerHTML = '';
+					console.log(answer);
+					main.innerHTML = JSON.stringify(answer);
+					console.log("OK");
 				} else {
 					alert(answer['Error']);
+					console.log("WTF?");
 				}
 			},
 			path: '/signup',
@@ -287,25 +291,30 @@ function createSignup() {
 }
 
 function createProfile() {
+	// Создаем родительский элемент
+	const profileSection = document.createElement('div');
+	profileSection.className = 'menu';
+	profileSection.dataset.section = 'profile';
 
-	const badProfile = document.createElement('div');
-	badProfile.className = 'menu';
-	badProfile.dataset.sectionName = 'profile';
+	// Добавляем его к main'у
+	main.appendChild(profileSection);
 
-	main.appendChild(badProfile);
-
-	const profile = new profileComponent(badProfile);
+	// Создаем объект класса profile...
+	const profile = new profileComponent(profileSection);
 	
+	// Запрос на me
 	AjaxModule.doGet({	
 		callback(xhr) {
 			const user = JSON.parse(xhr.responseText);
-			profile.render(authStatus ,user);
+			profile.render(authValid.status ,user);
 			console.log(user);
 		},
 		path : '/me',
 	});
 }
 
+// Примитивная реализация геймплея, при выходе нужно обновить страницу
+// пока не трогаем 
 function createGame() {
 	main.innerHTML = '';
 
@@ -335,21 +344,29 @@ function createGame() {
 function createLeaderboard(users) {
 	main.innerHTML = '';
 
+	// Создаем родительский блок
 	const leaderboard = document.createElement('div');
 	leaderboard.dataset.section = 'leaderboard';
 	leaderboard.className = 'menu';
+
 	helper.createTitle(leaderboard, 'Leaderboard');
 
 	if (users) {
 		const paginator = new paginationComponent({parentElement : leaderboard,
+													// Количество пользователей на странице
 													usersPerPage : 1,
-													totalPages : 7,
+													// Можно прикрутить максимально количество страниц, но работает и без этого
+													totalPages : 3,
 													});
 		const board = new boardComponent({parentElement : leaderboard});
+
+		// Сетим дату
 		board.data = JSON.parse(JSON.stringify(users));
 
+		// Отрисовываем борду, затем пагинатор
 		board.render(users); 
-		paginator.renderPaginator(7);
+		paginator.renderPaginator(3);
+	// Если юзеры не пришли, еще раз стучимся
 	} else {
 		console.log('data loading, please wait');
 
@@ -366,10 +383,10 @@ function createLeaderboard(users) {
 	main.appendChild(leaderboard);
 }
 
-function createAbout() {
-
+function createLogout() {
+	authValid.status = false;
+	createMenu();
 }
-
 
 // Главный блок: создаем меню 
 createMenu();
@@ -385,6 +402,7 @@ const functions = {
 	leaderboard: createLeaderboard,
 	profile: createProfile,
 	// about: createAbout,
+	logout: createLogout,
 
 
 	// Other functions

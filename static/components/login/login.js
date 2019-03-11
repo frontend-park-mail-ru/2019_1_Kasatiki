@@ -1,4 +1,4 @@
-export class LoginComponent {
+export class loginComponent {
     constructor({
         el = document.body,
     } = {}) {
@@ -22,8 +22,11 @@ export class LoginComponent {
                 </div>
             `;
         } else {
+            // ToDo, Tmrln: Тут надо что-то делать: либо у <form> ставить атрибуты action="/login", method="post" (потом будут проблемы с переадресацией),
+            //              либо делать <div class="menu"> (обрати внимание на адресную строку, туда печатается гет запрос с формы - это вообще не круто)
             var templateScript = `
-                <form>
+                <form class="menu">
+                    <h1>Login</h1>
                     <input
                         name="nickname"
                         type="text"
@@ -41,7 +44,7 @@ export class LoginComponent {
                 </form>
             `;
         }
-
+        // ToDo, Tmrln: У меня тут была логигка редиректа на /me (профиль), я делал все через станартные кнопки, на которые навешивал свои обрабтчики
         const template = Handlebars.compile(templateScript);
         this._el.innerHTML = template();
     }

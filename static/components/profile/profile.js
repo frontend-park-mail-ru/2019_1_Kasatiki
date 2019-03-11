@@ -1,13 +1,16 @@
 const {AjaxModule} = window;
 
 export class profileComponent {
+    
     constructor({
         parentElement = document.body,
     } = {}) {
         this._parentElement = parentElement;
+        // bool, определяющий текущий режим профиля (просмотр/изменение)
         this._editCheck = false;
     }
 
+    // Геттеры - Сеттеры
     get data() {
         return this._parentElement;
     }
@@ -17,9 +20,14 @@ export class profileComponent {
     }
 
     render(authStatus, user) {
+        // На живца
         const that = this;
+
+        console.log('in profile',authStatus)
+
         this._parentElement.innerHTML = '';
         if (authStatus) {
+            // Используем методы шаблонизатора для динамической отрисовки страницы 
             var templateScript = `
                 {{#if editCheck}}
                 <div class="profile">
@@ -31,9 +39,10 @@ export class profileComponent {
                             <div class="avatar">
                                 <img src="https://cdn.iconscout.com/icon/free/png-256/avatar-372-456324.png" alt="avatar">
                             </div>
-                            <div class="change">
-                                <input name="myFile" type="file" accept="image/*" class="avatar_change">
-                            </div>
+                            <form enctype="multipart/form-data" method="post" class="mainForm" action="upload" onsubmit="console.log(this.value)">
+                                <input name="uploadfile" type="file" accept="image/*" class="avatar_change">
+                                <input type="submit" value="send!" class="sub_photo">
+                            </form>
                             <div class="about">
                                 <input class="inputs" type="text" name="About" value="{{About}}">
                             </div>
@@ -98,15 +107,45 @@ export class profileComponent {
                 </div>
                 {{/if}}
             `;
+
             let template = Handlebars.compile(templateScript);
             this._parentElement.innerHTML += template(user); 
-            // console.log('parent:',this._parentElement);
-            if (user.editCheck) {
-                let submit = this._parentElement.querySelector(".sub_btn");
-                let back = this._parentElement.querySelector(".back_btn");
-                let imgFile = this._parentElement.querySelector(".avatar_change");
-               
 
+            if (user.editCheck) {
+                const submit = this._parentElement.querySelector(".sub_btn");
+                const submitPhoto = this._parentElement.querySelector(".sub_photo");
+                const back = this._parentElement.querySelector(".back_btn");
+
+                // Для отправки аватара 
+                const imgFile = that._parentElement.querySelector(".avatar_change");
+                const mainForm = that._parentElement.querySelector(".mainForm");
+                
+                // Обработчик сабмита фотографии (только ее)
+                // Изначально планировалась отправка с помощью html <form>, так как эта форма имеет 
+                // enctype="multipart/form-data"
+                mainForm.addEventListener('submit', function(event) {
+                    // Не смогли справиться с переадресацией (атрибут action="/upload")
+                    // Переправляет на lh:8080/upload - от этого не избавится
+                    event.preventDefault();
+
+                    console.log(mainForm);
+                    console.log(imgFile);
+
+                    var imageForm = new FormData();
+                    var uploadFile = imgFile.value;
+                    imageForm.append('avatar', uploadFile);
+
+                    AjaxModule.doPost({
+                        callback(xhr) {
+                            const answer = JSON.parse(xhr.responseText);
+                            console.log('answer:', answer);
+                        },
+                        path: '/upload',
+                        body: imageForm,
+                    });
+                });
+
+                // Обработчик самбмита измененных данных профиля
                 submit.addEventListener('click', () => {
                     user.editCheck = false;
     
@@ -115,16 +154,16 @@ export class profileComponent {
     
                     let req = {};
 
+                    // Для аватара
                     let imageForm = new FormData();
-                    var uploadFile = imgFile.files[0];
+                    let uploadFile = imgFile.files[0];
                     imageForm.append('avatar', uploadFile);
 
-                    console.log(imageForm);
-
+                    // Кидаем в реквест аватар тоже 
                     req.avatar = imageForm;
     
+                    // Преобразуем типы (стринга -> инт), так как html input type="text"
                     inputs.forEach(element => {
-                        // console.log(element.value, user[element.name]);
                         if (element.value != user[element.name]) {
                             if (element.name === 'Age') {
                                 console.log(typeof(element.value));
@@ -138,12 +177,12 @@ export class profileComponent {
                         }
                     });
     
+                    // Отправляем только те данные, которые поменял пользователь
                     if (Object.keys(req).length == 0) {
                         req.error = 'empty'
                     }
-
-                    console.log(req);
                     
+                    // Делаем на user/nickname, а не на /upload
                     AjaxModule.doPost({
                         callback(xhr) {
                             const answer = JSON.parse(xhr.responseText);
@@ -154,35 +193,25 @@ export class profileComponent {
                         body: req,
                     });
                 });
-    
+                
+                // Обработчик для кнопки возврата в режим просмотра профиля (измененные
+                // данные не сохраняются)
                 back.addEventListener('click', () => {
                     user.editCheck = false;
                     console.log(user.editCheck);   
                     that.render(authStatus, user);
                 })
+            // Режим просмотра
             } else {
                 let edit = this._parentElement.querySelector(".edit_btn");
     
+                // Обработчик перехода в режим редактирвания
                 edit.addEventListener('click', () => {
                     user.editCheck = true;
                     console.log('in false: ',that._editCheck);   
                     that.render(authStatus, user);
                 })
             }
-            const avatar = this._parentElement.querySelector(".avatar");
-            avatar.addEventListener('click', () => {
-                AjaxModule.doPost({
-                    callback(xhr) {
-                        const answer = JSON.parse(xhr.responseText);
-                        console.log('answer:', answer,'nickname:',user[nickname]);
-                        render(answer);
-                    },
-                    path: '/users/' + user.nickname,
-                    body: {
-                        nickname: 'gel0',
-                    },
-                });
-            });
         } else {
             var templateScript = `
                 <div class="menu">
@@ -199,12 +228,17 @@ export class profileComponent {
        
     }
 
-    createProfile(authStatus, nickname) {
+    // Главная функция, если пользователь залогинен, его отсылает на /me: 
+    // Делается get запрос -> сравнивается кука -> возвращается фулл инфо 
+    // о пользователе
+    createProfile(authStatus) {
+        // Тут уже на мотыля 
         const that = this;
         AjaxModule.doGet({
             callback(xhr) {
                 const getAnswer = JSON.parse(xhr.responseText);
                 if (typeof(getAnswer['Error']) === "undefined") {
+                    // И подсекаем, подсекаем !
                     that._parentElement.innerHTML = '';
                     that.render(authStatus ,getAnswer);
                 } else {

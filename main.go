@@ -275,7 +275,9 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 
 
 func upload(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("UPLOAAAAD")
 	r.ParseMultipartForm(32 << 20)
+	fmt.Println(r)
 	file, _, err := r.FormFile("uploadfile")
 	if err != nil {
 		// fmt.Println(err)

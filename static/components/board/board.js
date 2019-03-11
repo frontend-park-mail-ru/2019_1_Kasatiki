@@ -15,6 +15,7 @@ export class boardComponent {
 
     render(users) {
         console.log(users);
+        // Итерируясь по юзерам, выводим строки таблицы
         const templateScript = `
             <table class="leadersTable" border="1" cellpadding="0" cellspacing="0">
                 <thead>

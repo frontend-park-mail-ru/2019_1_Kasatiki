@@ -35,19 +35,19 @@ export class helperComponent {
         object.innerHTML += template(optionsDict); 
     };
 
-    createTitle(object, text) {
+    createTitle(parentObject, text) {
         const optionsDict = {
             text: text,
         }
 
         const templateScript = `
-            <h1>{{text}}</h1>
+            <div class="title">
+                <h1>{{text}}</h1>
+            </div>
         `;
 
-        // console.log(templateScript);
         const template = Handlebars.compile(templateScript);
-        // console.log(template);
-        object.innerHTML += template(optionsDict); 
+        parentObject.innerHTML += template(optionsDict); 
     }
 
 }

@@ -17,7 +17,7 @@ export class SignUpComponent {
         var templateScript = `
             <h1>Sign Up</h1>
 
-            <form>
+            <form id="signup-form">
                 <input
                     name="nickname"
                     type="text"
