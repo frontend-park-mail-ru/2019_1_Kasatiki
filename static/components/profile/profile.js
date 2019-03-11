@@ -37,9 +37,10 @@ export class profileComponent {
                                 <input class="inputs" type="text" name="nickname" value="{{nickname}}">
                             </div>
                             <div class="avatar">
-                                <img src="https://cdn.iconscout.com/icon/free/png-256/avatar-372-456324.png" alt="avatar">
+                                <img src="{{ImgUrl}}" alt="avatar">
                             </div>
-                            <form enctype="multipart/form-data" method="post" class="mainForm" action="upload" onsubmit="console.log(this.value)">
+                            <iframe name="votar" style="display:none;"></iframe>
+                            <form enctype="multipart/form-data" method="post" class="mainForm" action="/upload" target="votar">
                                 <input name="uploadfile" type="file" accept="image/*" class="avatar_change">
                                 <input type="submit" value="send!" class="sub_photo">
                             </form>
@@ -77,7 +78,7 @@ export class profileComponent {
                                 {{nickname}}
                             </div>
                             <div class="avatar">
-                                <img src="https://cdn.iconscout.com/icon/free/png-256/avatar-372-456324.png" alt="avatar">
+                                <img src="{{ImgUrl}}" alt="avatar">
                             </div>
                             <div class="about">
                                 {{About}}
@@ -110,63 +111,26 @@ export class profileComponent {
 
             let template = Handlebars.compile(templateScript);
             this._parentElement.innerHTML += template(user); 
+                
 
             if (user.editCheck) {
+                // Кнопки навигации
                 const submit = this._parentElement.querySelector(".sub_btn");
-                const submitPhoto = this._parentElement.querySelector(".sub_photo");
                 const back = this._parentElement.querySelector(".back_btn");
-
-                // Для отправки аватара 
-                const imgFile = that._parentElement.querySelector(".avatar_change");
-                const mainForm = that._parentElement.querySelector(".mainForm");
                 
-                // Обработчик сабмита фотографии (только ее)
-                // Изначально планировалась отправка с помощью html <form>, так как эта форма имеет 
-                // enctype="multipart/form-data"
-                mainForm.addEventListener('submit', function(event) {
-                    // Не смогли справиться с переадресацией (атрибут action="/upload")
-                    // Переправляет на lh:8080/upload - от этого не избавится
-                    event.preventDefault();
-
-                    console.log(mainForm);
-                    console.log(imgFile);
-
-                    var imageForm = new FormData();
-                    var uploadFile = imgFile.value;
-                    imageForm.append('avatar', uploadFile);
-
-                    AjaxModule.doPost({
-                        callback(xhr) {
-                            const answer = JSON.parse(xhr.responseText);
-                            console.log('answer:', answer);
-                        },
-                        path: '/upload',
-                        body: imageForm,
-                    });
-                });
-
-                // Обработчик самбмита измененных данных профиля
+                // Обработчик самбмита измененных данных профиля, кроме аватара (для аватара 
+                // отдельная кнопка с отдельный обработчиком)
                 submit.addEventListener('click', () => {
                     user.editCheck = false;
     
                     const inputs = that._parentElement.querySelectorAll('.inputs');
-                    // console.log(inputs);
     
                     let req = {};
-
-                    // Для аватара
-                    let imageForm = new FormData();
-                    let uploadFile = imgFile.files[0];
-                    imageForm.append('avatar', uploadFile);
-
-                    // Кидаем в реквест аватар тоже 
-                    req.avatar = imageForm;
     
                     // Преобразуем типы (стринга -> инт), так как html input type="text"
                     inputs.forEach(element => {
-                        if (element.value != user[element.name]) {
+                        if (element.value != user[element.name] && element.name != 'avatar') {
                             if (element.name === 'Age') {
-                                console.log(typeof(element.value));
                                 const age = parseInt(element.value);
                                 console.log(typeof(element.value));
                                 req[element.name] = age;
@@ -182,7 +146,7 @@ export class profileComponent {
                         req.error = 'empty'
                     }
                     
-                    // Делаем на user/nickname, а не на /upload
+                    // Делаем post запрос на user/nickname, а не на /upload
                     AjaxModule.doPost({
                         callback(xhr) {
                             const answer = JSON.parse(xhr.responseText);

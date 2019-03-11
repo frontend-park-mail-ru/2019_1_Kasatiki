@@ -3,6 +3,7 @@
 
 	class AjaxModule {
 		_ajax({
+			addHeader = {},
 			callback = noop,
 			method = 'GET',
 			path = '/',
@@ -11,10 +12,14 @@
 			const xhr = new XMLHttpRequest();
 			xhr.open(method, path, true);
 			xhr.withCredentials = true;
+
+			// Настравиваем безопасность 
+			// Запрет на открытие iframe (любых)
+			xhr.setRequestHeader('X-Frame-Options', 'DENY');
+			// Работа с токеном (CSRF)
 			if (this._csrfToken !== undefined) {
 				xhr.setRequestHeader('X-CSRF-Token', this._csrfToken);
 			}
-
 
 			if (body) {
 				xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
