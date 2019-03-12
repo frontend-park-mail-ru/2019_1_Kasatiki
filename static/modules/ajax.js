@@ -57,6 +57,19 @@
 			});
 		}
 
+		doPut({
+			callback = noop,
+			path = '/',
+			body = {},
+		} = {}) {
+			this._ajax({
+				callback,
+				path,
+				body,
+				method: 'PUT',
+			});
+		}
+
 		doPost({
 			callback = noop,
 			path = '/',

@@ -137,17 +137,21 @@ func checkAuth(cookie *http.Cookie) jwt.MapClaims {
 func isAuth(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
+		fmt.Println(r.Cookie("session_id"),err)
 		w.Write([]byte("{}"))
 		return
 	}
 
 	claims := checkAuth(cookie)
+	fmt.Println(claims)
 	for _, user := range users {
-		if user.Nickname == claims["id"].(string) {
+		if user.ID == claims["id"] {
 			json.NewEncoder(w).Encode(map[string]bool{"is_auth": true})
+			fmt.Println("True");
 			return
 		}
 	}
+	fmt.Println("False");
 	json.NewEncoder(w).Encode(map[string]bool{"is_auth": false})
 }
 
