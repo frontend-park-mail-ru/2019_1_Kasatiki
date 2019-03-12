@@ -14,7 +14,9 @@ AjaxModule.doGet({
 	callback(xhr) {
 		const answer = JSON.parse(xhr.responseText);
 		console.log(answer, answer.is_auth, document.cookie);
-		if (answer.is_auth) {
+		if (!answer.is_auth) {
+			answer.is_auth = false;
+		};
 			console.log("client started");
 
 			// Разименовывем необходимые элементы DOM'a
@@ -426,13 +428,10 @@ AjaxModule.doGet({
 					}
 				}
 			});
-		}
-		else {
-			console.log('error');
-		}
+		
 	},
 	path : '/isauth',
-	body : {'cookie' : document.cookie},
+	// body : {'cookie' : document.cookie},
 });
 
 

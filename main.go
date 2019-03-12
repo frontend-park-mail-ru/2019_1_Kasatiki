@@ -137,8 +137,8 @@ func checkAuth(cookie *http.Cookie) jwt.MapClaims {
 func isAuth(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		fmt.Println(r.Cookie("session_id"),err)
-		w.Write([]byte("{}"))
+		fmt.Println("False");
+		json.NewEncoder(w).Encode(map[string]bool{"is_auth": false})
 		return
 	}
 
@@ -151,8 +151,6 @@ func isAuth(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	fmt.Println("False");
-	json.NewEncoder(w).Encode(map[string]bool{"is_auth": false})
 }
 
 func editUser(w http.ResponseWriter, r *http.Request) {
