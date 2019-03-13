@@ -10,7 +10,7 @@ import {ValidModule} from './modules/loginValidator.js';
 
 const {AjaxModule} = window;
 
-AjaxModule.doGet({	
+AjaxModule.doGet({
 	callback(xhr) {
 		const answer = JSON.parse(xhr.responseText);
 		console.log(answer, answer.is_auth, document.cookie);
@@ -385,6 +385,11 @@ AjaxModule.doGet({
 			}
 
 			function createLogout() {
+				AjaxModule.doGet({	
+					callback(xhr) {
+					},
+					path : '/logout',
+				});
 				createMenu();
 			}
 

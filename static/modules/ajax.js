@@ -82,7 +82,19 @@
 				method: 'POST',
 			});
 		}
-		
+
+		doDelete({
+			callback = noop,
+			path = '/',
+			body = {},
+		} = {}) {
+			this._ajax({
+				callback,
+				path,
+				body,
+				method: 'DELETE',
+			});
+		}		
 	}
 	window.AjaxModule = new AjaxModule();
 })();
