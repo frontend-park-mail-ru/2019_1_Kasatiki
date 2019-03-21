@@ -323,5 +323,4 @@ func main() {
 
 	reciever.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/"))) // Uncomment if want to run locally
 	log.Fatal(http.ListenAndServe(":8080", reciever))
-	//meh
 }
