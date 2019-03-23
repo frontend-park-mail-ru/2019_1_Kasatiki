@@ -6,12 +6,10 @@ import GetAuthStatus from './networkHandler.js';
 export default class eventHandler {
     constructor(
         parentElement = document.body,
-        functions = {},
     ) {
         this._getAuthStatus = new GetAuthStatus();
-        this._functions = functions;
+        this._functions = {};
         this._parentElement = parentElement;
-        
     }
 
     // Обработчик всех кликов в _parentElement
@@ -33,13 +31,18 @@ export default class eventHandler {
     //         }) 
     //     }
     // }
+
+    setFunctions(funcs = {}) {
+        this._functions = funcs;
+    }
     
     handle(funcName = null, option = null) {
         const that = this;
 
         if (funcName !== null) {
-            this._getAuthStatus.doHead({
+            this._getAuthStatus.doGet({
                 callback(data) {
+                    // console.log('data:', data);
                     if (option === null) {
                         that._functions[funcName].run(data.is_auth);
                     } else {
@@ -50,31 +53,28 @@ export default class eventHandler {
             }) 
         }
 
-        that._getAuthStatus.doHead({
-            callback(data) {
-                that._parentElement.addEventListener('click', (evt) => {
-                    console.log('vnizu', data.is_auth);
-
-                    const { target } = evt;
-                
-                    console.log('click on ', target, 'datasec: ', target.dataset.section);
-                
-                    // Если target является кнопкой
-                    if (target instanceof HTMLButtonElement) {
-                        if (target.dataset.section in that._functions) {
-                            // Убираем все стандартные обработчики
-                            evt.preventDefault();
-                
-                            const { section } = target.dataset;
-                
-                            console.log('vnizu v if', data.is_auth);
-
+        that._parentElement.addEventListener('click', (evt) => {
+            const { target } = evt;
+        
+            // console.log('click on ', target, 'datasec: ', target.dataset.section);
+        
+            // Если target является кнопкой
+            if (target instanceof HTMLButtonElement) {
+                if (target.dataset.section in that._functions) {
+                    // Убираем все стандартные обработчики
+                    evt.preventDefault();
+        
+                    const { section } = target.dataset;
+        
+                    that._getAuthStatus.doGet({
+                        callback(data) {
+                            console.log('handler got response:', data.is_auth, 'section:', section);
                             that._functions[section].run(data.is_auth);
-                        }
-                    }
-                });
-            }, 
-            path : '/isauth'
-        })
+                        }, 
+                        path : '/isauth'
+                    })
+                }
+            }
+        });
     }
 }

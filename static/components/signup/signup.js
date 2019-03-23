@@ -5,9 +5,6 @@
  */
 import CustomValidation from '../../modules/validation.js'
 import GetAuthStatus from '../../modules/networkHandler.js'
-import eventHandler from '../../modules/eventListener.js';
-
-import ProfileComponent from '../profile/profile.js';
 
 export default class SignUpComponent {
 	/**
@@ -16,18 +13,13 @@ export default class SignUpComponent {
 	 *                               форма регистрации.
 	 */
 	constructor(
+        handler,
         parentElement = document.body,
     ) {
         this._parentElement = parentElement;
         this._authStatus = false;
 
-		this._profile = new ProfileComponent(this._parentElement);
-		// Функции для eventHandler'a
-		this._functions = {
-			profile : this._profile,
-		}
-
-		this._eventHandler = new eventHandler(this._parentElement, this._functions);
+		this._eventHandler = handler;
         this._getAuthStatus = new GetAuthStatus();
         this._CustomValidation = new CustomValidation;
     }
@@ -36,7 +28,6 @@ export default class SignUpComponent {
      * Метод отрисовки формы регистрации.
      */
 	_render() {
-        
 		const templateScript = `
             <div class="menu">    
                 <h1 class="title">Sign Up</h1>
@@ -178,8 +169,8 @@ export default class SignUpComponent {
 			this._getAuthStatus.doPost({
 				callback(data) {
 					if (typeof (data.Error) === 'undefined') {
-						console.log('data in signup:', data);
-						that._eventHandler.handleFunc('profile', data);
+
+						that._eventHandler.handle('profile', data);
 					} else {
 						const validationError = document.getElementById('repeat-password-error');
 						validationError.textContent = answer.Error;

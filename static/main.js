@@ -10,27 +10,22 @@ import ProfileComponent from '../components/profile/profile.js';
 import MenuComponent from '../components/menu/menu.js';
 import LogoutComponent from '../components/logout/logout.js';
 
-
 // Разименовывем необходимые элементы DOM'a
 const app = document.getElementById('application');
 app.innerHTML = ''
 
-const signup = new SignUpComponent(app);
-const login = new LoginComponent(app);
-const leaderboard = new BoardComponent(app);
-const profile = new ProfileComponent(app);
-const menu = new MenuComponent(app);
-const logout = new LogoutComponent(app);
+const handler = new eventHandler(app);
+
 
 const functions = {
-	signup : signup,
-	login : login,
-	leaderboard : leaderboard,
-	profile : profile,
-	menu : menu,
-	logout: logout,
-}
+	signup : new SignUpComponent(handler, app),
+	login : new LoginComponent(handler, app),
+	leaderboard : new BoardComponent(app),
+	profile : new ProfileComponent(handler, app),
+	menu : new MenuComponent(app),
+	logout: new LogoutComponent(handler),
+}	
 
-const handler = new eventHandler(app, functions);
+handler.setFunctions(functions);
 
 handler.handle('menu');	

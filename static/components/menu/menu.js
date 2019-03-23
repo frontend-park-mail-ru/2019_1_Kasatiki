@@ -1,8 +1,9 @@
 export default class MenuComponent {
     constructor(
-        parentElement,
+        parentElement = document.getElementsByClassName("app"),
         authStatus = false,
     ) {
+        // this._handler = handler;
         this._parentElement = parentElement;
         this._authStatus = authStatus;
         this._menuItems = {};
@@ -15,15 +16,15 @@ export default class MenuComponent {
             that._menuItems = {
                 game: 'Играть',
                 leaderboard: 'Таблица лидеров',
-                // about: 'О приложении',
+                about: 'О приложении',
                 profile: 'Профайл',
                 logout: 'Выйти',
             };
         } else {
             that._menuItems = {
-                signup: 'Регистрация',
+                // signup: 'Регистрация',
                 login: 'Логин',
-                game: 'Играть',
+                // game: 'Играть',
                 leaderboard: 'Таблица лидеров',
                 // about: 'О приложении',
                 profile: 'Профайл',
@@ -32,9 +33,8 @@ export default class MenuComponent {
     }
 
     _render() {
+        console.log("render menu with status:",this._authStatus);
         this._parentElement.innerHTML = '';
-
-        // this._setMenuItems();
 
         const templateScript = `
             <div class="menu">
@@ -51,29 +51,7 @@ export default class MenuComponent {
 
     run(authStatus) {
         this._authStatus = authStatus;
-        const that = this;
-        console.log('auth status (in menu):',  this._authStatus);
-        
-        if (this._authStatus) {
-            that._menuItems = {
-                game: 'Играть',
-                leaderboard: 'Таблица лидеров',
-                // about: 'О приложении',
-                profile: 'Профайл',
-                logout: 'Выйти',
-            };
-        } else {
-            that._menuItems = {
-                signup: 'Регистрация',
-                login: 'Логин',
-                game: 'Играть',
-                leaderboard: 'Таблица лидеров',
-                // about: 'О приложении',
-                profile: 'Профайл',
-            };
-        }
-        console.log(that._menuItems)
-
-        that._render();
+        this._setMenuItems();
+        this._render();
     }
 }

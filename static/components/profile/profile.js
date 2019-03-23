@@ -1,26 +1,18 @@
 import GetAuthStatus from '../../modules/networkHandler.js';
-import eventHandler from '../../modules/eventListener.js';
-
-import MenuComponent from '../menu/menu.js';
 
 /**
  * Класс для отрисовки профайла пользователя.
  */
 export default class ProfileComponent {
 	constructor(
+		eventhandler,
 		parentElement = document.getElementsByClassName("app"),
 		authStatus = false,
 	 ) {
 		this._authStatus = authStatus;
 		this._parentElement = parentElement;
 
-		this._menu = new MenuComponent(this._parentElement);
-		// Функции для eventHandler'a
-		this._functions = {
-			menu : this._menu,
-		}
-
-		this._eventHandler = new eventHandler(this._parentElement, this._functions);
+		this._eventHandler = eventhandler;
 		this._getAuthStatus = new GetAuthStatus();
 
 		// bool, определяющий текущий режим профиля (просмотр/изменение)
@@ -153,11 +145,9 @@ export default class ProfileComponent {
 					if (element.value != that._users[element.name] && element.name != 'avatar') {
 						if (element.name === 'Age') {
 							const age = parseInt(element.value);
-							console.log(typeof (element.value));
 							req[element.name] = age;
 						} else {
 							req[element.name] = element.value;
-							console.log(typeof (element.value));
 						}
 					}
 				});
@@ -170,7 +160,7 @@ export default class ProfileComponent {
 
 
 				// Делаем post запрос на that._users/nickname, а не на /upload
-				this._getAuthStatus .doPut({
+				this._getAuthStatus.doPut({
 					callback(data) {
 						that._users = data;
 						// console.log('answer:', answer,'nickname:',that._users[nickname]);

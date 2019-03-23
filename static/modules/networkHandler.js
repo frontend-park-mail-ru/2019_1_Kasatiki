@@ -40,14 +40,13 @@ const noop = () => null;
 					if (response.status !== 200) {
 						throw new Error('Wrong network response')
 					} 
-					console.log('next')
 					return response.json();
 				})
 				.then(function (data) {
 					callback(data);
 				})
 				.catch((error) => {
-					console.log(error.message);
+					console.error(error.message);
 				})
 			}
 
@@ -69,7 +68,7 @@ const noop = () => null;
 			this._getSatus({
 				callback,
 				path,
-				method : 'GET',
+				method : 'HEAD',
 			}) 
 		}
 

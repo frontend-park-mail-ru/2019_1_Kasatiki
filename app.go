@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
 	"log"
@@ -14,6 +12,9 @@ import (
 	"sort"
 	"strconv"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/mux"
 )
 
 type App struct {
@@ -176,10 +177,12 @@ func (instance *App) checkAuth(cookie *http.Cookie) jwt.MapClaims {
 	return claims
 }
 
+// Oleg: изменил ответ в том случае, если не приходит кука (возвращаю статус авторизации false)
 func (instance *App) isAuth(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		w.Write([]byte("{}"))
+		fmt.Println("error")
+		json.NewEncoder(w).Encode(map[string]bool{"is_auth": false})
 		return
 	}
 
@@ -335,6 +338,8 @@ func (instance *App) upload(w http.ResponseWriter, r *http.Request) {
 }
 
 // ToDo: Add cookie handle
+
+// Oleg: изменил положительный ответ (добавил возврат false статуса авторизации)
 func (instance *App) logout(w http.ResponseWriter, r *http.Request) {
 	_, err := r.Cookie("session_id")
 
@@ -350,5 +355,7 @@ func (instance *App) logout(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		HttpOnly: true,
 	})
+	fmt.Println("OK")
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]bool{"is_auth": false})
 }

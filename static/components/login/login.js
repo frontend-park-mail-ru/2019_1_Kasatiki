@@ -18,6 +18,7 @@ export default class LoginComponent {
 	 *                               форма логина.
 	 */
 	constructor(
+		handler,
 		parentElement = document.body,
 	) {
 		this._authStatus;
@@ -29,7 +30,7 @@ export default class LoginComponent {
 			profile : this._profile,
 		}
 
-		this._eventHandler = new eventHandler(this._parentElement, this._functions);
+		this._eventHandler = handler;
         this._getAuthStatus = new GetAuthStatus();
 		this._CustomValidation = new CustomValidation();
 	}
@@ -89,7 +90,7 @@ export default class LoginComponent {
 		const signInSection = document.querySelector(".menu");
 		const form = document.querySelector("#login-form");
 
-		console.log('signInSection',signInSection, 'form', form);
+		// console.log('signInSection',signInSection, 'form', form);
 
 			// ToDo, Tmrln: зачем алерты? оч мешает
 			
@@ -158,7 +159,7 @@ export default class LoginComponent {
 				password : form.elements.password.value,
 			}
 
-			console.log(payload);
+			// console.log(payload);
 
 			this._getAuthStatus.doPost({
 				callback(data) {
