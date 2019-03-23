@@ -88,8 +88,6 @@ export default class SignUpComponent {
 
         const form = document.getElementById('signup-form');
         
-        console.log('form:',form);
-
         form.addEventListener('submit', (event) => {
             event.preventDefault();
 
@@ -163,8 +161,6 @@ export default class SignUpComponent {
                 email: form.elements.email.value,
                 password: form.elements.password.value,
 			}
-
-            console.log(payload);
 
 			this._getAuthStatus.doPost({
 				callback(data) {
