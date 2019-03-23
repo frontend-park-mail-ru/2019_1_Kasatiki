@@ -1,5 +1,7 @@
-const {AjaxModule} = window;
-import {boardComponent} from '../board/board.js';
+// eslint-disable-next-line import/extensions
+import BoardComponent from '../board/board.js';
+
+const { AjaxModule } = window;
 
 // Handlebars.registerHelper('iff', function(a, operator, b, opts) {
 //     let bool = false;
@@ -19,7 +21,7 @@ import {boardComponent} from '../board/board.js';
 //         default:
 //             throw "Unknown operator " + operator;
 //     }
- 
+
 //     if (bool) {
 //         return opts.fn(this);
 //     } else {
@@ -27,69 +29,84 @@ import {boardComponent} from '../board/board.js';
 //     }
 // });
 
-export class paginationComponent {
-    constructor({
-        parentElement = document.createElement('div.main'),
-        usersPerPage = 1,
-        totalPages = 1,
-    } = {}) {
-        this._parentElement = parentElement;
+/**
+ * Класс для отрисовки leader board с Пагинацией.
+ */
+export default class PaginationComponent {
+	/**
+	 * Конструтор.
+	 * @param {node} parentElement - объект DOM-дерева, куда будет отрисовываться
+	 *                               таблица leader board.
+	 * @param {int} usersPerPage - количество пользователей в таблице.
+	 * @param {int} totalPages - общее количество страниц,
+	 */
+	constructor({
+		parentElement = document.createElement('div.main'),
+		usersPerPage = 1,
+		totalPages = 1,
+	} = {}) {
+		this._parentElement = parentElement;
 
-        this._usersPerPage = usersPerPage;
+		this._usersPerPage = usersPerPage;
 
-        this._pagesDict = {
-            _currentPage: 1,
-            _totalPages: totalPages,
-        };
+		this._pagesDict = {
+			_currentPage: 1,
+			_totalPages: totalPages,
+		};
+	}
 
-    }
+	/**
+	 * Метод отрисовки предыдущей страницы.
+	 */
+	_getPrevPage() {
+		if (this._pagesDict._currentPage > 1) this._pagesDict._currentPage--;
 
-    _getPrevPage() {
-        if (this._pagesDict._currentPage > 1)
-            this._pagesDict._currentPage --;
+		const offset = this._pagesDict._currentPage * this._usersPerPage;
 
-        const offset = this._pagesDict._currentPage*this._usersPerPage;
+		const board = new BoardComponent({ parentElement: this._parentElement });
 
-        const board = new boardComponent({parentElement : this._parentElement});
+		const that = this;
 
-        const that = this;
+		AjaxModule.doGet({
+			callback(xhr) {
+				const res = JSON.parse(xhr.responseText);
+				that._parentElement.innerHTML = '';
+				board.render(res);
+				that.renderPaginator();
+			},
+			path: `/leaderboard?offset=${offset}`,
+		});
+	}
 
-        AjaxModule.doGet({	
-            callback(xhr) {
-                let res = JSON.parse(xhr.responseText); 
-                that._parentElement.innerHTML='';
-                board.render(res);
-                that.renderPaginator();
-            },
-            path : '/leaderboard?offset=' + offset,
-        });
-    }
+	/**
+	 * Метод отрисовки следующей страницы.
+	 */
+	_getNextPage() {
+		if (this._pagesDict._currentPage < this._pagesDict._totalPages) this._pagesDict._currentPage++;
 
-    _getNextPage() {
-        if (this._pagesDict._currentPage < this._pagesDict._totalPages)
-            this._pagesDict._currentPage ++;
+		const offset = this._pagesDict._currentPage * this._usersPerPage;
+		console.log(offset);
 
-        const offset = this._pagesDict._currentPage*this._usersPerPage;
-        console.log(offset);
+		const board = new BoardComponent({ parentElement: this._parentElement });
 
-        const board = new boardComponent({parentElement : this._parentElement});
+		const that = this;
 
-        const that = this;
+		AjaxModule.doGet({
+			callback(xhr) {
+				const res = JSON.parse(xhr.responseText);
+				that._parentElement.innerHTML = '';
+				board.render(res);
+				that.renderPaginator();
+			},
+			path: `/leaderboard?offset=${offset}`,
+		});
+	}
 
-        AjaxModule.doGet({	
-            callback(xhr) {
-                let res = JSON.parse(xhr.responseText); 
-                that._parentElement.innerHTML='';
-                board.render(res);
-                that.renderPaginator();
-            },
-            path : '/leaderboard?offset=' + offset,
-        });
-    }
-
-
-    renderPaginator() {
-        const templateScript = `
+	/**
+	 * Метод отрисовки страницы leader board с пагинацией.
+	 */
+	renderPaginator() {
+		const templateScript = `
             <div class="paginatorBox">
                 <p class="prev"><</p>
                 <p class="next">></p>
@@ -99,30 +116,27 @@ export class paginationComponent {
         `;
 
 
-        // console.log(templateScript);
-        let template = Handlebars.compile(templateScript);
-        console.log(this._pagesDict);
-        this._parentElement.innerHTML += template(this._pagesDict); 
+		// console.log(templateScript);
+		const template = Handlebars.compile(templateScript);
+		console.log(this._pagesDict);
+		this._parentElement.innerHTML += template(this._pagesDict);
 
-        let pageBox = this._parentElement.querySelector(".paginatorBox");
-        // console.log(pageBox);
-        let prevButton = this._parentElement.querySelector(".prev");
-        let nextButton = this._parentElement.querySelector(".next");
+		const pageBox = this._parentElement.querySelector('.paginatorBox');
+		// console.log(pageBox);
+		const prevButton = this._parentElement.querySelector('.prev');
+		const nextButton = this._parentElement.querySelector('.next');
 
-        nextButton.addEventListener('click', () => {
-            pageBox.innerHTML = '';
-            this._getNextPage();
-            this.renderPaginator();
-        });
+		nextButton.addEventListener('click', () => {
+			pageBox.innerHTML = '';
+			this._getNextPage();
+			this.renderPaginator();
+		});
 
 
-        prevButton.addEventListener('click', () => {
-            pageBox.innerHTML = '';
-            this._getPrevPage();
-            this.renderPaginator();
-        });
-
-    }
+		prevButton.addEventListener('click', () => {
+			pageBox.innerHTML = '';
+			this._getPrevPage();
+			this.renderPaginator();
+		});
+	}
 }
-
-

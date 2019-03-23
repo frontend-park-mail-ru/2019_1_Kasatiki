@@ -1,34 +1,37 @@
-const {AjaxModule} = window;
+const { AjaxModule } = window;
 
-export class profileComponent {
-    
-    constructor({
-        parentElement = document.body,
-    } = {}) {
-        this._parentElement = parentElement;
-        // bool, определяющий текущий режим профиля (просмотр/изменение)
-        this._editCheck = false;
-    }
+/**
+ * Класс для отрисовки профайла пользователя.
+ */
+export default class ProfileComponent {
+	constructor({
+		parentElement = document.body,
+	} = {}) {
+		this._parentElement = parentElement;
+		// bool, определяющий текущий режим профиля (просмотр/изменение)
+		this._editCheck = false;
+	}
 
-    // Геттеры - Сеттеры
-    get data() {
-        return this._parentElement;
-    }
+	// Геттеры - Сеттеры
+	get data() {
+		return this._parentElement;
+	}
 
-    set data(obj) {
-        this._parentElement = obj;
-    }
+	set data(obj) {
+		this._parentElement = obj;
+	}
 
-    render(authStatus, user) {
-        // На живца
-        const that = this;
+	render(authStatus, user) {
+		// На живца
+		const that = this;
 
-        console.log('in profile',authStatus)
+		console.log('in profile', authStatus);
 
-        this._parentElement.innerHTML = '';
-        if (authStatus) {
-            // Используем методы шаблонизатора для динамической отрисовки страницы 
-            var templateScript = `
+		this._parentElement.innerHTML = '';
+		let templateScript = ``
+		if (authStatus) {
+			// Используем методы шаблонизатора для динамической отрисовки страницы
+			templateScript = `
                 {{#if editCheck}}
                 <div class="profile">
                     <div class="userSection">
@@ -109,75 +112,75 @@ export class profileComponent {
                 {{/if}}
             `;
 
-            let template = Handlebars.compile(templateScript);
-            this._parentElement.innerHTML += template(user); 
-                
+			const template = Handlebars.compile(templateScript);
+			this._parentElement.innerHTML += template(user);
 
-            if (user.editCheck) {
-                // Кнопки навигации
-                const submit = this._parentElement.querySelector(".sub_btn");
-                const back = this._parentElement.querySelector(".back_btn");
-                
-                // Обработчик самбмита измененных данных профиля, кроме аватара (для аватара 
-                // отдельная кнопка с отдельный обработчиком)
-                submit.addEventListener('click', () => {
-                    user.editCheck = false;
-    
-                    const inputs = that._parentElement.querySelectorAll('.inputs');
-    
-                    let req = {};
-    
-                    // Преобразуем типы (стринга -> инт), так как html input type="text"
-                    inputs.forEach(element => {
-                        if (element.value != user[element.name] && element.name != 'avatar') {
-                            if (element.name === 'Age') {
-                                const age = parseInt(element.value);
-                                console.log(typeof(element.value));
-                                req[element.name] = age;
-                            } else {
-                                req[element.name] = element.value;
-                                console.log(typeof(element.value));
-                            }
-                        }
-                    });
-    
-                    // Отправляем только те данные, которые поменял пользователь
-                    if (Object.keys(req).length == 0) {
-                        req.error = 'empty'
-                    }
-                    
-                    // Делаем post запрос на user/nickname, а не на /upload
-                    AjaxModule.doPost({
-                        callback(xhr) {
-                            const answer = JSON.parse(xhr.responseText);
-                            // console.log('answer:', answer,'nickname:',user[nickname]);
-                            that.render(authStatus, answer);
-                        },
-                        path: '/users/' + user.nickname,
-                        body: req,
-                    });
-                });
-                
-                // Обработчик для кнопки возврата в режим просмотра профиля (измененные
-                // данные не сохраняются)
-                back.addEventListener('click', () => {
-                    user.editCheck = false;
-                    console.log(user.editCheck);   
-                    that.render(authStatus, user);
-                })
-            // Режим просмотра
-            } else {
-                let edit = this._parentElement.querySelector(".edit_btn");
-    
-                // Обработчик перехода в режим редактирвания
-                edit.addEventListener('click', () => {
-                    user.editCheck = true;
-                    console.log('in false: ',that._editCheck);   
-                    that.render(authStatus, user);
-                })
-            }
-        } else {
-            var templateScript = `
+
+			if (user.editCheck) {
+				// Кнопки навигации
+				const submit = this._parentElement.querySelector('.sub_btn');
+				const back = this._parentElement.querySelector('.back_btn');
+
+				// Обработчик самбмита измененных данных профиля, кроме аватара (для аватара
+				// отдельная кнопка с отдельный обработчиком)
+				submit.addEventListener('click', () => {
+					user.editCheck = false;
+
+					const inputs = that._parentElement.querySelectorAll('.inputs');
+
+					const req = {};
+
+					// Преобразуем типы (стринга -> инт), так как html input type="text"
+					inputs.forEach((element) => {
+						if (element.value != user[element.name] && element.name != 'avatar') {
+							if (element.name === 'Age') {
+								const age = parseInt(element.value);
+								console.log(typeof (element.value));
+								req[element.name] = age;
+							} else {
+								req[element.name] = element.value;
+								console.log(typeof (element.value));
+							}
+						}
+					});
+
+					// Отправляем только те данные, которые поменял пользователь
+					if (Object.keys(req).length == 0) {
+						req.error = 'empty';
+					}
+
+					// Делаем post запрос на user/nickname, а не на /upload
+					AjaxModule.doPost({
+						callback(xhr) {
+							const answer = JSON.parse(xhr.responseText);
+							// console.log('answer:', answer,'nickname:',user[nickname]);
+							that.render(authStatus, answer);
+						},
+						path: `/users/${user.nickname}`,
+						body: req,
+					});
+				});
+
+				// Обработчик для кнопки возврата в режим просмотра профиля (измененные
+				// данные не сохраняются)
+				back.addEventListener('click', () => {
+					user.editCheck = false;
+					console.log(user.editCheck);
+					that.render(authStatus, user);
+				});
+				// Режим просмотра
+			} else {
+				const edit = this._parentElement.querySelector('.edit_btn');
+
+				// Обработчик перехода в режим редактирвания
+				edit.addEventListener('click', () => {
+					user.editCheck = true;
+					console.log('in false: ', that._editCheck);
+					that.render(authStatus, user);
+				});
+			}
+		} else {
+			templateScript = `
                 <div class="menu">
                     <h1>Вы не авторизированы</h1>
                     <button data-section="login" class="btn">Войти</button>
@@ -185,32 +188,30 @@ export class profileComponent {
                     <button data-section="menu" class="btn">Назад</button>
                 </div>
             `;
-            let template = Handlebars.compile(templateScript);
-            this._parentElement.innerHTML += template(user); 
-        }
-    
-       
-    }
+			const template = Handlebars.compile(templateScript);
+			this._parentElement.innerHTML += template(user);
+		}
+	}
 
-    // Главная функция, если пользователь залогинен, его отсылает на /me: 
-    // Делается get запрос -> сравнивается кука -> возвращается фулл инфо 
-    // о пользователе
-    createProfile(authStatus) {
-        // Тут уже на мотыля 
-        const that = this;
-        AjaxModule.doGet({
-            callback(xhr) {
-                const getAnswer = JSON.parse(xhr.responseText);
-                if (typeof(getAnswer['Error']) === "undefined") {
-                    // И подсекаем, подсекаем !
-                    that._parentElement.innerHTML = '';
-                    that.render(authStatus ,getAnswer);
-                } else {
-                    alert(getAnswer['Error']);
-                    console.log("WTF?");
-                }
-            },
-            path: "/me",	
-        });
-    }
+	// Главная функция, если пользователь залогинен, его отсылает на /me:
+	// Делается get запрос -> сравнивается кука -> возвращается фулл инфо
+	// о пользователе
+	createProfile(authStatus) {
+		// Тут уже на мотыля
+		const that = this;
+		AjaxModule.doGet({
+			callback(xhr) {
+				const getAnswer = JSON.parse(xhr.responseText);
+				if (typeof (getAnswer.Error) === 'undefined') {
+					// И подсекаем, подсекаем !
+					that._parentElement.innerHTML = '';
+					that.render(authStatus, getAnswer);
+				} else {
+					alert(getAnswer.Error);
+					console.log('WTF?');
+				}
+			},
+			path: '/me',
+		});
+	}
 }

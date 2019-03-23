@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
 	"log"
@@ -13,6 +11,9 @@ import (
 	"os/exec"
 	"sort"
 	"strconv"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/mux"
 )
 
 // ToDo бахнуть обработку ошибок
@@ -137,7 +138,7 @@ func checkAuth(cookie *http.Cookie) jwt.MapClaims {
 func isAuth(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		fmt.Println("False");
+		fmt.Println("False")
 		json.NewEncoder(w).Encode(map[string]bool{"is_auth": false})
 		return
 	}
@@ -147,7 +148,7 @@ func isAuth(w http.ResponseWriter, r *http.Request) {
 	for _, user := range users {
 		if user.ID == claims["id"] {
 			json.NewEncoder(w).Encode(map[string]bool{"is_auth": true})
-			fmt.Println("True");
+			fmt.Println("True")
 			return
 		}
 	}

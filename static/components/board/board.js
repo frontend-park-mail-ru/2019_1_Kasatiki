@@ -1,22 +1,41 @@
-export class boardComponent {
-    constructor ({
-        parentElement = document.body, 
-    } = {}) {
-        this._parentElement = parentElement;
-    }
+/**
+ * Класс с методом render для отрисовки leader board.
+ */
+// eslint-disable-next-line import/prefer-default-export
+export default class BoardComponent {
+	/**
+	 * Конструктор
+	 * @param {Object} parentElement - Элемент DOM дерева,
+	 * куда будет отрисовываться leader board.
+	 */
+	constructor({
+		parentElement = document.body,
+	} = {}) {
+		this._parentElement = parentElement;
+	}
 
-    get data() {
-        return this._usersArr;
-    }
+	/**
+	 * Геттер данных о пользователе.
+	 */
+	get data() {
+		return this._usersArr;
+	}
 
-    set data(usersArr = []) {
-        this._usersArr = usersArr;
-    }
+	/**
+	 * Сеттер данных о пользователе.
+	*/
+	set data(usersArr = []) {
+		this._usersArr = usersArr;
+	}
 
-    render(users) {
-        console.log(users);
-        // Итерируясь по юзерам, выводим строки таблицы
-        const templateScript = `
+	/**
+	 * Метод для отрисоки leader board.
+	 * @param {array} users - массив данных о пользователях.
+	 */
+	render(users) {
+		console.log(users);
+		// Итерируясь по юзерам, выводим строки таблицы
+		const templateScript = `
             <table class="leadersTable" border="1" cellpadding="0" cellspacing="0">
                 <thead>
                     <tr>
@@ -37,9 +56,9 @@ export class boardComponent {
             </table>
         `;
 
-        // console.log(templateScript);
-        const template = Handlebars.compile(templateScript);
-        // console.log(template);
-        this._parentElement.innerHTML += template(users); 
-    }
+		// console.log(templateScript);
+		const template = Handlebars.compile(templateScript);
+		// console.log(template);
+		this._parentElement.innerHTML += template(users);
+	}
 }
