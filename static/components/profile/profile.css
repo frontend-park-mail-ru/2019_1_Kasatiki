@@ -71,6 +71,21 @@
 
 }
 
+.avatar {
+    height: 300px;
+    width: 200px;
+}
+
+.avatarImage {
+    max-width:100%; 
+    height:auto;
+}
+
+.avatarImageEdit {
+    max-width: 75%; 
+    height:auto;
+}
+
 .buttonSection button:hover {
     transition: 0.2s linear;
     background-color: rgb(48, 219, 162);

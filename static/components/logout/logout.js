@@ -11,10 +11,8 @@ export default class LogoutComponent {
     run(authStatus) {
         const that = this;
         if (authStatus) {
-            console.log("try to logout");
             that._getAuthStatus.doGet({
                 callback(data) {
-                    console.log("done logout", data);
                     that._eventHandler.handle('menu', data.is_auth);
                 },
                 path : '/logout',
