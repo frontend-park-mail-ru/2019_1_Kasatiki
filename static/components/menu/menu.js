@@ -22,7 +22,7 @@ export default class MenuComponent {
             };
         } else {
             that._menuItems = {
-                // signup: 'Регистрация',
+                signup: 'Регистрация',
                 login: 'Логин',
                 // game: 'Играть',
                 leaderboard: 'Таблица лидеров',

@@ -42,11 +42,10 @@ export default class eventHandler {
         if (funcName !== null) {
             this._getAuthStatus.doGet({
                 callback(data) {
-                    // console.log('data:', data);
                     if (option === null) {
                         that._functions[funcName].run(data.is_auth);
                     } else {
-                        that._functions[funcName].run(option);
+                        that._functions[funcName].run(data.is_auth, option);
                     }
                 }, 
                 path : '/isauth'
@@ -68,7 +67,7 @@ export default class eventHandler {
         
                     that._getAuthStatus.doGet({
                         callback(data) {
-                            console.log('handler got response:', data.is_auth, 'section:', section);
+                            // console.log('handler got response:', data.is_auth, 'section:', section);
                             that._functions[section].run(data.is_auth);
                         }, 
                         path : '/isauth'

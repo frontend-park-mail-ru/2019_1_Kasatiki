@@ -46,7 +46,7 @@ const noop = () => null;
 					callback(data);
 				})
 				.catch((error) => {
-					console.error(error.message);
+					console.error('response status !== 200!, error:',error.message);
 				})
 			}
 

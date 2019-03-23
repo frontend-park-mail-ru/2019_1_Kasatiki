@@ -91,10 +91,6 @@ export default class SignUpComponent {
         form.addEventListener('submit', (event) => {
             event.preventDefault();
 
-            // const email = form.elements.email.value;
-            // const nickname = form.elements.nickname.value;
-            // const password = form.elements.password.value;
-
             const that = this;
 
             const validationBlocks = [

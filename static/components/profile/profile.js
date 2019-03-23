@@ -17,7 +17,7 @@ export default class ProfileComponent {
 
 		// bool, определяющий текущий режим профиля (просмотр/изменение)
 		this._editCheck = false;
-		this._users = {};
+		this._user = {};
 	}
 
 	// Геттеры - Сеттеры
@@ -129,7 +129,7 @@ export default class ProfileComponent {
 		}
 
 		const template = Handlebars.compile(templateScript);
-		this._parentElement.innerHTML += template(that._users);
+		this._parentElement.innerHTML += template(that._user);
 
 		if (this._editCheck) {
 			const submit = that._parentElement.querySelector('.sub_btn');
@@ -146,7 +146,7 @@ export default class ProfileComponent {
 
 				// Преобразуем типы (стринга -> инт), так как html input type="text"
 				inputs.forEach((element) => {
-					if (element.value != that._users[element.name] && element.name != 'avatar') {
+					if (element.value != that._user[element.name] && element.name != 'avatar') {
 						if (element.name === 'Age') {
 							const age = parseInt(element.value);
 							req[element.name] = age;
@@ -161,10 +161,10 @@ export default class ProfileComponent {
 					req.error = 'empty';
 				}
 
-				// Делаем post запрос на that._users/nickname, а не на /upload
+				// Делаем post запрос на that._user/nickname, а не на /upload
 				this._getAuthStatus.doPut({
 					callback(data) {
-						that._users = data;
+						that._user = data;
 						that._render();
 					},
 					path: `/users/${req.nickname}`,
@@ -196,34 +196,14 @@ export default class ProfileComponent {
 	// Главная функция, если пользователь залогинен, его отсылает на /me:
 	// Делается get запрос -> сравнивается кука -> возвращается фулл инфо
 	// о пользователе
-	run(option) {
+	run(authStatus, option = null) {
 		const that = this;
+		this._authStatus = authStatus;
 
-		if (typeof option === 'object') {
-			that._getAuthStatus.doGet({
-				callback(data) {
-					that._authStatus = data.is_auth;
-					that._users = option;
-					that._render();
-				},
-				path: '/isauth',
-			});
-		} else {
-			that._authStatus = option;
-			// Тут уже на мотыля
-			that._getAuthStatus.doGet({
-				callback(data) {
-					that._users = data;
-					// И подсекаем, подсекаем !
-					that._render();
-				},
-				path: '/me',
-			});
+		if (option !== null) {
+			that._user = option;
 		}
 
-		// Кнопки навигации
-		// const submit = this._parentElement.querySelector('.sub_btn');
-		// const back = this._parentElement.querySelector('.back_btn');
-
+		this._render();
 	}
 }
