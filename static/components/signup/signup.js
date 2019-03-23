@@ -1,62 +1,193 @@
 /* eslint-disable import/prefer-default-export */
 
 /**
- * Класс отрисовки формы логина.
+ * Класс отрисовки формы регистрации.
  */
+import CustomValidation from '../../modules/validation.js'
+import GetAuthStatus from '../../modules/networkHandler.js'
+import eventHandler from '../../modules/eventListener.js';
+
+import ProfileComponent from '../profile/profile.js';
+
 export default class SignUpComponent {
 	/**
 	 * Конструтор.
-	 * @param {node} el - объект DOM-дерева, куда будет отрисовываться
+	 * @param {node} parentElement - объект DOM-дерева, куда будет отрисовываться
 	 *                               форма регистрации.
 	 */
-	constructor({
-		el = document.body,
-	} = {}) {
-		this.el = el;
-	}
+	constructor(
+        parentElement = document.body,
+    ) {
+        this._parentElement = parentElement;
+        this._authStatus = false;
+
+		this._profile = new ProfileComponent(this._parentElement);
+		// Функции для eventHandler'a
+		this._functions = {
+			profile : this._profile,
+		}
+
+		this._eventHandler = new eventHandler(this._parentElement, this._functions);
+        this._getAuthStatus = new GetAuthStatus();
+        this._CustomValidation = new CustomValidation;
+    }
 
 	/**
      * Метод отрисовки формы регистрации.
      */
-	render() {
+	_render() {
+        
 		const templateScript = `
-            <h1>Sign Up</h1>
-
-            <form id="signup-form">
-                <input
-                    name="nickname"
-                    type="text"
-                    placeholder="Username"
-                    class="signup_input"
-                    required>
-				<div id="nickname-validation-error" class="signup_input_error_text"></div>
-                <input
-                    name="email"
-                    type="text"
-                    placeholder="Email"
-                    class="signup_input"
-                    required>
-                <div id="email-validation-error" class="signup_input_error_text"></div>
-                <input
-                    name="password"
-                    type="password"
-                    placeholder="Password"
-                    class="signup_input"
-                    required>
-				<div id="password-validation-error" class="signup_input_error_text"></div>                
-                <input
-                    name="password_repeat"
-                    type="password"
-                    placeholder="Repeat Password"
-                    class="signup_input"
-                    required>
-                <div id="repeat-password-error" class="signup_input_error_text"></div>  
-                <input name="submit" type="submit" class="signup_btn">                    
-                <button data-section="menu" class="signup_btn">Назад</button>
-            </form>
+            <div class="menu">    
+                <h1 class="title">Sign Up</h1>
+                <form id="signup-form">
+                    <input
+                        name="nickname"
+                        type="text"
+                        placeholder="Username"
+                        class="signup_input"
+                        required>
+                    <div id="nickname-validation-error" class="signup_input_error_text"></div>
+                    <input
+                        name="email"
+                        type="text"
+                        placeholder="Email"
+                        class="signup_input"
+                        required>
+                    <div id="email-validation-error" class="signup_input_error_text"></div>
+                    <input
+                        name="password"
+                        type="password"
+                        placeholder="Password"
+                        class="signup_input"
+                        required>
+                    <div id="password-validation-error" class="signup_input_error_text"></div>                
+                    <input
+                        name="password_repeat"
+                        type="password"
+                        placeholder="Repeat Password"
+                        class="signup_input"
+                        required>
+                    <div id="repeat-password-error" class="signup_input_error_text"></div>  
+                    <input name="submit" type="submit" class="btn">                    
+                    <button data-section="menu" class="btn">Назад</button>
+                </form>
+            </div>
         `;
 
 		const template = Handlebars.compile(templateScript);
-		this.el.innerHTML = template();
-	}
+		this._parentElement.innerHTML = template();
+    }
+    
+    run(authStatus) {
+        this._authStatus = authStatus;
+        this._render();
+
+        // let id = -1;
+        // const signUpSection = document.getElementById('signup-form');
+        // const signUpChildNodes = signUpSection.childNodes;
+        // for (let i = 0; i < signUpChildNodes.length; i += 1) {
+        //     if ('signup-form'.localeCompare(signUpChildNodes[i].id) === 0) {
+        //         id = i;
+        //     }
+        // }
+        // if (id === -1) {
+        //     return;
+        // }
+
+        const form = document.getElementById('signup-form');
+        
+        console.log('form:',form);
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            // const email = form.elements.email.value;
+            // const nickname = form.elements.nickname.value;
+            // const password = form.elements.password.value;
+
+            const that = this;
+
+            const validationBlocks = [
+                {
+                    input: form.elements.nickname,
+                    validationFunction: this._CustomValidation.checkNickname,
+                    errorField: document.getElementById('nickname-validation-error'),
+                },
+                {
+                    input: form.elements.email,
+                    validationFunction: this._CustomValidation.checkEmail,
+                    errorField: document.getElementById('email-validation-error'),
+                },
+                {
+                    input: form.elements.password,
+                    validationFunction: this._CustomValidation.checkPassword,
+                    errorField: document.getElementById('password-validation-error'),
+                },
+            ];
+
+            const validForm = true;
+
+            validationBlocks.forEach((block) => {
+                // eslint-disable-next-line no-param-reassign
+                block.input.className = 'login_input';
+                // eslint-disable-next-line no-param-reassign
+                block.errorField.textContent = '';
+
+                const errorText = block.validationFunction(block.input.value);
+
+                if (errorText.localeCompare('OK') !== 0) {
+                    // eslint-disable-next-line no-param-reassign
+                    block.input.className = 'signup_input signup_input_error';
+                    // eslint-disable-next-line no-param-reassign
+                    block.errorField.textContent = errorText;
+                    validForm = false;
+                }
+            });
+
+            const { password } = form.elements;
+            // eslint-disable-next-line camelcase
+            const { password_repeat } = form.elements;
+
+            if (password.value.localeCompare(password_repeat.value) !== 0) {
+                password_repeat.className = 'signup_input signup_input_error';
+
+                const errorField = document.getElementById('repeat-password-error');
+                errorField.textContent = 'Passwords do not match.';
+
+                validForm = false;
+            } else {
+                form.elements.password_repeat.className = 'signup_input';
+
+                const errorField = document.getElementById('repeat-password-error');
+                errorField.textContent = '';
+            }
+
+            if (!validForm) {
+                return;
+            }
+
+            const payload = {
+                nickname: form.elements.nickname.value,
+                email: form.elements.email.value,
+                password: form.elements.password.value,
+			}
+
+            console.log(payload);
+
+			this._getAuthStatus.doPost({
+				callback(data) {
+					if (typeof (data.Error) === 'undefined') {
+						console.log('data in signup:', data);
+						that._eventHandler.handleFunc('profile', data);
+					} else {
+						const validationError = document.getElementById('repeat-password-error');
+						validationError.textContent = answer.Error;
+					}
+				},
+				path: '/signup',
+				body: JSON.stringify( payload ),
+			});
+        });
+    }
 }

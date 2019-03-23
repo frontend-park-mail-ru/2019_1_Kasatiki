@@ -2,9 +2,8 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable no-useless-constructor */
 /* eslint-disable class-methods-use-this */
-(
-	() => {
-		class CustomValidation {
+
+export default class CustomValidation {
 			constructor(str) {
 				this.str = str;
 			}
@@ -56,5 +55,3 @@
 				return 'OK';
 			}
 		}
-		window.CustomValidation = new CustomValidation();
-	})();

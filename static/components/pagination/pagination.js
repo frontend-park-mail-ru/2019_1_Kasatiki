@@ -1,33 +1,6 @@
 // eslint-disable-next-line import/extensions
-import BoardComponent from '../board/board.js';
 
 const { AjaxModule } = window;
-
-// Handlebars.registerHelper('iff', function(a, operator, b, opts) {
-//     let bool = false;
-//     switch(operator) {
-//         case '!=':
-//             bool = a != b;
-//             break;
-//         case '==':
-//             bool = a == b;
-//             break;
-//         case '>':
-//             bool = a > b;
-//             break;
-//         case '<':
-//             bool = a < b;
-//             break;
-//         default:
-//             throw "Unknown operator " + operator;
-//     }
-
-//     if (bool) {
-//         return opts.fn(this);
-//     } else {
-//         return opts.inverse(this);
-//     }
-// });
 
 /**
  * Класс для отрисовки leader board с Пагинацией.
@@ -41,12 +14,13 @@ export default class PaginationComponent {
 	 * @param {int} totalPages - общее количество страниц,
 	 */
 	constructor({
-		parentElement = document.createElement('div.main'),
+		boardElement,
+		parentElement = document.body,
 		usersPerPage = 1,
 		totalPages = 1,
 	} = {}) {
+		this._boardElement = boardElement;
 		this._parentElement = parentElement;
-
 		this._usersPerPage = usersPerPage;
 
 		this._pagesDict = {
@@ -63,16 +37,12 @@ export default class PaginationComponent {
 
 		const offset = this._pagesDict._currentPage * this._usersPerPage;
 
-		const board = new BoardComponent({ parentElement: this._parentElement });
-
 		const that = this;
 
 		AjaxModule.doGet({
 			callback(xhr) {
-				const res = JSON.parse(xhr.responseText);
-				that._parentElement.innerHTML = '';
-				board.render(res);
-				that.renderPaginator();
+				const response = JSON.parse(xhr.responseText);
+				that._boardElement.setAndRender(response);
 			},
 			path: `/leaderboard?offset=${offset}`,
 		});
@@ -82,61 +52,55 @@ export default class PaginationComponent {
 	 * Метод отрисовки следующей страницы.
 	 */
 	_getNextPage() {
-		if (this._pagesDict._currentPage < this._pagesDict._totalPages) this._pagesDict._currentPage++;
+		if (this._pagesDict._currentPage < this._pagesDict._totalPages) 
+		{
+			this._pagesDict._currentPage++;
 
-		const offset = this._pagesDict._currentPage * this._usersPerPage;
-		console.log(offset);
-
-		const board = new BoardComponent({ parentElement: this._parentElement });
-
-		const that = this;
-
-		AjaxModule.doGet({
-			callback(xhr) {
-				const res = JSON.parse(xhr.responseText);
-				that._parentElement.innerHTML = '';
-				board.render(res);
-				that.renderPaginator();
-			},
-			path: `/leaderboard?offset=${offset}`,
-		});
+			const offset = this._pagesDict._currentPage * this._usersPerPage;
+	
+			const that = this;
+	
+			AjaxModule.doGet({
+				callback(xhr) {
+					const response = JSON.parse(xhr.responseText);
+					that._boardElement.setAndRender(response);
+				},
+				path: `/leaderboard?offset=${offset}`,
+			});
+		} 
 	}
 
 	/**
 	 * Метод отрисовки страницы leader board с пагинацией.
 	 */
-	renderPaginator() {
+	render() {
 		const templateScript = `
-            <div class="paginatorBox">
-                <p class="prev"><</p>
-                <p class="next">></p>
-            </div>
-
-            <button data-section="menu" class="btn">Назад</button>
+			<p class="prev"><</p>
+			<p class="next">></p>
         `;
-
 
 		// console.log(templateScript);
 		const template = Handlebars.compile(templateScript);
 		console.log(this._pagesDict);
 		this._parentElement.innerHTML += template(this._pagesDict);
 
+		console.log('page:',this._parentElement);
+
 		const pageBox = this._parentElement.querySelector('.paginatorBox');
-		// console.log(pageBox);
 		const prevButton = this._parentElement.querySelector('.prev');
 		const nextButton = this._parentElement.querySelector('.next');
 
 		nextButton.addEventListener('click', () => {
 			pageBox.innerHTML = '';
 			this._getNextPage();
-			this.renderPaginator();
+			this.render();
 		});
 
 
 		prevButton.addEventListener('click', () => {
 			pageBox.innerHTML = '';
 			this._getPrevPage();
-			this.renderPaginator();
+			this.render();
 		});
 	}
 }
