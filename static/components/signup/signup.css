@@ -1,11 +1,43 @@
-.signup_input {
-    width: 350px;
-    height: 50px;
-    margin: 10px 25px 10px 25px;
-    border: 0;
+.signup {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 
-    border-radius: 10px;
+    margin: 30vh auto auto auto;
+    width: 450px;
+    height: 154px;
 }
+
+.signup_input {
+    margin: 5px;
+    padding: 10px;
+    width: 100%;
+    height: 30px;
+
+    border: solid 1px red;
+    border-radius: 5px;
+
+    background: rgba(255, 255, 255, 0.5);
+    color: red;
+
+    outline: none;
+}
+
+.signup-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    width: 100%;
+}
+
+.signup__title {
+    width: 100%;
+    text-align: center;
+
+    color: red;
+}
+
 
 .signup_bad_input {
     border: solid 2px #ff0000;
@@ -13,4 +45,41 @@
 
 .signup_good_input {
     border: solid 2px #808080;
+}
+
+.signup__btn-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    margin: 5px;
+    width: 100%;
+}
+
+.signup-btn {
+    font-size: 25px;
+
+    width: 48%;
+    height: 50px;
+
+    border-radius: 5px;
+    border: solid red 1px;
+
+    color: red;
+    background: rgba(255, 255, 255, 0.5);
+
+    transition: 0.2s linear;
+
+    outline: none;
+}
+
+.signup-btn:hover {
+    font-size: 30px;
+
+    border: solid white 1px;
+
+    background-color: red;
+    color: white;
+
+    transition: 0.2s linear;
 }

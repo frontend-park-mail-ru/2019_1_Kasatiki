@@ -1,57 +1,37 @@
-export default class MenuComponent {
+export default class menuComponent { 
     constructor(
-        parentElement = document.getElementsByClassName("app"),
+        parentElement = document.body,
         authStatus = false,
     ) {
-        // this._handler = handler;
         this._parentElement = parentElement;
         this._authStatus = authStatus;
         this._menuItems = {};
     }
 
-    // Разное меню для залогиненых/разлогиненых пользователей
-    _setMenuItems() {
-        const that = this;
-        if (that._authStatus) {
-            that._menuItems = {
-                game: 'Играть',
-                leaderboard: 'Таблица лидеров',
-                about: 'О приложении',
-                profile: 'Профайл',
-                logout: 'Выйти',
-            };
-        } else {
-            that._menuItems = {
-                signup: 'Регистрация',
-                login: 'Логин',
-                // game: 'Играть',
-                leaderboard: 'Таблица лидеров',
-                // about: 'О приложении',
-                profile: 'Профайл',
-            };
-        }
-    }
-
     _render() {
-        console.log("render menu with status:",this._authStatus);
-        this._parentElement.innerHTML = '';
-
         const templateScript = `
             <div class="menu">
-                <h1 class="title">Main menu</h1>
-                {{#each .}}
-                    <button class="btn" data-section="{{@key}}">{{this}}</button>
-                {{/each}}
+                <h1 class="menu__title">ADVHATER</h1>
+                <div class="main-bar">
+                    <button class="main-bar__item menu_btn" data-title="LEADERBOARD" data-section="leaderboard"><i class="fas fa-list-ul"></i></button>
+                    <button class="main-bar__item menu_btn" data-title="PAYOUT" data-section="signup"><i class="fas fa-wallet"></i></button>
+                    <button class="main-bar__item menu_btn" data-title="SHOP" data-section="login"><i class="fas fa-shopping-cart"></i></button>
+                </div>
+                <div class="menu__profile"></div>
+                <button class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
+                <div class="options">
+                    <a href="#" class="options__link">Report bug</a>
+                    <a href="#" class="options__link">Help</a>
+                    <a href="#" class="options__link">Hate with us!</a>
+                </div>  
             </div>
         `;
 
         const template = Handlebars.compile(templateScript);
-		this._parentElement.innerHTML = template(this._menuItems);
+		this._parentElement.innerHTML = template();
     }
 
-    run(authStatus) {
-        this._authStatus = authStatus;
-        this._setMenuItems();
+    run() {
         this._render();
     }
 }

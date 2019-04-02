@@ -55,7 +55,7 @@ export default class eventHandler {
         that._parentElement.addEventListener('click', (evt) => {
             const { target } = evt;
         
-            // console.log('click on ', target, 'datasec: ', target.dataset.section);
+            console.log('click on ', target, 'datasec: ', target.dataset.section);
         
             // Если target является кнопкой
             if (target instanceof HTMLButtonElement) {

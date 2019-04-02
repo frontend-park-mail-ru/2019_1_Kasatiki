@@ -2,7 +2,6 @@
 
 import CustomValidation from '../../modules/validation.js'
 import GetAuthStatus from '../../modules/networkHandler.js'
-import eventHandler from '../../modules/eventListener.js';
 
 import ProfileComponent from '../profile/profile.js';
 
@@ -52,9 +51,9 @@ export default class LoginComponent {
             `;
 		} else {
 			templateScript = `
-				<div class="menu">
-					<h1 class="title">Login</h1>	
-					<form id="login-form">
+				<div class="login">
+					<h1 class="login__title">Login</h1>	
+					<form id="login-form" class="login-form">
 						<input
 							name="login"
 							type="text"
@@ -69,8 +68,10 @@ export default class LoginComponent {
 							class="login_input"
 							required>
 						<div id="password-validation-error" class="login_input_error_text"></div>
-						<input name="submit" type="submit" class="btn">
-						<button data-section="menu" class="btn">Назад</button>
+						<div class="login__btn-section">
+							<button data-section="menu" class="login-btn"><i class="fas fa-undo-alt"></i></button>
+							<button type="submit" class="login-btn"><i class="fas fa-angle-double-right"></i></button>
+						</div>
 					</form>
 				</div>
 			`;
@@ -87,70 +88,70 @@ export default class LoginComponent {
 
 		this._render();
 
-		const signInSection = document.querySelector(".menu");
-		const form = document.querySelector("#login-form");
+		const signInSection = document.querySelector(".login");
+		// const form = document.querySelector("#login-form");
 
 		// console.log('signInSection',signInSection, 'form', form);
 
 			// ToDo, Tmrln: зачем алерты? оч мешает
 			
-			// const signInChildNodes = signInSection.childNodes;
+			const signInChildNodes = signInSection.childNodes;
 
-			// let id = -1;
-			// console.log('childs', signInChildNodes);
-			// for (let i = 0; i < signInChildNodes.length; i += 1) {
-			// 	if ('login-form'.localeCompare(signInChildNodes[i].id) === 0) {
-			// 		id = i;
-			// 	}
-			// }
-			// if (id === -1) {
-			// 	console.log('form id changed!!!');
-			// 	return;
-			// }
-			// const form = signInChildNodes[id];
+			let id = -1;
+			console.log('childs', signInChildNodes);
+			for (let i = 0; i < signInChildNodes.length; i += 1) {
+				if ('login-form'.localeCompare(signInChildNodes[i].id) === 0) {
+					id = i;
+				}
+			}
+			if (id === -1) {
+				console.log('form id changed!!!');
+				return;
+			}
+			const form = signInChildNodes[id];
 
 			form.addEventListener('submit',
 				(event) => {
 					event.preventDefault();
 
-					// let validForm = true;
+					let validForm = true;
 
-					// const validationBlocks = [
-					// 	{
-					// 		input: form.elements.login,
-					// 		validationFunction: CustomValidation.checkNickname,
-					// 		errorField: document.getElementById('login-validation-error'),
-					// 	},
-					// 	{
-					// 		input: form.elements.password,
-					// 		validationFunction: CustomValidation.checkPassword,
-					// 		errorField: document.getElementById('password-validation-error'),
-					// 	},
-					// ];
+					const validationBlocks = [
+						{
+							input: form.elements.login,
+							validationFunction: CustomValidation.checkNickname,
+							errorField: document.getElementById('login-validation-error'),
+						},
+						{
+							input: form.elements.password,
+							validationFunction: CustomValidation.checkPassword,
+							errorField: document.getElementById('password-validation-error'),
+						},
+					];
 
-					// validationBlocks.forEach((block) => {
-					// 	// eslint-disable-next-line no-param-reassign
-					// 	block.input.className = 'login_input';
-					// 	// eslint-disable-next-line no-param-reassign
-					// 	block.errorField.textContent = '';
+					validationBlocks.forEach((block) => {
+						// eslint-disable-next-line no-param-reassign
+						block.input.className = 'login_input';
+						// eslint-disable-next-line no-param-reassign
+						block.errorField.textContent = '';
 
-					// 	const errorText = block.validationFunction(block.input.value);
+						const errorText = block.validationFunction(block.input.value);
 
 
-					// 	if (errorText.localeCompare('OK') !== 0) {
-					// 		// eslint-disable-next-line no-param-reassign
-					// 		block.input.className = 'login_input login_input_error';
-					// 		// eslint-disable-next-line no-param-reassign
-					// 		block.errorField.textContent = errorText;
-					// 		validForm = false;
-					// 	}
-					// });
+						if (errorText.localeCompare('OK') !== 0) {
+							// eslint-disable-next-line no-param-reassign
+							block.input.className = 'login_input login_input_error';
+							// eslint-disable-next-line no-param-reassign
+							block.errorField.textContent = errorText;
+							validForm = false;
+						}
+					});
 
-					// if (!validForm) {
-					// 	return;
-					// }
+					if (!validForm) {
+						return;
+					}
 
-					// console.log('changed:', answer.is_auth);
+					console.log('changed:', answer.is_auth);
 
 			// that._eventHandler.handle('profile');
 
@@ -167,6 +168,7 @@ export default class LoginComponent {
 						console.log('data in login:', data);
 						that._eventHandler.handle('profile', data);
 					} else {
+						cosnsole.log('net ne davai');
 						const validationError = document.getElementById('repeat-password-error');
 						validationError.textContent = answer.Error;
 					}

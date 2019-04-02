@@ -7,25 +7,32 @@ import LoginComponent from '../components/login/login.js';
 import SignUpComponent from '../components/signup/signup.js';
 import BoardComponent from '../components/board/board.js';
 import ProfileComponent from '../components/profile/profile.js';
-import MenuComponent from '../components/menu/menu.js';
+import menuComponent from '../components/menu/menu.js';
 import LogoutComponent from '../components/logout/logout.js';
+import CountdownComponent from '../components/countdown/countdown.js'
+import choseComponent from '../components/chose/chose.js'
 
-// Разименовывем необходимые элементы DOM'a
-const app = document.getElementById('application');
-app.innerHTML = ''
 
-const handler = new eventHandler(app);
-
+const handler = new eventHandler();
 
 const functions = {
-	signup : new SignUpComponent(handler, app),
-	login : new LoginComponent(handler, app),
-	leaderboard : new BoardComponent(app),
-	profile : new ProfileComponent(handler, app),
-	menu : new MenuComponent(app),
-	logout: new LogoutComponent(handler),
+	signup : new SignUpComponent(),
+	login : new LoginComponent(),
+	leaderboard : new BoardComponent(),
+	// profile : new ProfileComponent(handler, app),
+	menu : new menuComponent(),
+	chose: new choseComponent(),
+	// logout: new LogoutComponent(handler),
 }	
 
 handler.setFunctions(functions);
+handler.handle();
 
-handler.handle('menu');	
+const countdown = new CountdownComponent(handler);
+
+const menu = new menuComponent();
+
+
+countdown.run();
+
+// menu.run();

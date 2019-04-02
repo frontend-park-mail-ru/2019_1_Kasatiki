@@ -13,13 +13,11 @@ export default class SignUpComponent {
 	 *                               форма регистрации.
 	 */
 	constructor(
-        handler,
         parentElement = document.body,
     ) {
         this._parentElement = parentElement;
         this._authStatus = false;
 
-		this._eventHandler = handler;
         this._getAuthStatus = new GetAuthStatus();
         this._CustomValidation = new CustomValidation;
     }
@@ -29,9 +27,9 @@ export default class SignUpComponent {
      */
 	_render() {
 		const templateScript = `
-            <div class="menu">    
-                <h1 class="title">Sign Up</h1>
-                <form id="signup-form">
+            <div class="signup">    
+                <h1 class="signup__title">Sign Up</h1>
+                <form id="signup-form" class="signup-form">
                     <input
                         name="nickname"
                         type="text"
@@ -60,8 +58,10 @@ export default class SignUpComponent {
                         class="signup_input"
                         required>
                     <div id="repeat-password-error" class="signup_input_error_text"></div>  
-                    <input name="submit" type="submit" class="btn">                    
-                    <button data-section="menu" class="btn">Назад</button>
+                    <duv class="signup__btn-section">
+                        <button data-section="menu" class="signup-btn"><i class="fas fa-undo-alt"></i></button>
+                        <button type="submit" class="signup-btn"><i class="fas fa-angle-double-right"></i></button>                  
+                    </div>
                 </form>
             </div>
         `;

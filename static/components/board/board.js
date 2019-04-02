@@ -89,9 +89,9 @@ export default class BoardComponent {
 	_renderPaginator() {
 		// Шаблон без div, так как div прописан в шаблоне борды
 		const templateScript = `
-			<button class="prev btn"><</button>
+			<button class="prev leaderboard_page-button"><i class="fas fa-arrow-left"></i></button>
 			<h1 class="pageNumber">{{_currentPage}}</h1>
-			<button class="next btn">></button>
+			<button class="next leaderboard_page-button"><i class="fas fa-arrow-right"></i></button>
 		`;
 		
 		const template = Handlebars.compile(templateScript);
@@ -139,30 +139,21 @@ export default class BoardComponent {
 		// Итерируясь по юзерам, выводим строки таблицы
 		// Зарание создал место для пагинатора: <div class="paginatorSection"></div>
 		const templateScript = `
-			<div class="menu">
-				<h1 class="title">Leaderboard</h1>
-				<table class="leadersTable" border="1" cellpadding="0" cellspacing="0">
-					<thead>
-						<tr>
-							<th>Nickname</th>
-							<th>Region</th>
-							<th>Score</th>
-						</tr>
-					</thead>
-					<tbody>
-						{{#each .}}                  
-							<tr class="tr">
-								<td>{{nickname}}</td>
-								<td>{{Region}}</td>
-								<td>{{Points}}</td>
-							</tr>
-						{{/each}}
-					</tbody>
-				</table>
-				<div class="paginatorSection">
+		<div class="leaderboard">
+			<h1 class="leaderboard__title">Leaderboard</h1>
+			<div class="board">
+				{{#each .}} 
+				<div class="board__player">
+					<img src="{{avtar}}" class="board__item player-avatar"></img>
+					<h4 class="board__item player-nickname">{{nickname}}</h4>
+					<div class="board__item player-score">{{Points}}</div>
 				</div>
-				<button data-section="menu" class="btn">Назад</button>
+				{{/each}} 
 			</div>
+			<div class="paginator-section"></div>
+			<button class="leaderboard_back-button" data-section="menu"><i class="fas fa-undo-alt"></i>
+			</button>
+		</div>
 		`;
 
 		const template = Handlebars.compile(templateScript);
@@ -170,13 +161,14 @@ export default class BoardComponent {
 
 		// Вытаскиваю из DOM'а <div class="paginatorSection"></div>, записываю его в 
 		// _paginatorSection: 
-		this._paginatorSection = this._parentElement.querySelector('.paginatorSection');
+		this._paginatorSection = this._parentElement.querySelector('.paginator-section');
 
 		// Рендерю пагинатор в _paginatorSection
 		this._renderPaginator();
 	}
 
 	run() {
+		console.log('run');
 		const that = this;
 		this._getAuthStatus.doGet({
 			callback(data) {
