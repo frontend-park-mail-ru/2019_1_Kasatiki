@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>test serv</title>
+	<link rel="stylesheet" 
+		href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" 
+		integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" 
+		crossorigin="anonymous">
+	<!-- <script src="handlebars.js"></script> -->
+	<link rel="stylesheet" href="login.css">	
+</head>
+<body>
+	<div class="login">
+		<h1 class="login__title">Login</h1>	
+		<form id="login-form" class="login-form">
+			<input
+				name="login"
+				type="text"
+				placeholder="Nickname"
+				class="login_input"
+				required>
+			<div id="login-validation-error" class="login_input_error_text"></div>
+			<input
+				name="password"
+				type="password"
+				placeholder="Password"
+				class="login_input"
+				required>
+			<div id="password-validation-error" class="login_input_error_text"></div>
+			<div class="login__btn-section">
+				<button type="submit" class="login-btn"><i class="fas fa-undo-alt"></i></button>
+				<button data-section="menu" class="login-btn"><i class="fas fa-angle-double-right"></i></button>
+			</div>
+		</form>
+	</div>
+	<script type="module" src="login.js"></script>
+</body>
+</html>
+

@@ -2,8 +2,8 @@
   "name": "sample",
   "version": "1.0.0",
   "scripts": {
-    "start": "node server",
-    "tmpl": "./node_modules/.bin/fest-build --dir=public",
+    "start": "go run main.go app.gom",
+    "tmpl": "./node_modules/.bin/fest-build --dir=static",
     "prestart": "npm run tmpl"
   },
   "keywords": [],
@@ -14,7 +14,13 @@
     "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
     "fest": "^0.12.1",
+    "handlebars": "^4.1.0",
     "morgan": "^1.9.1",
     "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "eslint": "^5.15.1",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.16.0"
   }
 }
