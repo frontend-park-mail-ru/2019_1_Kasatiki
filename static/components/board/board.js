@@ -144,9 +144,7 @@ export default class BoardComponent {
 			<div class="board">
 				{{#each .}} 
 				<div class="board__player">
-					<img src="{{avtar}}" class="board__item player-avatar"></img>
-					<h4 class="board__item player-nickname">{{nickname}}</h4>
-					<div class="board__item player-score">{{Points}}</div>
+					
 				</div>
 				{{/each}} 
 			</div>

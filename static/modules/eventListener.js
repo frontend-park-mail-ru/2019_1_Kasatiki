@@ -72,6 +72,20 @@ export default class eventHandler {
                         }, 
                         path : '/isauth'
                     })
+                } else if (target.parentElement.dataset.section in that._functions) {
+                    evt.preventDefault();
+
+                    console.log('not a button:', target.parentElement);
+        
+                    const { section } = target.parentElement.dataset;
+        
+                    that._getAuthStatus.doGet({
+                        callback(data) {
+                            // console.log('handler got response:', data.is_auth, 'section:', section);
+                            that._functions[section].run(data.is_auth);
+                        }, 
+                        path : '/isauth'
+                    })
                 }
             }
         });

@@ -11,13 +11,19 @@ export default class menuComponent {
     _render() {
         const templateScript = `
             <div class="menu">
-                <h1 class="menu__title">ADVHATER</h1>
+                <h1 class="menu__title">ADV<a class="hate">HATER</a></h1>
                 <div class="main-bar">
                     <button class="main-bar__item menu_btn" data-title="LEADERBOARD" data-section="leaderboard"><i class="fas fa-list-ul"></i></button>
-                    <button class="main-bar__item menu_btn" data-title="PAYOUT" data-section="signup"><i class="fas fa-wallet"></i></button>
-                    <button class="main-bar__item menu_btn" data-title="SHOP" data-section="login"><i class="fas fa-shopping-cart"></i></button>
+                    <button class="main-bar__item menu_btn" data-title="PAYOUT" data-section="payout"><i class="fas fa-wallet"></i></button>
+                    <button class="main-bar__item menu_btn" data-title="SHOP" data-section="shop"><i class="fas fa-shopping-cart"></i></button>
                 </div>
-                <div class="menu__profile"></div>
+                <div class="menu__profile">
+                    <img src="https://cdn3.iconfinder.com/data/icons/red-icons-1/512/Male-profile-icon-512.png" class="profile-avatar"></img>
+                    <div class="profile-info">
+                        <h4 class="profile-nickname">evvFeburary</h4>
+                        <h4 class="profile-score">2240 $</h4>
+                    </div>
+                </div>
                 <button class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
                 <div class="options">
                     <a href="#" class="options__link">Report bug</a>
@@ -28,7 +34,59 @@ export default class menuComponent {
         `;
 
         const template = Handlebars.compile(templateScript);
-		this._parentElement.innerHTML = template();
+        this._parentElement.innerHTML = template();
+        
+        const profile = this._parentElement.querySelector('.menu__profile');
+
+        // this._parentElement.addEventListener('mouseover', (evt) => {
+        //     const { target } = evt;
+
+
+        //     if (target.className === 'btn-1') {
+        //         console.log('back');
+        //         return;
+        //     }
+
+        //     if (target.parentElement === profile || target === profile || 
+        //         target.parentElement.className === 'profile-info') {
+
+        //         console.log('profile)');
+
+        //         profile.innerHTML = `
+        //             <img src="./img/avatar.png" class="profile-avatar"></img>
+        //             <div class="profile-info">
+        //                 <h4 class="profile-nickname">evvFeburary</h4>
+        //                 <h4 class="profile-score">2240 $</h4>
+        //             </div>
+        //             <button class="btn-1">1</button>
+        //             <button class="btn-1">2</button>
+        //         `
+        //     }
+        // });
+
+        // this._parentElement.addEventListener('mouseout', (evt) => {
+        //     const { target } = evt;
+
+        //     if (target.className === 'btn-1') {
+        //         console.log('back');
+        //         return;
+        //     }
+
+        //     if (target.parentElement === profile || target === profile || 
+        //         target.parentElement.className === 'profile-info') {
+
+        //         console.log('profile out');
+
+        //         profile.innerHTML = ``;
+        //         profile.innerHTML = `
+        //             <img src="./img/avatar.png" class="profile-avatar"></img>
+        //             <div class="profile-info">
+        //                 <h4 class="profile-nickname">evvFeburary</h4>
+        //                 <h4 class="profile-score">2240 $</h4>
+        //             </div>
+        //         `
+        //     }
+        // });
     }
 
     run() {

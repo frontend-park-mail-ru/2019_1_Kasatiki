@@ -69,8 +69,8 @@ export default class LoginComponent {
 							required>
 						<div id="password-validation-error" class="login_input_error_text"></div>
 						<div class="login__btn-section">
-							<button data-section="menu" class="login-btn"><i class="fas fa-undo-alt"></i></button>
-							<button type="submit" class="login-btn"><i class="fas fa-angle-double-right"></i></button>
+							<button data-section="chose" class="login-btn"><i class="fas fa-undo-alt"></i></button>
+							<button data-section="menu" type="submit" class="login-btn"><i class="fas fa-angle-double-right"></i></button>
 						</div>
 					</form>
 				</div>
@@ -166,7 +166,8 @@ export default class LoginComponent {
 				callback(data) {
 					if (typeof (data.Error) === 'undefined') {
 						console.log('data in login:', data);
-						that._eventHandler.handle('profile', data);
+						// that._eventHandler.handle('profile', data);
+						that._eventHandler.handle('menu');
 					} else {
 						cosnsole.log('net ne davai');
 						const validationError = document.getElementById('repeat-password-error');

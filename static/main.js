@@ -29,7 +29,6 @@ handler.setFunctions(functions);
 handler.handle();
 
 const countdown = new CountdownComponent(handler);
-
 const menu = new menuComponent();
 
 
