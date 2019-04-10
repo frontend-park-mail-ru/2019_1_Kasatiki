@@ -46,4 +46,8 @@ _testmain.go
 /test/garbage/*.out
 /test/pass.out
 /test/run.out
+<<<<<<< HEAD
 /test/times.out
+=======
+/test/times.out
+>>>>>>> origin/dev

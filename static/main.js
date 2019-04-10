@@ -29,7 +29,10 @@ handler.setFunctions(functions);
 handler.handle();
 
 const countdown = new CountdownComponent(handler);
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/dev
 const menu = new menuComponent();
 
 

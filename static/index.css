@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @import url('js/components/MenuComponent/MenuComponent.css');
 @import url('js/components/LoginComponent/LoginComponent.css');
 @import url('js/components/SignupComponent/SignupComponent.css');
@@ -89,3 +90,11 @@ html {
     height: 700px;  
     border: solid;
 } */
+=======
+@import url('./components/menu/menu.css');
+@import url('./components/board/board.css');
+@import url('./components/login/login.css');
+@import url('./components/signup/signup.css');
+@import url('./components/countdown/countdown.css');
+@import url('./components/chose/chose.css');
+>>>>>>> origin/dev
