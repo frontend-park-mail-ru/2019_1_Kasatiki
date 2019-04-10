@@ -6,13 +6,15 @@ import LoginView from './js/views/LoginView.js';
 import LogoutView from './js/views/LogoutView.js';
 import SignupView from './js/views/SignupView.js';
 import CountdownView from './js/views/CountdownView.js';
+import leaderboardView from './js/views/LeaderboardView.js';
 
 const app = document.getElementById('app');
 
-const router = new Router(app);
+const router = new Router(document.body);
 router.add('/', MenuView);
 router.add('/countdown', CountdownView);
 router.add('/login', LoginView);
 router.add('/logout', LogoutView);
 router.add('/signup', SignupView);
+router.add('/leaderboard', leaderboardView);
 router.run();

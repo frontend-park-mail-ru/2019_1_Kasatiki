@@ -1,7 +1,7 @@
 import BaseView from './View.js';
 
 import LoginComponent from '../components/LoginComponent/LoginComponent.js';
-import Validation from '../modules/Validation.js';
+import Validation from '../modules/validation.js';
 
 const { NetworkHandler } = window;
 

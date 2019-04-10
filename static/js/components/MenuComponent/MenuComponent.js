@@ -6,9 +6,9 @@ export default class MenuComponent {
                 <div class="menu">
                     <h1 class="menu__title">ADV<a class="hate">HATER</a></h1>
                     <div class="main-bar">
-                        <button class="main-bar__item menu_btn" data-title="LEADERBOARD" data-section="leaderboard"><i class="fas fa-list-ul"></i></button>
-                        <button class="main-bar__item menu_btn" data-title="PAYOUT" data-section="payout"><i class="fas fa-wallet"></i></button>
-                        <button class="main-bar__item menu_btn" data-title="SHOP" data-section="shop"><i class="fas fa-shopping-cart"></i></button>
+                        <button class="main-bar__item menu_btn" href="/leaderboard" data-title="LEADERBOARD" data-section="leaderboard"><i class="fas fa-list-ul"></i></button>
+                        <button class="main-bar__item menu_btn" href="/payout" data-title="PAYOUT" data-section="payout"><i class="fas fa-wallet"></i></button>
+                        <button class="main-bar__item menu_btn" href="/shop" data-title="SHOP" data-section="shop"><i class="fas fa-shopping-cart"></i></button>
                     </div>
                     <div class="menu__profile">
                         <img src="https://cdn3.iconfinder.com/data/icons/red-icons-1/512/Male-profile-icon-512.png" class="profile-avatar"></img>

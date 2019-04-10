@@ -12,11 +12,12 @@ export default class Router {
     }
 
     run() {
-        // this.go(window.location.pathname);
-        this.go('/countdown');
+        this.go(window.location.pathname);
+        // this.go('/countdown');
 
         this.app.addEventListener('click', (event) => {
             event.preventDefault();
+            console.log('LISTEN!');
             this.go(event.target.getAttribute('href'));
         })
 
