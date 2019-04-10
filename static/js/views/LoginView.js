@@ -86,8 +86,8 @@ export default class LoginView extends BaseView {
     validateValue(input, validationFunc, LoginComponent) {
         let validationMessage = validationFunc(input.value);
         if (validationMessage.localeCompare('OK') !== 0) {
-            // LoginComponent.setErrorText(validationMessage,);
-            LoginComponent.errorField(input, validationMessage);
+            LoginComponent.setErrorText(validationMessage,);
+            LoginComponent.errorField(input);
             return false;
         }
         LoginComponent.goodField(input);

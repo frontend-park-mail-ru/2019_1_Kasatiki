@@ -68,6 +68,21 @@
     outline: none;
 }
 
+.signup__input:valid {
+    background: white;
+    color: red;
+}
+
+.signup__input:invalid {
+    background: red;
+    color: white;
+}
+
+.signup__input:hover {
+    background: rgba(255, 255, 255, 0.5);
+    color: red;
+}
+
 .signup__title {
     width: 100%;
     text-align: center;

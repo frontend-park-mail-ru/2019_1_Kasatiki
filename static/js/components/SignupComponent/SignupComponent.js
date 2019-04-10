@@ -68,13 +68,11 @@ export default class SignupComponent {
 		errorField.textContent = text;
 	}
 
-	goodField(input=document.body) {
-		input.style.color = 'red';
-		input.style.background = 'white';
+	goodField(input) {
+		input.setCustomValidity("");
 	}
 
 	errorField(input) {
-		input.style.color = 'white';
-		input.style.background = 'red';
+		input.setCustomValidity("-_-");
 	}
 }

@@ -73,7 +73,7 @@ export default class LoginComponent {
 		input.setCustomValidity("");
 	}
 
-	errorField(input, validationMessage) {
-		input.setCustomValidity("SADASD");
+	errorField(input) {
+		input.setCustomValidity("-_-");
 	}
 }
