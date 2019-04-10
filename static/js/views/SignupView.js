@@ -1,0 +1,93 @@
+import BaseView from './View.js';
+
+import SignupComponent from '../components/SignupComponent/SignupComponent.js';
+import Validation from '../modules/Validation.js';
+
+const { NetworkHandler } = window;
+
+export default class SignupView extends BaseView {
+    constructor() {
+        super(...arguments);
+        this.Validation = new Validation();
+        this.SignupComponent = new SignupComponent();
+        this.initSpecialRoutes();
+    }
+
+    show() {
+        let that = this;
+        NetworkHandler.doGet({
+            // eslint-disable-next-line no-unused-vars
+            callback(data) {
+                let isAuth = data['is_auth'];
+                that.root.innerHTML = that.SignupComponent.render(isAuth);
+            },
+            path: '/isauth',
+        });
+    }
+    
+    initSpecialRoutes() {
+        this.specialRoutes['/signupuser'] = this.signupUser;
+    }
+
+    signupUser(that) {
+        let form = document.querySelector('#signup-form');
+
+        let isValid = that.validateValue(form.nickname, that.Validation.checkNickname, that.SignupComponent);
+        if (!isValid) {
+            return;
+        }
+        isValid = that.validateValue(form.email, that.Validation.checkEmail, that.SignupComponent);
+        if (!isValid) {
+            return;
+        }
+        isValid = that.validateValue(form.password, that.Validation.checkPassword, that.SignupComponent);
+        if (!isValid) {
+            return;
+        }
+        if (form.password.value !== form.password_repeat.value) {
+            that.SignupComponent.setErrorText('Passwords do not match');
+            return
+        }
+        
+
+        const payload = {
+            nickname : form.nickname.value,
+            email    : form.email.value,
+            password : form.password.value,
+        }
+
+        console.log(payload);
+        NetworkHandler.doPost({
+            callback(data) {
+                if (typeof data.Error === 'undefined') {
+                    // console.log('data in signup:', data);
+                    // that.router.handle('profile', data);
+                    that.router.go('/');
+                } else {
+                    that.SignupComponent.setErrorText(data.Error);
+                }
+            },
+            path: '/signup',
+            body: JSON.stringify( payload ),
+        });
+    }
+
+    /**
+     * Функциия, проверяющая на валидность поле input.
+     * Если поле не валидное, то вызывает метод errorField, которое подсвечивает поле.
+     * Если все ок - убирает подсветку.
+     * @param {HTMLelement} input
+     * @param {function} validationFunc 
+     * @param {Object} SignupComponent 
+     */
+    validateValue(input, validationFunc, SignupComponent) {
+        let validationMessage = validationFunc(input.value);
+        if (validationMessage.localeCompare('OK') !== 0) {
+            SignupComponent.setErrorText(validationMessage);
+            SignupComponent.errorField(input);
+            return false;
+        }
+        SignupComponent.goodField(input);
+        return true;
+    }
+}
