@@ -40,4 +40,8 @@ export default class MenuComponent {
         const template = Handlebars.compile(templateScript);
 		return template();
     }
+
+    _doSmt() {
+        console.log("i am not private");
+    }
 }
