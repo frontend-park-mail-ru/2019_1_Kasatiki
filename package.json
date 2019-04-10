@@ -2,7 +2,7 @@
   "name": "sample",
   "version": "1.0.0",
   "scripts": {
-    "start": "go run main.go app.gom",
+    "start": "node server",
     "tmpl": "./node_modules/.bin/fest-build --dir=static",
     "prestart": "npm run tmpl"
   },

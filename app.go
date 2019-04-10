@@ -106,15 +106,8 @@ func (instance *App) createUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	newUser.setUniqueId()
-	sessionId := instance.createSessionId(newUser)
 	Users = append(Users, newUser) // Check succesfull append? ( in db clearly )
-	cookie := &http.Cookie{
-		Name:     "session_id",
-		Value:    sessionId,
-		HttpOnly: true,
-	}
-	http.SetCookie(w, cookie)
-	json.NewEncoder(w).Encode(newUser)
+	//json.NewEncoder(w).Encode(newUser)
 
 }
 

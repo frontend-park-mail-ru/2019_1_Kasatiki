@@ -1,0 +1,36 @@
+html, body {
+    overflow-y:hidden;
+}
+
+.timer-digit {
+    /* background: linear-gradient(45deg, #0B2349 33%, #0D61BC 66%, #8AA9D6); */
+    /* Можно поэкспериментировать с процентами/цветами/углом */
+    background: linear-gradient(5deg, #ff0000 50%, #ffe2e2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -0.625em;
+    margin-left: -0.225em;
+}
+
+.supporting-text {
+    font-size: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+
+    position: absolute;
+    top: 20%;
+    left: 70%;
+    margin-top: -0.625em;
+}
+
+.alert {
+    margin: 30vw auto auto auto;
+
+    border: 1px solid red;
+    border-radius: 5px;
+}
