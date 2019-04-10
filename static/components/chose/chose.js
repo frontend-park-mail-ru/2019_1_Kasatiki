@@ -12,10 +12,10 @@ export default class choseComponent {
         const templateScript = `
             <div class="chose">
                 <h1 class="chose__title">ADVHATER</h1>
-                <div class="main-bar">
-                    <button class="main-bar__item chose_btn" data-title="SIGNUP" data-section="signup"><i class="fas fa-user-plus"></i></button>
-                    <button class="main-bar__item chose_btn" data-title="QUICK PO" data-section="chose"><i class="fas fa-wallet"></i></button>
-                    <button class="main-bar__item chose_btn" data-title="LOGIN" data-section="login"><i class="fas fa-sign-in-alt"></i></button>
+                <div class="chose-main-bar">
+                    <button class="chose-main-bar__item chose_btn" data-title="SIGNUP" data-section="signup"><i class="fas fa-user-plus"></i></button>
+                    <button class="chose-main-bar__item chose_btn" data-title="QUICK PO" data-section="chose"><i class="fas fa-wallet"></i></button>
+                    <button class="chose-main-bar__item chose_btn" data-title="LOGIN" data-section="login"><i class="fas fa-sign-in-alt"></i></button>
                 </div> 
             </div>
         `;

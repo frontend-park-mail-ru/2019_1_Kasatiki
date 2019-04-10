@@ -18,11 +18,6 @@ export default class menuComponent {
                     <button class="main-bar__item menu_btn" data-title="SHOP" data-section="shop"><i class="fas fa-shopping-cart"></i></button>
                 </div>
                 <div class="menu__profile">
-                    <img src="https://cdn3.iconfinder.com/data/icons/red-icons-1/512/Male-profile-icon-512.png" class="profile-avatar"></img>
-                    <div class="profile-info">
-                        <h4 class="profile-nickname">evvFeburary</h4>
-                        <h4 class="profile-score">2240 $</h4>
-                    </div>
                 </div>
                 <button class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
                 <div class="options">
