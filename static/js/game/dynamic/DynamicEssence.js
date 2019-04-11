@@ -60,6 +60,7 @@ export default class DynamicEssence {
         if(keys['down']) {
             this.yPos += 7;
         }
+        
 
         // if (this.xPos < 0) {
         //     this.xPos = canvas.width;
