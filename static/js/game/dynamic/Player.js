@@ -12,7 +12,7 @@ export default class Player extends DynamicEssence {
         // ySize = 50,
         // URL = "/default_texture",
         // velocity = 100,
-        
+
     ) {
         super(...arguments);
         this.keyHandler = new KeyboardControl();
@@ -59,16 +59,16 @@ export default class Player extends DynamicEssence {
 
         let keys = this.keyHandler.handleKey();
         if(keys['right']) {
-            this.xPos += 7;
+            this.xPos += this.velocity;
         }
         if(keys['left']) {
-            this.xPos -= 7;
+            this.xPos -= this.velocity;
         }
         if(keys['up']) {
-            this.yPos -= 7;
+            this.yPos -= this.velocity;
         }
         if(keys['down']) {
-            this.yPos += 7;
+            this.yPos += this.velocity;
         }
     }
 
@@ -86,9 +86,10 @@ export default class Player extends DynamicEssence {
 
     _logicBuffs() {
         let buffs = this.buffs;
-        this.buffs = {};
+        this.buffs = [];
+        console.log(buffs);
         buffs.forEach((buff) => {
-            if (Date.now - buff.startTime < buff.buff.time) {
+            if (Date.now() - buff.startTime <  buff.buff.time) {
                 this.buffs[this.buffs.length] = buff;
             } else {
                 if (buff.buff.name == 'increaseHpCapacity') {
@@ -103,9 +104,9 @@ export default class Player extends DynamicEssence {
         });
     }
 
-    addBuff(buff) {
+    addBuff(person, buff) {
         if (buff.isTemporary) {
-            this.buffs[length] = {
+            this.buffs[this.buffs.length] = {
                 buff: buff,
                 startTime: Date.now(),
             }
@@ -113,11 +114,12 @@ export default class Player extends DynamicEssence {
                 case 'increaseHpCapacity':
                     // eslint-disable-next-line no-case-declarations
                     let prevHpCapacity = this.hpCapacity;
-                    this.hpCapacity = this.hpCapacity;
-                    this.hp *= (1 + this.hpCapacity / prevHpCapacity);
+                    person.hpCapacity = this.hpCapacity;
+                    person.hp *= (1 + this.hpCapacity / prevHpCapacity);
                     break;
                 case 'increaseVelocity':
-                    this.velocity += buff.value;
+                    person.velocity += buff.value;
+                    console.log(person.velocity);
                     break;
             }
         } else {

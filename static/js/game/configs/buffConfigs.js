@@ -18,4 +18,4 @@ const buffConfigs = {
     }
 }
 
-export default { buffConfigs };
+export default buffConfigs;

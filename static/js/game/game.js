@@ -26,7 +26,7 @@ export default class Game {
         this.objects = [];
 
         this.CollisionHandler = new CollisionHandler();
-        this._player = new DynamicEssence(
+        this._player = new Player(
             10, 10,
             20, 20,
             "none",
@@ -61,9 +61,13 @@ export default class Game {
         let players = [this._player];
         let buffs = [this._buff];
 
-        console.log(this.CollisionHandler.getPairCollisions(
+        let pairs = this.CollisionHandler.getPairCollisions(
             players, buffs
-        ));
+        );
+
+        pairs.forEach((pair) => {
+            pair.second.interact(pair.first, pair.second);
+        });
 
         this._player.logic();
         this._screen.render(this.objects);

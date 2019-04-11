@@ -49,18 +49,18 @@ export default class DynamicEssence {
         let keys = this.keyHandler.handleKey();
 
         if(keys['right']) {
-            this.xPos += 7;
+            this.xPos += this.velocity;
         }
         if(keys['left']) {
-            this.xPos -= 7;
+            this.xPos -= this.velocity;
         }
         if(keys['up']) {
-            this.yPos -= 7;
+            this.yPos -= this.velocity;
         }
         if(keys['down']) {
-            this.yPos += 7;
+            this.yPos += this.velocity;
         }
-        
+
 
         // if (this.xPos < 0) {
         //     this.xPos = canvas.width;

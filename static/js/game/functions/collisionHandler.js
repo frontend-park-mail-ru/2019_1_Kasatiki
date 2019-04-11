@@ -39,8 +39,6 @@ export default class CollisionHandler {
     _checkCollisionRectangles(obj1, obj2) {
         if (Math.abs(obj1.xPos - obj2.xPos) <= obj1.xSize + obj2.xSize &&
             Math.abs(obj1.yPos - obj2.yPos) <= obj1.ySize + obj2.ySize) {
-            console.log(obj1.xPos, obj1.yPos, obj1.xSize, obj1.ySize);
-            console.log(obj2.xPos, obj2.yPos, obj2.xSize, obj2.ySize);
             return true;
         }
         return false;
