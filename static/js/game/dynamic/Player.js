@@ -1,4 +1,6 @@
-export default class DynamicEssence {
+import DynamicEssence from "./DynamicEssence.js";
+
+export default class Player extends DynamicEssence {
     
     constructor(
         xPos,
@@ -9,6 +11,7 @@ export default class DynamicEssence {
         URL = "/default_texture",
         velocity = 100,
     ) {
+        super(...arguments)
         // Основные параметры
         this.hp = 100; // %
         this.hpCapacity = 100; // у.е
@@ -27,17 +30,16 @@ export default class DynamicEssence {
         this.ySize = ySize; // vh
 
         // Тип оружия - только для usera 
-        // this.melle = true;
-        // this.gunId = 0; // 0 - knife
+        this.melle = true;
+        this.gunId = 0; // 0 - knife
 
         // Бафы - только для usera 
-        // this.bufs = {} // "key" : {}
+        this.bufs = {} // "key" : {}
 
         // Шмот
-        // this.skinId = 0; // для игрока
+        this.skinId = 0; // для игрока
         this.texture = URL; // URL 
 
-        this.immortal = false; // для рекламы
     }
 
     _render() {
