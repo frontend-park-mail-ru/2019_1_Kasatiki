@@ -16,6 +16,7 @@ export default class Game {
 
         // Игровой экран
         this._screen = new Screen(this.root);
+        this._screen.createCanvas();
 
         // Очко)
         this.score;
@@ -25,7 +26,7 @@ export default class Game {
 
 
         this._player = new DynamicEssence(
-            10, 10,
+            300, 300,
             20, 20,
             "none",
             5
@@ -38,7 +39,6 @@ export default class Game {
         this.objects.push(this._player);
 
         // Рисуем канвас
-        this._screen.createCanvas();
     }
 
     defeat() {
@@ -50,7 +50,7 @@ export default class Game {
     }
 
     frame() {
-        this._player.logic();
+        this._player.logic(this._screen.height, this._screen.width);
         this._screen.render(this.objects);
         requestAnimationFrame(time => this.frame());
     }

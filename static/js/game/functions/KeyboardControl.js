@@ -5,12 +5,22 @@ export default class KeyboardControl {
             'left': false,
             'down': false,
             'right': false,
+            'mouseX' : 0,
+            'mouseY' : 0
         }
+        const that = this;
+
+        this.mouseX = 0;
+        this.mouseY = 0;
 
         document.addEventListener('keydown', keyDownHandler, false);
         document.addEventListener('keyup', keyUpHandler, false);
+
+        document.body.onmousemove = function(evt) {
+            that.mouseX = evt.pageX;
+            that.mouseY = evt.pageY;
+        }
         
-        const that = this;
 
         function keyDownHandler(e) {
             if(e.key == "Right" || e.key == "ArrowRight") {
@@ -47,4 +57,6 @@ export default class KeyboardControl {
     handleKey() {
         return this.keys;
     }
+
+
 }

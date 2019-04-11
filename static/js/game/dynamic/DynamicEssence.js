@@ -1,4 +1,5 @@
 import KeyboardControl from '../functions/KeyboardControl.js'
+import MyMath from '../functions/myMath.js';
 
 export default class DynamicEssence {
     
@@ -12,6 +13,7 @@ export default class DynamicEssence {
         velocity = 100,
     ) {
         this.keyHandler = new KeyboardControl();
+        this.myMath = new MyMath();
 
         // Основные параметры
         this.hp = 100; // %
@@ -30,6 +32,8 @@ export default class DynamicEssence {
         this.xSize = xSize; // vh
         this.ySize = ySize; // vh
 
+        this.teta = 0;
+
         // Тип оружия - только для usera 
         // this.melle = true;
         // this.gunId = 0; // 0 - knife
@@ -45,10 +49,13 @@ export default class DynamicEssence {
     }
 
     // Логика перемещения только для рекламы 
-    logic() {
+    logic(screenWidth, screenHeight) {
         let keys = this.keyHandler.handleKey();
+        let y = this.yPos + this.ySize/2;
+        let x = this.xPos + this.xSize/2;
+        this.teta = this.myMath.get0toCor(x, y, keys['mouseX'], keys['mouseY']);
 
-        console.log(keys);
+        // console.log('teta: ',teta);
 
         if(keys['right']) {
             this.xPos += 7;
@@ -62,6 +69,8 @@ export default class DynamicEssence {
         if(keys['down']) {
             this.yPos += 7;
         }
+
+
 
         // if (this.xPos < 0) {
         //     this.xPos = canvas.width;
