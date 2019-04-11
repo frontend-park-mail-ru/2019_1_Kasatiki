@@ -1,29 +1,42 @@
 export default class CollisionHandler {
     /**
-     * 
-     * @param {Array} persons 
-     * @param {Array} advs 
-     * @param {Array} bullets 
-     * @param {Array} statics 
-     * @param {Array of Array} map - карта для области видимости.
+     * Функция возвращает массив пар {first: firstObj, second: secondObj}
+     * @param {Array of } firstArr 
+     * @param {Array of } secondArr 
      */
-    checkAllCollisions(
-        persons = {},
-        advs = {},
-        bullets = {},
-        statics = {},
-        map = {},
-    ) {
+    getPairCollisions(firstArr, secondArr) {
+        let pairs = [];
+        firstArr.forEach(firstObj => {
+            if (typeof firstObj !== 'undefined') {
+                secondArr.forEach(secondObj => {
+                    if (typeof secondObj !== 'undefined') {
+                        if (this._checkCollision(firstObj, secondObj)) {
+                            pairs[length] = {
+                                first: firstObj,
+                                second: secondObj,
+                            };
+                        }
+                    }
+                }).bind(this);
+            }
+        }).bind(this);
+        return pairs;
     }
 
+    /**
+     * 
+     * @param {Array of Array} map 
+     * @param {Array} objArray 
+     */
+    _setObjectsVisibilityArea(map, objArray) {
 
-
-
-    checkCollision(obj1, obj2) {
+    }
+ 
+    _checkCollision(obj1, obj2) {
         return this.collisionRectangles(obj1, obj2);
     }
 
-    checkCollisionRectangles(obj1, obj2) {
+    _checkCollisionRectangles(obj1, obj2) {
         if (Math.abs(obj1.xPos - obj2.xPos) < obj1.xSize + obj2.xSize &&
             Math.abs(obj1.yPos - obj2.yPos) < obj1.ySize + obj2.ySize) {
             return true;
@@ -31,11 +44,28 @@ export default class CollisionHandler {
         return false;
     }
 
-    checkCollisionCirles(obj1, obj2) {
+    _checkCollisionCirles(obj1, obj2) {
 
     }
 
-    checkCollisionRectangleCirle(rect, cirle) {
+    _checkCollisionRectangleCirle(rect, cirle) {
 
+    }
+}
+
+class increaseHpByTime {
+    constructor() {
+        this.start = Date.now();
+    }
+
+    start() {
+        this.start = Date.now();
+    }
+
+    end(person) {
+        person.hp = person.hp + Math.trunc((Date.now() - this.start) / 100);
+        if (person.hp > person.hpCapacity) {
+            person.hp = person.hpCapacity;
+        }
     }
 }
