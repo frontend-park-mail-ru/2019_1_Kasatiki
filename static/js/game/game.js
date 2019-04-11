@@ -31,7 +31,7 @@ export default class Game {
 
         this._spawnBarriers();
         
-        this._player = new DynamicEssence(
+        this._player = new Player(
             300, 300,
             20, 20,
             "none",
@@ -102,11 +102,13 @@ export default class Game {
         let players = [this._player];
         let buffs = [this._buff];
 
-        let pair =  this.CollisionHandler.getPairCollisions(
+        let pairs = this.CollisionHandler.getPairCollisions(
             players, buffs
         );
 
-        // console.log(pair)
+        pairs.forEach((pair) => {
+            pair.second.interact(pair.first, pair.second);
+        });
 
         this._player.logic();
         this._screen.render(this.objects);

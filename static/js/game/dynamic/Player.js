@@ -89,7 +89,7 @@ export default class Player extends DynamicEssence {
         this.buffs = [];
         console.log(buffs);
         buffs.forEach((buff) => {
-            if (Date.now() - buff.startTime <  buff.buff.time) {
+            if (Date.now() - buff.startTime < buff.buff.time) {
                 this.buffs[this.buffs.length] = buff;
             } else {
                 if (buff.buff.name == 'increaseHpCapacity') {
