@@ -1,40 +1,44 @@
+import Screen from './functions/Screen.js'
+
+import KeyboardControl from './functions/KeyboardControl.js'
+import Player from './dynamic/Player.js';
+import DynamicEssence from './dynamic/DynamicEssence.js';
+
 export default class Game {
     constructor( 
-        router,
-
-        root = document.body
+        root = document.body,
+        router
     ) {
-        this.router;
+        this.router = router;
 
         // Родительский узел DOM 
         this._root = root;
 
-        // Параметры canvas
-        this._canvas = document.createElement('canvas');
-
-        // Размеры карты
-        this.width;
-        this.height;
+        // Игровой экран
+        this._screen = new Screen(this.root);
 
         // Очко)
         this.score;
 
         // Массив объектов
-        this.objects = {};
-    }
+        this.objects = [];
 
-    _renderCanvas() {
 
-    }
+        this._player = new DynamicEssence(
+            10, 10,
+            20, 20,
+            "none",
+            5
+        );
 
-    // ?? 
-    _resizeConvas() {
+        this._player.logic();
 
-    }
+        // this._keyControll = new KeyboardControl;
 
-    // Инит метод : цикл -> отрисовка 
-    run() {
+        this.objects.push(this._player);
 
+        // Рисуем канвас
+        this._screen.createCanvas();
     }
 
     defeat() {
@@ -44,5 +48,18 @@ export default class Game {
     victory() {
         router.go('/win');
     }
+
+    frame() {
+        this._player.logic();
+        this._screen.render(this.objects);
+        requestAnimationFrame(time => this.frame());
+    }
+
+    // Инит метод : цикл -> отрисовка 
+    run() {
+        this._screen.createCanvas();
+        requestAnimationFrame(time => this.frame());
+    }
+
 
 }  

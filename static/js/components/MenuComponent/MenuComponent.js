@@ -17,7 +17,7 @@ export default class MenuComponent {
                             <h4 class="profile-score">2240 $</h4>
                         </div>
                     </div>
-                    <button class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
+                    <button href="/play" class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
                     <div class="options">
                         <a href="#" class="options__link">Report bug</a>
                         <a href="#" class="options__link">Help</a>
@@ -39,5 +39,9 @@ export default class MenuComponent {
         }
         const template = Handlebars.compile(templateScript);
 		return template();
+    }
+
+    _doSmt() {
+        console.log("i am not private");
     }
 }
