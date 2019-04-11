@@ -28,16 +28,11 @@ export default class Game {
         this.objects = {};
 
         this.CollisionHandler = new CollisionHandler();
-<<<<<<< HEAD
 
         this._spawnBarriers();
         
         this._player = new DynamicEssence(
             300, 300,
-=======
-        this._player = new Player(
-            10, 10,
->>>>>>> origin/newsick
             20, 20,
             "none",
             5
@@ -105,19 +100,9 @@ export default class Game {
         let players = [this._player];
         let buffs = [this._buff];
 
-<<<<<<< HEAD
         // console.log(this.CollisionHandler.getPairCollisions(
         //     players, buffs
         // ));
-=======
-        let pairs = this.CollisionHandler.getPairCollisions(
-            players, buffs
-        );
-
-        pairs.forEach((pair) => {
-            pair.second.interact(pair.first, pair.second);
-        });
->>>>>>> origin/newsick
 
         this._player.logic();
         this._screen.render(this.objects);
