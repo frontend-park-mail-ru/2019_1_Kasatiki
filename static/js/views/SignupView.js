@@ -20,6 +20,11 @@ export default class SignupView extends BaseView {
             callback(data) {
                 let isAuth = data['is_auth'];
                 that.root.innerHTML = that.SignupComponent.render(isAuth);
+                let form = document.querySelector('#signup-form');
+                that.SignupComponent.setOnChangeListener(form.nickname);
+                that.SignupComponent.setOnChangeListener(form.email);
+                that.SignupComponent.setOnChangeListener(form.password);
+                that.SignupComponent.setOnChangeListener(form.password_repeat);                
             },
             path: '/isauth',
         });

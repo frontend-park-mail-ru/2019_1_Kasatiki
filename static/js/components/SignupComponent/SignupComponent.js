@@ -53,6 +53,12 @@ export default class SignupComponent {
 		}
         const template = Handlebars.compile(templateScript);
         return template();
+    }
+    
+    setOnChangeListener(input) {
+		input.addEventListener("input", () => {
+			this.goodField(input);
+		});
 	}
 	
 	get form() {
