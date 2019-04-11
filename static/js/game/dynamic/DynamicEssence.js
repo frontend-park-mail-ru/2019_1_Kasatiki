@@ -69,10 +69,6 @@ export default class DynamicEssence {
         }
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/newsick
         // if (this.xPos < 0) {
         //     this.xPos = canvas.width;
         // }
