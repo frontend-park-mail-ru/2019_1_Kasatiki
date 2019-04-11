@@ -5,6 +5,7 @@ export default class KeyboardControl {
             'left': false,
             'down': false,
             'right': false,
+            'mouseClick' : false,
             'mouseX' : 0,
             'mouseY' : 0
         }
@@ -15,11 +16,16 @@ export default class KeyboardControl {
 
         document.addEventListener('keydown', keyDownHandler, false);
         document.addEventListener('keyup', keyUpHandler, false);
+        document.addEventListener('mousedown', mouseClick,false)
 
         document.body.onmousemove = function(evt) {
             that.mouseX = evt.pageX;
             that.mouseY = evt.pageY;
         }
+
+        function mouseClick() {
+            this.keys.mouseClick = true;
+        } 
         
 
         function keyDownHandler(e) {

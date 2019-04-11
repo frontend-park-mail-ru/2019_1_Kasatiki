@@ -53,6 +53,8 @@ export default class Game {
         this.objects['players'].push(this._player)
         this.objects['buffers'].push(this._buff);
 
+
+
         // Рисуем канвас
     }
 
@@ -100,9 +102,11 @@ export default class Game {
         let players = [this._player];
         let buffs = [this._buff];
 
-        // console.log(this.CollisionHandler.getPairCollisions(
-        //     players, buffs
-        // ));
+        let pair =  this.CollisionHandler.getPairCollisions(
+            players, buffs
+        );
+
+        // console.log(pair)
 
         this._player.logic();
         this._screen.render(this.objects);
