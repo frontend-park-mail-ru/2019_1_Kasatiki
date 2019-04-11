@@ -6,7 +6,7 @@ export default class MyMath {
         let a = mouseX - x;
         let b = mouseY - y;
         
-        console.log(mouseX, mouseY)
+        // console.log(mouseX, mouseY)
 
         let alfa;
         if (a > b) {

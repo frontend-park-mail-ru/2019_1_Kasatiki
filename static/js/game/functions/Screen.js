@@ -18,15 +18,25 @@ export default class Screen {
         this.ctx = ctx;
     } 
 
-    _renderEssence(essence) {
+    _renderEssence(name, essence) {
         this.ctx.beginPath();
         this.ctx.save();
-        this.ctx.rotate(essence.teta);
+        // this.ctx.rotate(essence.teta);
         this.ctx.rect(essence.xPos, essence.yPos, essence.xSize, essence.ySize);
-        this.ctx.fillStyle = "#0095DD";
+        switch (name) {
+            case 'players' : 
+                this.ctx.fillStyle = "#48F67F";
+                break;
+            case 'buffers' :
+                this.ctx.fillStyle = "#FF5555";
+                break;
+            case 'barriers' : 
+                this.ctx.fillStyle = "#C9CAC9";
+                break;
+        }
         this.ctx.fill();
         this.ctx.restore();
-        this.ctx.closePath();  
+        this.ctx.closePath();
     }
 
     createCanvas() {
@@ -41,8 +51,14 @@ export default class Screen {
     render(objects = []) {
         this.ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
         const that = this;
-        objects.forEach(obj => {
-            that._renderEssence(obj);
+        objects['players'].forEach(obj => {
+            that._renderEssence('players',obj);
+        });
+        objects['buffers'].forEach(obj => {
+            that._renderEssence('buffers',obj);
+        });
+        objects['barriers'].forEach(obj => {
+            that._renderEssence('barriers',obj);
         });
     }
 

@@ -55,11 +55,6 @@ export default class DynamicEssence {
         let x = this.xPos + this.xSize/2;
         this.teta = this.myMath.get0toCor(x, y, keys['mouseX'], keys['mouseY']);
 
-<<<<<<< HEAD
-        // console.log('teta: ',teta);
-
-=======
->>>>>>> origin/newsick
         if(keys['right']) {
             this.xPos += 7;
         }
