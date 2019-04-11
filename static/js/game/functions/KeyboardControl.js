@@ -25,7 +25,6 @@ export default class KeyboardControl {
         function keyDownHandler(e) {
             if(e.key == "Right" || e.key == "ArrowRight") {
                 that.keys['right'] = true;
-                console.log('right');
             }
             else if(e.key == "Left" || e.key == "ArrowLeft") {
                 that.keys['left'] = true;
