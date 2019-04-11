@@ -1,57 +1,131 @@
+import KeyboardControl from '../functions/KeyboardControl.js'
+
 import DynamicEssence from "./DynamicEssence.js";
 
 export default class Player extends DynamicEssence {
     
     constructor(
-        xPos,
-        yPos,
+        // xPos,
+        // yPos,
 
-        xSize = 50,
-        ySize = 50,
-        URL = "/default_texture",
-        velocity = 100,
+        // xSize = 50,
+        // ySize = 50,
+        // URL = "/default_texture",
+        // velocity = 100,
+        
     ) {
-        super(...arguments)
-        // Основные параметры
-        this.hp = 100; // %
-        this.hpCapacity = 100; // у.е
-        this.velocity = velocity; // у.е
+        super(...arguments);
+        this.keyHandler = new KeyboardControl();
 
-        // Координаты
-        this.xPos = xPos;
-        this.yPos = yPos;
+        this.defaultVelocity = this.velocity;
+        this.buffs = [];
 
-        // Позиция прицела - только у плеера
-        this.xAim = 0;
-        this.yAim = 0;
+        // // Основные параметры
+        // this.hp = 100; // %
+        // this.hpCapacity = 100; // у.е
+        // this.velocity = velocity; // у.е
 
-        // Его размеры 
-        this.xSize = xSize; // vh
-        this.ySize = ySize; // vh
+        // // Координаты
+        // this.xPos = xPos;
+        // this.yPos = yPos;
 
-        // Тип оружия - только для usera 
-        this.melle = true;
-        this.gunId = 0; // 0 - knife
+        // // Позиция прицела - только у плеера
+        // this.xAim = 0;
+        // this.yAim = 0;
 
-        // Бафы - только для usera 
-        this.bufs = {} // "key" : {}
+        // // Его размеры 
+        // this.xSize = xSize; // vh
+        // this.ySize = ySize; // vh
 
-        // Шмот
-        this.skinId = 0; // для игрока
-        this.texture = URL; // URL 
+        // // Тип оружия - только для usera 
+        // this.melle = true;
+        // this.gunId = 0; // 0 - knife
 
+        // // Бафы - только для usera 
+        // this.bufs = {} // "key" : {}
+
+        // // Шмот
+        // this.skinId = 0; // для игрока
+        // this.texture = URL; // URL 
     }
 
     _render() {
 
-    };
+    }
 
     // Логика перемещения только для рекламы 
     logic() {
+        this._logicBuffs();
 
-    } 
+        let keys = this.keyHandler.handleKey();
+        if(keys['right']) {
+            this.xPos += 7;
+        }
+        if(keys['left']) {
+            this.xPos -= 7;
+        }
+        if(keys['up']) {
+            this.yPos -= 7;
+        }
+        if(keys['down']) {
+            this.yPos += 7;
+        }
+    }
 
     interact() {
 
+    }
+
+    _addHp(hp) {
+        if (this.hp + hp >= this.hpCapacity) {
+            this.hp = this.hpCapacity;
+        } else {
+            this.hp += hp;
+        }
+    }
+
+    _logicBuffs() {
+        let buffs = this.buffs;
+        this.buffs = {};
+        buffs.forEach((buff) => {
+            if (Date.now - buff.startTime < buff.buff.time) {
+                this.buffs[this.buffs.length] = buff;
+            } else {
+                if (buff.buff.name == 'increaseHpCapacity') {
+                    this.hpCapacity = buff.buff.value;
+                    if (this.hp > this.hpCapacity) {
+                        this.hp = this.hpCapacity;
+                    }
+                } else if (buff.buff.name == 'increaseVelocity') {
+                    this.velocity -= buff.buff.value;
+                }
+            }
+        });
+    }
+
+    addBuff(buff) {
+        if (buff.isTemporary) {
+            this.buffs[length] = {
+                buff: buff,
+                startTime: Date.now(),
+            }
+            switch (buff.name) {
+                case 'increaseHpCapacity':
+                    // eslint-disable-next-line no-case-declarations
+                    let prevHpCapacity = this.hpCapacity;
+                    this.hpCapacity = this.hpCapacity;
+                    this.hp *= (1 + this.hpCapacity / prevHpCapacity);
+                    break;
+                case 'increaseVelocity':
+                    this.velocity += buff.value;
+                    break;
+            }
+        } else {
+            switch (buff.name) {
+                case 'health':
+                    this._addHp(buff.value);
+                    break;
+            }
+        }
     }
 }

@@ -1,8 +1,10 @@
 import Screen from './functions/Screen.js'
 
+import CollisionHandler from './functions/collisionHandler.js';
 import KeyboardControl from './functions/KeyboardControl.js'
 import Player from './dynamic/Player.js';
 import DynamicEssence from './dynamic/DynamicEssence.js';
+import Buff from './static/Buff.js';
 
 export default class Game {
     constructor( 
@@ -23,7 +25,7 @@ export default class Game {
         // Массив объектов
         this.objects = [];
 
-
+        this.CollisionHandler = new CollisionHandler();
         this._player = new DynamicEssence(
             10, 10,
             20, 20,
@@ -32,10 +34,16 @@ export default class Game {
         );
 
         this._player.logic();
+        this._buff = new Buff(
+            100, 10,
+            20, 20,
+            "none"
+        )
 
         // this._keyControll = new KeyboardControl;
 
         this.objects.push(this._player);
+        this.objects.push(this._buff);
 
         // Рисуем канвас
         this._screen.createCanvas();
@@ -50,8 +58,16 @@ export default class Game {
     }
 
     frame() {
+        let players = [this._player];
+        let buffs = [this._buff];
+
+        console.log(this.CollisionHandler.getPairCollisions(
+            players, buffs
+        ));
+
         this._player.logic();
         this._screen.render(this.objects);
+
         requestAnimationFrame(time => this.frame());
     }
 

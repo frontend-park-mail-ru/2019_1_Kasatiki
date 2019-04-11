@@ -1,38 +1,11 @@
-// Возможные бафы
-export const buffs = {
-    health: 1,
-    increaseHpCapacity: 2,
-    increaseVelocity: 3,
-}
+import StaticEssence from './StaticEssence.js';
 
-const buffTimer = {
-    increaseHpCapacity: 30 * 1000, //mc
-    increaseVelocity: 15 * 1000
-}
+import buffConfigs from '../configs/buffConfigs.js';
 
 export default class Buff extends StaticEssence {
-    constructor(buffId) {
+    constructor(buff) {
         super(...arguments);
-        this.buffId = buffId;
-        this.initBuffs();
-    }
-
-    initBuffs() {
-        this.hpBuff = 10;
-        this.hpCapacityBuff = 10;
-        this.velocityBuff = 10;
-    }
-
-    static get health() {
-        return buffs.health;
-    }
-
-    static get increaseHpCapacity() {
-        return buffs.increaseHpCapacity;
-    }
-
-    static get increaseVelocity() {
-        return buffs.increaseVelocity;
+        this.buff = buff;
     }
 
     _render(canvasContext) {
@@ -43,19 +16,6 @@ export default class Buff extends StaticEssence {
             this.ySize);
     }
 
-    interact(person) {
-        switch (this.buffId) {
-            case buffs.health:
-                person.hp = person.hp + this.hpBuff;
-                break;
-            case buffs.increaseHpCapacity:
-                person.hpCapacity = person.hpCapacity + this.hpCapacityBuff;
-                // Увеличиваю хп пропорционально увеличению капасити
-                person.hp = person.hpCapacity / (person.hpCapacity - this.hpCapacityBuff) * person.hp;
-                break; 
-            case buffs.increaseVelocity:
-                person.velocity = person.velocity + this.velocityBuff;
-                break;
-        }
+    interact() {
     }
 }

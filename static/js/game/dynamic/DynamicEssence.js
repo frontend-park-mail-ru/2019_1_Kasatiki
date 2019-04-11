@@ -48,8 +48,6 @@ export default class DynamicEssence {
     logic() {
         let keys = this.keyHandler.handleKey();
 
-        console.log(keys);
-
         if(keys['right']) {
             this.xPos += 7;
         }
