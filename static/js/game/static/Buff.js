@@ -5,6 +5,10 @@ export const buffs = {
     increaseVelocity: 3,
 }
 
+const buffTimer = {
+    increaseHpCapacity: 30 * 1000, //mc
+    increaseVelocity: 15 * 1000
+}
 
 export default class Buff extends StaticEssence {
     constructor(buffId) {
