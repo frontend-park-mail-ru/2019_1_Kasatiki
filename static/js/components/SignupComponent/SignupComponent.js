@@ -21,27 +21,27 @@ export default class SignupComponent {
                             placeholder="Username"
                             class="signup__input"
                             autocomplete="on"
-                            required>
+                            >
                         <input
                             name="email"
                             type="text"
                             placeholder="Email"
                             class="signup__input"
                             autocomplete="on"
-                            required>
+                            >
                         <input
                             name="password"
                             type="password"
                             placeholder="Password"
                             class="signup__input"
                             autocomplete="on"
-                            required>
+                            >
                         <input
                             name="password_repeat"
                             type="password"
                             placeholder="Repeat Password"
                             class="signup__input"
-                            required>
+                            >
                         <div id="signup-form__error-text-field" class="signup_error_text"></div>  
                         <div class="signup__btn-section">
                             <button href="/" class="signup-btn"><i href="/" class="fas fa-undo-alt"></i></button>

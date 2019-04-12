@@ -22,7 +22,7 @@ export default class LoginComponent {
 							class="login__input"
 							id="login__input-login"
 							autocomplete="on"
-							required>
+							>
 						<input
 							name="password"
 							type="password"
@@ -30,7 +30,7 @@ export default class LoginComponent {
 							class="login__input"
 							id="login__input-password"
 							autocomplete="on"
-							required>
+							>
                         <div id="login__authorization-error-field" class="login_error_text"></div>
                         <div class="login__btn">
                         </div>
@@ -49,6 +49,8 @@ export default class LoginComponent {
 	setOnChangeListener(input) {
 		input.addEventListener("input", () => {
 			this.goodField(input);
+			// this.setErrorText("");
+			// this.style.background-color = 'white';
 		});
 	}
 	

@@ -66,6 +66,8 @@
     color: red;
 
     outline: none;
+
+    transition: 0.2s linear;
 }
 
 .signup__input:valid {
@@ -81,6 +83,8 @@
 .signup__input:hover {
     background: rgba(255, 255, 255, 0.5);
     color: red;
+
+    transition: 0.2s linear;
 }
 
 .signup__title {

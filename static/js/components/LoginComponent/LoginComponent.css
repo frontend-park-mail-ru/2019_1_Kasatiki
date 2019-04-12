@@ -71,6 +71,9 @@
     color: red;
 
     outline: none;
+
+    transition: 0.2s linear;
+
 }
 
 .login__input:valid {
@@ -86,6 +89,8 @@
 .login__input:hover {
     background: rgba(255, 255, 255, 0.5);
     color: red;
+
+    transition: 0.2s linear;
 }
 
 ::placeholder {

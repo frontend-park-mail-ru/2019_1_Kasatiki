@@ -1,7 +1,6 @@
 import BaseView from './View.js';
 
 import CountdownComponent from '../components/CountdownComponent/CountdownComponent.js';
-
 /**
  * Класс с отрисовкой формы логина.
  */
@@ -43,10 +42,11 @@ export default class CountdownView extends BaseView {
         let canvas = document.getElementById('countdown__canvas');
         let start = Date.now();
 
+
         let frameId = () => {
             let deltaTime = Date.now() - start;
             if (deltaTime < 3000) {
-                this.draw(canvas, deltaTime);
+                // this.draw(canvas, deltaTime);=
                 window.requestAnimationFrame(frameId);
             } else {
                 this.router.go('/');

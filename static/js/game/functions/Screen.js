@@ -1,3 +1,5 @@
+import Escape from '../static/escape.js'
+
 export default class Screen {
     constructor(
         root = document.body
@@ -12,6 +14,8 @@ export default class Screen {
         // Размеры карты (видимая область)
         this.width = window.innerWidth;
         this.height = window.innerHeight;
+
+        this.escape = new Escape(700,500,200,50);
     }
 
     set canvas(ctx) {
@@ -32,6 +36,9 @@ export default class Screen {
                 break;
             case 'barriers' : 
                 this.ctx.fillStyle = "#C9CAC9";
+                break;
+            case 'escape' :
+                this.ctx.fillStyle = '#FF33F3';
                 break;
         }
         this.ctx.fill();
@@ -60,6 +67,8 @@ export default class Screen {
         objects['barriers'].forEach(obj => {
             that._renderEssence('barriers',obj);
         });
+
+        this._renderEssence('escape',this.escape);
     }
 
     // ?? 
