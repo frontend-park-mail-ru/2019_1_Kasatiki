@@ -2,7 +2,7 @@ const CACHE_NAME = 'advhater-cache';
 
 const cacheUrls = [
     '/',
-    'isauth',
+    'api/isauth',
 ];
 
 this.addEventListener('install', (event) => {
