@@ -113,6 +113,8 @@ export default class Game {
         this._player.logic();
         this._screen.render(this.objects);
 
+        this._player.xPos ++;
+
         requestAnimationFrame(time => this.frame());
     }
 

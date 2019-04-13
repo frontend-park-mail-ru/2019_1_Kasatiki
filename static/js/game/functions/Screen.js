@@ -24,8 +24,14 @@ export default class Screen {
 
     _renderEssence(name, essence) {
         this.ctx.beginPath();
-        this.ctx.save();
-        // this.ctx.rotate(essence.teta);
+        const that = this;
+        // if (name == 'players') {
+        //     that.ctx.save();
+        //     that.ctx.translate(essence.dx, essence.dy);
+        //     that.ctx.rotate(essence.teta);
+        //     that.ctx.translate(-essence.dx, -essence.dy);
+
+        // }
         this.ctx.rect(essence.xPos, essence.yPos, essence.xSize, essence.ySize);
         switch (name) {
             case 'players' : 
@@ -42,8 +48,11 @@ export default class Screen {
                 break;
         }
         this.ctx.fill();
-        this.ctx.restore();
+        // if (name == 'players') {
+        //     that.ctx.restore();
+        // }
         this.ctx.closePath();
+
     }
 
     createCanvas() {
@@ -64,9 +73,9 @@ export default class Screen {
         objects['buffers'].forEach(obj => {
             that._renderEssence('buffers',obj);
         });
-        objects['barriers'].forEach(obj => {
-            that._renderEssence('barriers',obj);
-        });
+        // objects['barriers'].forEach(obj => {
+        //     that._renderEssence('barriers',obj);
+        // });
 
         this._renderEssence('escape',this.escape);
     }

@@ -20,6 +20,9 @@ export default class Player extends DynamicEssence {
         this.defaultVelocity = this.velocity;
         this.buffs = [];
 
+        this.dx;
+        this.dy;
+
         // // Основные параметры
         // this.hp = 100; // %
         // this.hpCapacity = 100; // у.е
@@ -56,8 +59,15 @@ export default class Player extends DynamicEssence {
     // Логика перемещения только для рекламы 
     logic() {
         this._logicBuffs();
-
         let keys = this.keyHandler.handleKey();
+        this.dx = this.yPos + this.ySize/2;
+        this.dy = this.xPos + this.xSize/2;
+        // console.log(keys['mouseX'], keys['mouseY'])
+
+        this.teta = this.myMath.getTeta(this.dx, this.dy, keys['mouseX'], keys['mouseY']);
+
+        
+
         if(keys['right']) {
             this.xPos += this.velocity;
         }
@@ -87,7 +97,7 @@ export default class Player extends DynamicEssence {
     _logicBuffs() {
         let buffs = this.buffs;
         this.buffs = [];
-        console.log(buffs);
+        // // console.log(buffs);
         buffs.forEach((buff) => {
             if (Date.now() - buff.startTime < buff.buff.time) {
                 this.buffs[this.buffs.length] = buff;
@@ -119,7 +129,7 @@ export default class Player extends DynamicEssence {
                     break;
                 case 'increaseVelocity':
                     person.velocity += buff.value;
-                    console.log(person.velocity);
+                    // console.log(person.velocity);
                     break;
             }
         } else {

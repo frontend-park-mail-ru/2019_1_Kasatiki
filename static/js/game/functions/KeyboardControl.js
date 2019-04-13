@@ -19,8 +19,8 @@ export default class KeyboardControl {
         document.addEventListener('mousedown', mouseClick,false)
 
         document.body.onmousemove = function(evt) {
-            that.mouseX = evt.pageX;
-            that.mouseY = evt.pageY;
+            that.keys.mouseX = evt.pageX;
+            that.keys.mouseY = evt.pageY;
         }
 
         function mouseClick() {
