@@ -38,18 +38,18 @@ func (instance *App) Initialize() {
 
 func (instance *App) initializeRoutes() {
 	// GET ( get exist data )
-	instance.Router.HandleFunc("/leaderboard", instance.getLeaderboard).Methods("GET")
-	instance.Router.HandleFunc("/isauth", instance.isAuth).Methods("GET")
-	instance.Router.HandleFunc("/me", instance.getMe).Methods("GET")
-	instance.Router.HandleFunc("/logout", instance.logout).Methods("GET") // ToDO: Cors added ( maybe post?)
+	instance.Router.HandleFunc("/api/leaderboard", instance.getLeaderboard).Methods("GET")
+	instance.Router.HandleFunc("/api/isauth", instance.isAuth).Methods("GET")
+	instance.Router.HandleFunc("/api/me", instance.getMe).Methods("GET")
+	instance.Router.HandleFunc("/api/logout", instance.logout).Methods("GET") // ToDO: Cors added ( maybe post?)
 
 	// POST ( create new data )
-	instance.Router.HandleFunc("/signup", instance.createUser).Methods("POST")
-	instance.Router.HandleFunc("/upload", instance.upload).Methods("POST")
-	instance.Router.HandleFunc("/login", instance.login).Methods("POST")
+	instance.Router.HandleFunc("/api/signup", instance.createUser).Methods("POST")
+	instance.Router.HandleFunc("/api/upload", instance.upload).Methods("POST")
+	instance.Router.HandleFunc("/api/login", instance.login).Methods("POST")
 
 	// PUT ( update data )
-	instance.Router.HandleFunc("/users/{Nickname}", instance.editUser).Methods("PUT")
+	instance.Router.HandleFunc("/api/users/{Nickname}", instance.editUser).Methods("PUT")
 
 	//Static path
 	instance.Router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
@@ -98,7 +98,6 @@ func (instance *App) createUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var newUser User
 	_ = json.NewDecoder(r.Body).Decode(&newUser) // ToDo: Log error
-	fmt.Println(newUser)
 	for _, existUser := range Users {
 		if newUser.Nickname == existUser.Nickname || newUser.Email == existUser.Email {
 			json.NewEncoder(w).Encode(errorCreateUser)
@@ -177,12 +176,10 @@ func (instance *App) checkAuth(cookie *http.Cookie) jwt.MapClaims {
 	return claims
 }
 
-// Oleg: изменил ответ в том случае, если не приходит кука (возвращаю статус авторизации false)
 func (instance *App) isAuth(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		fmt.Println("error")
-		json.NewEncoder(w).Encode(map[string]bool{"is_auth": false})
+		w.Write([]byte("{}"))
 		return
 	}
 
@@ -338,8 +335,6 @@ func (instance *App) upload(w http.ResponseWriter, r *http.Request) {
 }
 
 // ToDo: Add cookie handle
-
-// Oleg: изменил положительный ответ (добавил возврат false статуса авторизации)
 func (instance *App) logout(w http.ResponseWriter, r *http.Request) {
 	_, err := r.Cookie("session_id")
 
@@ -355,7 +350,5 @@ func (instance *App) logout(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		HttpOnly: true,
 	})
-	fmt.Println("OK")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]bool{"is_auth": false})
 }

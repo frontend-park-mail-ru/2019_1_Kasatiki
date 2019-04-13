@@ -21,7 +21,7 @@ export default class LeaderboardView extends BaseView {
 				that.LeaderboardComponent._usersArr = data;
 				that.LeaderboardComponent.render();
 			},
-			path: '/leaderboard',
+			path: '/api/leaderboard',
 		});
     }
 

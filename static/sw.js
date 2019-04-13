@@ -1,7 +1,8 @@
 const CACHE_NAME = 'advhater-cache';
 
 const cacheUrls = [
-    'isauth'
+    '/',
+    'isauth',
 ];
 
 this.addEventListener('install', (event) => {
@@ -19,12 +20,19 @@ this.addEventListener('fetch', (event) => {
         caches
             .match(event.request)
             .then((cachedResponse) => {
-                console.log(cachedResponse, navigator.onLine);
                 if (!navigator.onLine && cachedResponse) {
                     return cachedResponse;
                 }
 
-                return fetch(event.request);
+                return fetch(event.request)
+                    .then(response => caches
+                        .open(CACHE_NAME)
+                        .then((cache) => {
+                            if (event.request.method === 'GET') {
+                                cache.put(event.request, response.clone());
+                            }
+                            return response;
+                        }));
             })
     );
 });

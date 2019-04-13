@@ -19,7 +19,7 @@ export default class MenuView extends BaseView {
                 let isAuth = data['is_auth'];
                 that.root.innerHTML = that.MenuComponent.render(isAuth);
             },
-            path: '/isauth',
+            path: '/api/isauth',
         });
     }
 }

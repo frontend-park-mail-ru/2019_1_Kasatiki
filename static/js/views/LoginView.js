@@ -26,7 +26,7 @@ export default class LoginView extends BaseView {
                 that.LoginComponent.setOnChangeListener(that.LoginComponent.login);
                 that.LoginComponent.setOnChangeListener(that.LoginComponent.password);
             },
-            path: '/isauth',
+            path: '/api/isauth',
         });
     }
     
@@ -70,7 +70,7 @@ export default class LoginView extends BaseView {
                     that.LoginComponent.setErrorText(data.Error);
                 }
             },
-            path: '/login',
+            path: '/api/login',
             body: JSON.stringify( payload ),
         });
     }
