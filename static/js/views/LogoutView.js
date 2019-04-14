@@ -17,7 +17,7 @@ export default class LogoutView extends BaseView {
             callback() {
                 that.router.go('/');
             },
-            path : '/logout',
+            path : '/api/logout',
         });
     }
 }

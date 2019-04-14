@@ -26,7 +26,7 @@ export default class SignupView extends BaseView {
                 that.SignupComponent.setOnChangeListener(form.password);
                 that.SignupComponent.setOnChangeListener(form.password_repeat);                
             },
-            path: '/isauth',
+            path: '/api/isauth',
         });
     }
     
@@ -74,7 +74,7 @@ export default class SignupView extends BaseView {
                     that.SignupComponent.setErrorText(data.Error);
                 }
             },
-            path: '/signup',
+            path: '/api/signup',
             body: JSON.stringify( payload ),
         });
     }
