@@ -30,6 +30,7 @@ export default class Screen {
         this._canvas.height = this.height;
         this._root.appendChild(this._canvas);
         this.ctx = this._canvas.getContext('2d');
+        return this._canvas;
     }
 
     render(objects = []) {

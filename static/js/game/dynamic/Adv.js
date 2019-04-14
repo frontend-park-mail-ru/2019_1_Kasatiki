@@ -53,7 +53,7 @@ export default class Adv extends DynamicEssence {
             window.open('http://ya.ru');
             return this.hp;
         } else if (obj.name == 'barrier') {
-            if (Math.abs(obj.xPos - this.curTargetX) > Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {
+            if (Math.abs(obj.xPos - this.curTargetX) >= Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {
                 this.xPos = this.xPrev + this.velocity;
                 this.yPos = this.yPrev;
             } else if (Math.abs(obj.xPos - this.curTargetX) < Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {
@@ -61,7 +61,7 @@ export default class Adv extends DynamicEssence {
                 this.yPos = this.yPrev;
             }
 
-            if (Math.abs(obj.yPos - this.curTargetY) > Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {
+            if (Math.abs(obj.yPos - this.curTargetY) >= Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {
                 this.yPos = this.yPrev + this.velocity;
                 this.xPos = this.xPrev;
             } else if (Math.abs(obj.yPos - this.curTargetY) < Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {

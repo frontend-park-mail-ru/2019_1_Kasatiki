@@ -10,6 +10,7 @@ export default class Handler {
             'left': false,
             'down': false,
             'right': false,
+            'interact' : false,
 
             // Нажатие мышки
             'mouseClick' : false,
@@ -30,7 +31,7 @@ export default class Handler {
         document.addEventListener('keyup', keyUpHandler, false);
         document.addEventListener('mousedown', mouseClickDown, false)
         document.addEventListener('mouseup', mouseClickUp, false)
-        // document.addEventListener('click', mouseClickDown, false)
+        document.addEventListener('mousedown', keyDownHandler, false);
 
         document.body.onmousemove = function(evt) {
             that.eventsMap.mouseX = evt.pageX - that.bounds.left;
@@ -47,34 +48,56 @@ export default class Handler {
 
 
         function keyDownHandler(e) {
-            if(e.key == "Right" || e.key == "ArrowRight") {
+            if(e.code == "KeyD" || e.code == "ArrowRight") {
                 that.eventsMap['right'] = true;
             }
-            else if(e.key == "Left" || e.key == "ArrowLeft") {
+            else if(e.code == "KeyA" || e.code == "ArrowLeft") {
                 that.eventsMap['left'] = true;
             }
-            else if(e.key == "Up" || e.key == "ArrowUp") {
+            else if(e.code == "KeyW" || e.code == "ArrowUp") {
                 that.eventsMap['up'] = true;
             }
-            else if(e.key == "Down" || e.key == "ArrowDown") {
+            else if(e.code == "KeyS" || e.code == "ArrowDown") {
                 that.eventsMap['down'] = true;
+            }
+            
+            if(e.code == 'KeyE') {
+                if (that.eventsMap['interact']) {
+                    that.eventsMap['interact'] = false ;
+                } else {   
+                    that.eventsMap['interact'] = true;
+                }
             }
         }
         
         function keyUpHandler(e) {
-            if(e.key == "Right" || e.key == "ArrowRight") {
+            if(e.code == "KeyD" || e.code == "ArrowRight") {
                 that.eventsMap['right'] = false;
             }
-            else if(e.key == "Left" || e.key == "ArrowLeft") {
+            else if(e.code == "KeyA" || e.code == "ArrowLeft") {
                 that.eventsMap['left'] = false;
             }
-            else if(e.key == "Up" || e.key == "ArrowUp") {
+            else if(e.code == "KeyW" || e.code == "ArrowUp") {
                 that.eventsMap['up'] = false;
             }
-            else if(e.key == "Down" || e.key == "ArrowDown") {
+            else if(e.code == "KeyS" || e.code == "ArrowDown") {
                 that.eventsMap['down'] = false;
-            }
+            } 
         }
+
+        // function keyClick(e) {
+        //     if(e.code == 'KeyE') {
+        //         if (this.eventsMap['interact']) {
+        //             this.eventsMap['interact'] = false ;
+        //         } else {   
+        //             this.eventsMap['interact'] = true;
+        //         }
+        //     }
+        // }
+    }
+
+    addEventListener(eventType, callback) {
+        document.addEventListener(eventType, callback, false);
     }
 
 

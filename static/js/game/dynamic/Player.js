@@ -18,6 +18,9 @@ export default class Player extends DynamicEssence {
         this.centerX;
         this.centerY;
 
+        this.inShop;
+        this.currentShop;
+
         this.xPrev = this.xPos;
         this.yPrev = this.yPos;
     }
@@ -59,20 +62,31 @@ export default class Player extends DynamicEssence {
             this.yPos += this.velocity;
         }
 
+        if (this.inShop) {
+            // console.log(this.currentShop);
+            if (eventsMap['interact']) {
+                this.currentShop.open(this.inShop);
+            } else {
+                this.currentShop.close();
+            }
+        }
+
         if (this.xPos <= 0 || this.xPos >= cvsWidth || this.yPos <= 0 || this.yPos >= cvsHeight) {
             this.interact();
         }
     }
 
-    interact(name) {
-        console.log(name);
-        if (name !== 'adv') {
+    interact(name, obj = {}) {
+        // console.log(name);
+        if (name == 'adv'){ 
+            this.hp -= 95;
+        } else if (name == 'shop') {
+            this.inShop = true;
+            this.currentShop = obj;
+        } else {
             this.xPos = this.xPrev;
             this.yPos = this.yPrev;
-        } else { 
-            console.log('minus 20')
-            this.hp -= 95;
-        }
+        }  
     }
 
     _addHp(hp) {

@@ -24,12 +24,13 @@ export default class CollisionHandler {
         return pairs;
     }
 
-    handleCollisions(objects) {
+    handleCollisions(objects, score = {}) {
         let PlayerBarrierCollision = this._getPairCollisions(objects['players'], objects['barriers']);
         let BulletBarrierCollision = this._getPairCollisions(objects['bullets'], objects['barriers']);
         let BulletAdvsCollision = this._getPairCollisions(objects['bullets'], objects['advs']);
         let PlayersAdvsCollision = this._getPairCollisions(objects['players'], objects['advs']);
         let AdvBarrierCollision = this._getPairCollisions(objects['barriers'], objects['advs']);
+        let PlayersShopsCollision = this._getPairCollisions(objects['players'], objects['shops']);
 
         if (PlayerBarrierCollision.length != 0) {
             PlayerBarrierCollision.first.firstObj.interact();
@@ -47,7 +48,7 @@ export default class CollisionHandler {
             objects['bullets'].splice(BulletAdvsCollision.first.fidx, 1);
             let advHealth = BulletAdvsCollision.second.secondObj.interact(BulletAdvsCollision.first.firstObj);
             if (advHealth <= 0) {
-                objects.score += 100;
+                score.value += 100;
                 objects['advs'].splice(BulletAdvsCollision.second.sidx, 1);
             }                
         }
@@ -57,7 +58,7 @@ export default class CollisionHandler {
             PlayersAdvsCollision.first.firstObj.interact('adv');
             let advHealth = PlayersAdvsCollision.second.secondObj.interact(PlayersAdvsCollision.first.firstObj);
             if (advHealth <= 0) {
-                objects.score += 100;
+                score.value += 100;
                 objects['advs'].splice(PlayersAdvsCollision.second.sidx, 1);
             }                
         }
@@ -67,10 +68,16 @@ export default class CollisionHandler {
             AdvBarrierCollision.second.secondObj.interact(AdvBarrierCollision.first.firstObj);            
         }
 
-        // if (PlayersAdvsCollision.length != 0) {
-        //     PlayerBarrierCollision.first.firstObj.interact();
-        //     PlayerBarrierCollision.second.interact();                
-        // }
+        if (PlayersShopsCollision.length != 0) {
+            PlayersShopsCollision.first.firstObj.interact('shop',PlayersShopsCollision.second.secondObj);
+            PlayersShopsCollision.second.secondObj.playerInShop = true;                
+        } else {
+            if (objects['shops'].length != 0) {
+                objects['shops'][0].playerInShop = false;
+                objects['players'][0].inShop = false;
+            }
+        }
+
     }
 
 

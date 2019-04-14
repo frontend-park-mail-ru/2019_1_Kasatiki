@@ -25,6 +25,8 @@ export default class Game {
         // Очко)
         this.score = 0;
 
+        this.scoreObj = {value : this.score};
+
         this.currentTime = 0;
 
         // Массив объектов
@@ -66,7 +68,7 @@ export default class Game {
         this.objects['players'].push(this._player)
         this.objects['buffers'].push(this._buff);
 
-        this._screen.createCanvas();
+        this.canvas = this._screen.createCanvas();
         this.CollisionHandler = new CollisionHandler();
         this.handler = new Handler(this._screen._canvas);
 
@@ -126,7 +128,6 @@ export default class Game {
         this.eventsMap = this.handler.sendEventMap();
 
         if (this.waveTrigger) {
-            this.objects['players'][0].hp = 100;
             this.totalAdvSpawn += 5;
             this.currentAdvCount = this.totalAdvSpawn;
             this.waveCount++;
@@ -155,10 +156,11 @@ export default class Game {
         this.objects['players'][0].logic(this.eventsMap, this.width, this.height);
         this.objects['advs'].forEach(adv => {
             adv.logic(this.objects['players'][0].xPos, this.objects['players'][0].yPos);
-        })
+        });
+
         this._screen.render(this.objects);
 
-        this.CollisionHandler.handleCollisions(this.objects);
+        this.CollisionHandler.handleCollisions(this.objects, this.scoreObj);
 
         this.currentTime++;
 
@@ -169,6 +171,7 @@ export default class Game {
         }
 
         if (this.objects['advs'].length == 0 && !this.wavePause) {
+            this.objects['players'][0].hp = 100;
             this.currentTime = 0;
             this.pauseTimer = 30 * 60;
             this.wavePause = true;
