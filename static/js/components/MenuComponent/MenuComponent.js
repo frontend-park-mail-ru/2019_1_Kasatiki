@@ -1,7 +1,7 @@
 export default class MenuComponent {
-    render(isAuth) {
+    render(obj) {
         let templateScript = ``;
-        if (isAuth) {
+        if (obj.isAuth) {
             templateScript = `
                 <div class="menu">
                     <h1 class="menu__title">ADV<a class="hate">HATER</a></h1>
@@ -11,10 +11,10 @@ export default class MenuComponent {
                         <button class="main-bar__item menu_btn" href="/shop" data-title="SHOP" data-section="shop"><i class="fas fa-shopping-cart"></i></button>
                     </div>
                     <div class="menu__profile">
-                        <img src="https://cdn3.iconfinder.com/data/icons/red-icons-1/512/Male-profile-icon-512.png" class="profile-avatar"></img>
+                        <img src="{{obj.ImgUrl}}" class="profile-avatar"></img>
                         <div class="profile-info">
-                            <h4 class="profile-nickname">evvFeburary</h4>
-                            <h4 class="profile-score">2240 $</h4>
+                            <h4 class="profile-nickname">{{obj.nickname}}</h4>
+                            <h4 class="profile-score">{{obj.Points}} $</h4>
                         </div>
                     </div>
                     <button href="/play" class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
