@@ -1,7 +1,7 @@
 export default class MenuComponent {
     render(obj) {
         let templateScript = ``;
-        if (obj.isAuth) {
+        if (obj.is_auth) {
             templateScript = `
                 <div class="menu">
                     <h1 class="menu__title">ADV<a class="hate">HATER</a></h1>
