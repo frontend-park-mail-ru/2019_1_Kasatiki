@@ -19,6 +19,8 @@ export default class Game {
         // Родительский узел DOM 
         this._root = root;
 
+        this._root.innerHTML = '';
+        
         // Игровой экран
         this._screen = new Screen(this.root);
 
@@ -68,7 +70,6 @@ export default class Game {
         this.objects['players'].push(this._player)
         this.objects['buffers'].push(this._buff);
 
-        this.canvas = this._screen.createCanvas();
         this.CollisionHandler = new CollisionHandler();
         this.handler = new Handler(this._screen._canvas);
 
@@ -206,6 +207,7 @@ export default class Game {
 
     // Инит метод : цикл -> отрисовка 
     run() {
+        this.canvas = this._screen.createCanvas();
         requestAnimationFrame(time => this.frame());
     }
 
