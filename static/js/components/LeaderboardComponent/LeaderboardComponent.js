@@ -137,7 +137,9 @@ export default class LeaderboardComponent {
 			<div class="board">
 				{{#each .}} 
 				<div class="board__player">
-					
+					<h3 class="board__player-place">{{ID}}</h3>
+					<h3 class="board__player-nickname">{{nickname}}</h3>
+					<h3 class="board__player-points">{{Points}}</h3>
 				</div>
 				{{/each}} 
 			</div>

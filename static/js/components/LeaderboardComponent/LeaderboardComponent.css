@@ -35,11 +35,6 @@
     width: 100%;
 }
 
-.board__player {
-    display: flex;
-    justify-content: space-between;
-}
-
 .board__item {
     margin: none;
     width: 32%;
@@ -48,6 +43,9 @@
 }
 
 .board__player {
+    display: flex;
+    justify-content: space-between;
+
     width: 80%;
     height: 50px;
     margin: 0px 0px 2px 0px;
@@ -56,6 +54,10 @@
     border: solid 1px red;
 
     transition: 0.2s linear;
+}
+
+.board__player h3 {
+    width: 30%;
 }
 
 .leaderboard_back-button {
