@@ -64,6 +64,10 @@ export default class SignupView extends BaseView {
         console.log(payload);
         NetworkHandler.doPost({
             callback(data) {
+                if (typeof data === 'undefined') {
+                    that.router.go('/');
+                    return;
+                }
                 if (typeof data.Error === 'undefined') {
                     console.log ('OK answer');
                     // console.log('data in signup:', data);
