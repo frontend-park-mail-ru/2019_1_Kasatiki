@@ -50,7 +50,7 @@ export default class LeaderboardComponent {
 					that._usersArr = data;
 					that.render();
 				},
-				path: `/leaderboard?offset=${offset}`,
+				path: `/api/leaderboard?offset=${offset}`,
 			});
 		}
 	}
@@ -74,7 +74,7 @@ export default class LeaderboardComponent {
 					that._usersArr = data;
 					that.render();
 				},
-				path: `/leaderboard?offset=${offset}`,
+				path: `/api/leaderboard?offset=${offset}`,
 			});
 		} 
 	}
