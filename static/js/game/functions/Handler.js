@@ -23,6 +23,6 @@ export default class Handler {
         this.objects[name]  = obj;
     }
 
-    sendKeys
+    // sendKeys
 }
 
