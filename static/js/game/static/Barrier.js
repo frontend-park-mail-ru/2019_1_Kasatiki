@@ -14,6 +14,8 @@ export default class Barrier {
         this.xPos = xPos;
         this.yPos = yPos;
 
+        this.name = 'barrier';
+
         // Позиция прицела - только у плеера
 
         // Его размеры 
@@ -21,6 +23,17 @@ export default class Barrier {
         this.ySize = ySize; // vh
     }
 
+    render(ctx) {
+        ctx.beginPath();
+        ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);
+        ctx.fillStyle = "gray";
+        ctx.fill();
+        ctx.closePath();
+    }
+
     logic() {}
+
+    interact() {
+    }
 
 }

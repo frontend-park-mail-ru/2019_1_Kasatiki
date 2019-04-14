@@ -1,89 +1,92 @@
-import KeyboardControl from '../functions/KeyboardControl.js'
+// import KeyboardControl from '../functions/KeyboardControl.js'
 
+import Bullet from './bullet.js'
 import DynamicEssence from "./DynamicEssence.js";
 
 export default class Player extends DynamicEssence {
     
     constructor(
-        // xPos,
-        // yPos,
-
-        // xSize = 50,
-        // ySize = 50,
-        // URL = "/default_texture",
-        // velocity = 100,
-
     ) {
         super(...arguments);
-        this.keyHandler = new KeyboardControl();
+        // this.keyHandler = new KeyboardControl();
+
+        this.name = 'player'
 
         this.defaultVelocity = this.velocity;
         this.buffs = [];
 
-        this.dx;
-        this.dy;
+        this.centerX;
+        this.centerY;
 
-        // // Основные параметры
-        // this.hp = 100; // %
-        // this.hpCapacity = 100; // у.е
-        // this.velocity = velocity; // у.е
+        this.inShop;
+        this.currentShop;
 
-        // // Координаты
-        // this.xPos = xPos;
-        // this.yPos = yPos;
-
-        // // Позиция прицела - только у плеера
-        // this.xAim = 0;
-        // this.yAim = 0;
-
-        // // Его размеры 
-        // this.xSize = xSize; // vh
-        // this.ySize = ySize; // vh
-
-        // // Тип оружия - только для usera 
-        // this.melle = true;
-        // this.gunId = 0; // 0 - knife
-
-        // // Бафы - только для usera 
-        // this.bufs = {} // "key" : {}
-
-        // // Шмот
-        // this.skinId = 0; // для игрока
-        // this.texture = URL; // URL 
+        this.xPrev = this.xPos;
+        this.yPrev = this.yPos;
     }
 
-    _render() {
-
+    render(ctx) {
+        ctx.beginPath();
+        ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);
+        ctx.fillStyle = "#48F67F";
+        ctx.fill();
+        ctx.closePath();
     }
 
-    // Логика перемещения только для рекламы 
-    logic() {
+    logic(eventsMap, cvsWidth, cvsHeight) {
+        const that = this;
         this._logicBuffs();
-        let keys = this.keyHandler.handleKey();
-        this.dx = this.yPos + this.ySize/2;
-        this.dy = this.xPos + this.xSize/2;
-        // console.log(keys['mouseX'], keys['mouseY'])
 
-        this.teta = this.myMath.getTeta(this.dx, this.dy, keys['mouseX'], keys['mouseY']);
+        this.centerY = this.yPos + this.ySize/2;
+        this.centerX = this.xPos + this.xSize/2;
+        // console.log(eventsMap['mouseX'], eventsMap['mouseY'])
 
+        // this.teta = this.myMath.getTeta(this.centerX, this.centerY, eventsMap['mouseX'], eventsMap['mouseY']);
+        // console.log('this.teta',this.teta);
         
 
-        if(keys['right']) {
+
+        if(eventsMap['right']) {
+            this.xPrev = this.xPos;
             this.xPos += this.velocity;
-        }
-        if(keys['left']) {
+        } else if(eventsMap['left']) {
+            this.xPrev = this.xPos;
             this.xPos -= this.velocity;
         }
-        if(keys['up']) {
+
+        if(eventsMap['up']) {
+            this.yPrev = this.yPos;
             this.yPos -= this.velocity;
-        }
-        if(keys['down']) {
+        } else if(eventsMap['down']) {
+            this.yPrev = this.yPos;
             this.yPos += this.velocity;
+        }
+
+        if (this.inShop) {
+            // console.log(this.currentShop);
+            if (eventsMap['interact']) {
+                this.currentShop.open(this.inShop);
+            } else {
+                this.currentShop.close();
+            }
+        }
+
+        if (this.xPos <= 0 || this.xPos >= cvsWidth || this.yPos <= 0 || this.yPos >= cvsHeight) {
+            this.interact();
         }
     }
 
-    interact() {
-
+    interact(name, obj = {}) {
+        // console.log(name);
+        if (name == 'adv'){ 
+            this.hp -= 95;
+        } else if (name == 'shop') {
+            this.inShop = true;
+            this.currentShop = obj;
+        } else {
+            this.xPos = this.xPrev;
+            this.yPos = this.yPrev;
+        }  
     }
 
     _addHp(hp) {

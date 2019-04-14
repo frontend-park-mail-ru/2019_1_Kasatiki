@@ -6,9 +6,8 @@ export default class DynamicEssence {
     constructor(
         xPos,
         yPos,
-
-        xSize = 50,
-        ySize = 50,
+        xSize = 40,
+        ySize = 40,
         URL = "/default_texture",
         velocity = 100,
     ) {

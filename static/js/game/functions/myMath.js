@@ -5,7 +5,8 @@ export default class MyMath {
     {
         let a = mouseX - x;
         let b = mouseY - y;
-        
-        return 90/57.3 - Math.atan(a/b);
+        let teta = 90/57.3 - Math.atan(a/b);
+        // console.log(a,b);
+        return teta;
     }
 }
