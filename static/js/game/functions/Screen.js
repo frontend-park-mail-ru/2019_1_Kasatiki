@@ -14,13 +14,17 @@ export default class Screen {
         // Размеры карты (видимая область)
         this.width = window.innerWidth;
         this.height = window.innerHeight;
+
+        // Параметры отображения текста
+        this.fontCfg = '25px Arial';
+        this.textPosY = 45;
     }
 
     set canvas(ctx) {
         this.ctx = ctx;
     } 
 
-    _renderEssence(name, essence) {
+    _createMap() {
 
     }
 
@@ -57,26 +61,22 @@ export default class Screen {
 
     showInfo(score, health) {
         this.ctx.fillStyle = "#000";
-        this.ctx.font = "italic 20pt Arial";
-        this.ctx.fillText('score: ' + score,this.width/2 - 250, 30);
+        this.ctx.font = this.fontCfg;
+        this.ctx.fillText('score: ' + score,this.width/2 - 250, this.textPosY);
         this.ctx.fillStyle = "red";
-        this.ctx.font = "italic 20pt Arial";
-        this.ctx.fillText('hp: ' + health,this.width/2 , 30);
+        this.ctx.font = this.fontCfg;
+        this.ctx.fillText('hp: ' + health,this.width/2 , this.textPosY);
     }
 
     showPauseTime(time) {
         this.ctx.fillStyle = "#000";
-        this.ctx.font = "italic 20pt Arial";
-        this.ctx.fillText('pause: ' + time,this.width - 500, 30);
+        this.ctx.font = this.fontCfg;
+        this.ctx.fillText('pause: ' + time,this.width - 500, this.textPosY);
     }
 
     showWaveNumber(number) {
         this.ctx.fillStyle = "#000";
-        this.ctx.font = "italic 20pt Arial";
-        this.ctx.fillText('Wave: ' + number,100, 30);
-    }
-
-    _resizeConvas() {
-
+        this.ctx.font = this.fontCfg;
+        this.ctx.fillText('Wave: ' + number,100, this.textPosY);
     }
 }

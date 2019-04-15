@@ -6,9 +6,14 @@ export default class Shop extends StaticEssence{
 
         this.playerInShop = false;
         this.shopOpenStatus = false;
+
+        this.ctx;
+
+        this.root = document.body;
     }
 
     render(ctx) {
+        this.ctx = ctx;
         ctx.beginPath();
         ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);
         ctx.fillStyle = "#C733FF";
@@ -33,7 +38,9 @@ export default class Shop extends StaticEssence{
     open() {
         if (this.playerInShop) {
             this.shopOpenStatus = true;
-            console.log('Shop opened');
+
+            this.ctx.fillStyle = 'E3E3E3';
+            this.ctx.fillRect(250, 300, 650, 600);
         }
     }
 

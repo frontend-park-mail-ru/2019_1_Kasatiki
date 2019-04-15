@@ -13,6 +13,8 @@ export default class Adv extends DynamicEssence {
         this.centerX;
         this.centerY;
 
+        this.advUrl = 'http://ya.ru';
+
         this.teta;
 
         this.color = 9100;
@@ -37,6 +39,7 @@ export default class Adv extends DynamicEssence {
 
         this.xPrev = this.xPos;
         this.yPrev = this.yPos;
+
         this.xPos += this.velocity * Math.sin(this.teta);
         this.yPos += this.velocity * Math.cos(this.teta);
     }
@@ -50,24 +53,26 @@ export default class Adv extends DynamicEssence {
             return this.hp;
         } else if (obj.name == 'player') {
             this.hp = 0;
-            window.open('http://ya.ru');
+            window.open(this.advUrl);
             return this.hp;
         } else if (obj.name == 'barrier') {
-            if (Math.abs(obj.xPos - this.curTargetX) >= Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {
-                this.xPos = this.xPrev + this.velocity;
-                this.yPos = this.yPrev;
-            } else if (Math.abs(obj.xPos - this.curTargetX) < Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {
-                this.xPos = this.xPrev - this.velocity;
-                this.yPos = this.yPrev;
-            }
+            // if (Math.abs(obj.xPos - this.curTargetX) >= Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {
+            //     this.xPos = this.xPrev + this.velocity;
+            //     this.yPos = this.yPrev;
+            // } else if (Math.abs(obj.xPos - this.curTargetX) < Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {
+            //     this.xPos = this.xPrev - this.velocity;
+            //     this.yPos = this.yPrev
+            // }
 
-            if (Math.abs(obj.yPos - this.curTargetY) >= Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {
-                this.yPos = this.yPrev + this.velocity;
-                this.xPos = this.xPrev;
-            } else if (Math.abs(obj.yPos - this.curTargetY) < Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {
-                this.yPos = this.yPrev - this.velocity;
-                this.xPos = this.xPrev;
-            }
+            // if (Math.abs(obj.yPos - this.curTargetY) >= Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {
+            //     this.yPos = this.yPrev + this.velocity;
+            //     this.xPos = this.xPrev;
+            // } else if (Math.abs(obj.yPos - this.curTargetY) < Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {
+            //     this.yPos = this.yPrev - this.velocity;
+            //     this.xPos = this.xPrev;
+            // }
+            this.xPos = this.xPrev;
+            this.yPos = this.yPrev;
         }
     }
 }
