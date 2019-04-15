@@ -46,8 +46,12 @@ export default class NetworkHandler {
 				callback(data);
 			})
 			.catch((error) => {
+<<<<<<< HEAD
 				console.log(error);
 				callback(response.status);
+=======
+				callback();
+>>>>>>> origin/develop
 			})
 	}
 
