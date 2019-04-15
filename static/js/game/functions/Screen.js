@@ -38,7 +38,6 @@ export default class Screen {
     }
 
     render(objects = []) {
-        // console.log(objects['barriers']);
         this.ctx.clearRect(0, 0, this.width, this.height);
         const that = this;
         objects['players'].forEach(obj => {
@@ -71,7 +70,7 @@ export default class Screen {
     showPauseTime(time) {
         this.ctx.fillStyle = "#000";
         this.ctx.font = this.fontCfg;
-        this.ctx.fillText('pause: ' + time,this.width - 500, this.textPosY);
+        this.ctx.fillText('pause: ' + time,this.width - 300, this.textPosY);
     }
 
     showWaveNumber(number) {

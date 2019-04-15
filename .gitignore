@@ -21,7 +21,6 @@ _testmain.go
 ./idea
 *.xml
 *.iml
-*.go
 
 /VERSION.cache
 /bin/
@@ -51,7 +50,4 @@ _testmain.go
 
 /node_modules
 2019_1_Kasatiki
-/static/bundle.js
-/conf
-/domestic
-/server
+# /static/bundle.js

@@ -18,9 +18,30 @@ export default class MenuView extends BaseView {
                 console.log('menu view', data);
                 if (typeof(data) == 'object') {
                     that.root.innerHTML = that.MenuComponent.render(data);
+
+                    const profileSection = document.querySelector('.menu__profile');
+                    const buttonsSection = document.querySelector('.menu__profile-buttons-section');
+                    profileSection.addEventListener('mouseover', showButtons, false);
+                    profileSection.addEventListener('mouseout', hideButtons, false);
+        
+                    function showButtons(e) {
+                        console.log('on');
+                        buttonsSection.innerHTML += `
+                            <button class="profile-button">Edit</button>
+                            <button class="profile-button">Logout</button>
+                        `
+                    }
+
+                    function hideButtons(e) {
+                        console.log('out');
+                        buttonsSection.innerHTML = ``;
+                    }
+
                 } else {
                     that.root.innerHTML = that.MenuComponent.render(false);
                 }   
+
+
             },
             path: '/api/isauth',
         });

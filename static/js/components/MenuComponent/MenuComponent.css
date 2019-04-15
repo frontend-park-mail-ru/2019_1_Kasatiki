@@ -298,9 +298,43 @@
         margin: 5px auto;
         width: 650px;
     }
+    .menu__profile-buttons-section {
+        display: flex;
+        flex-wrap: wrap;
+
+        height: 100%;
+    }
     
     /* Элементы */
     
+    .profile-button {
+        width: 45%;
+        height: 10px;
+
+        font-size: 15px;
+    
+        border-radius: 2px;
+        border: solid red 1px;
+    
+        color: red;
+        background: rgba(255, 255, 255, 0.5);
+    
+        transition: 0.2s linear;
+    
+        outline: none;
+    }
+
+    .profile-button:hover {
+        font-size: 20px;
+    
+        border: solid white 1px;
+    
+        background-color: red;
+        color: white;
+    
+        transition: 0.2s linear;
+    }
+
     .menu__title {
         text-align: center;
     
