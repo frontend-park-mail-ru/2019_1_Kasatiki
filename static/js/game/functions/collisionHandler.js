@@ -29,7 +29,7 @@ export default class CollisionHandler {
         let BulletBarrierCollision = this._getPairCollisions(objects['bullets'], objects['barriers']);
         let BulletAdvsCollision = this._getPairCollisions(objects['bullets'], objects['advs']);
         let PlayersAdvsCollision = this._getPairCollisions(objects['players'], objects['advs']);
-        let AdvBarrierCollision = this._getPairCollisions(objects['barriers'], objects['advs']);
+        let BarriersAdvsCollision = this._getPairCollisions(objects['barriers'], objects['advs']);
         let PlayersShopsCollision = this._getPairCollisions(objects['players'], objects['shops']);
 
         if (PlayerBarrierCollision.length != 0) {
@@ -63,9 +63,9 @@ export default class CollisionHandler {
             }                
         }
 
-        if (AdvBarrierCollision.length != 0) {
-            AdvBarrierCollision.first.firstObj.interact();
-            AdvBarrierCollision.second.secondObj.interact(AdvBarrierCollision.first.firstObj);            
+        if (BarriersAdvsCollision.length != 0) {
+            BarriersAdvsCollision.first.firstObj.interact();
+            BarriersAdvsCollision.second.secondObj.interact(BarriersAdvsCollision.first.firstObj);            
         }
 
         if (PlayersShopsCollision.length != 0) {

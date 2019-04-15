@@ -15,9 +15,11 @@ export default class MenuView extends BaseView {
         NetworkHandler.doGet({
             // eslint-disable-next-line no-unused-vars
             callback(data) {
-                console.log(data['is_auth']);
-                let isAuth = data['is_auth'];
-                that.root.innerHTML = that.MenuComponent.render(isAuth);
+                if (typeof(data) == 'object') {
+                    that.root.innerHTML = that.MenuComponent.render(data);
+                } else {
+                    that.root.innerHTML = that.MenuComponent.render(false);
+                }   
             },
             path: '/api/isauth',
         });

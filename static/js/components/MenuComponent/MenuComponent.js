@@ -1,30 +1,30 @@
 export default class MenuComponent {
-    render(obj) {
+    render(data) {
         let templateScript = ``;
-        if (obj.is_auth) {
+        if (typeof(data) == 'object') {
             templateScript = `
-                <div class="menu">
-                    <h1 class="menu__title">ADV<a class="hate">HATER</a></h1>
-                    <div class="main-bar">
-                        <button class="main-bar__item menu_btn" href="/leaderboard" data-title="LEADERBOARD" data-section="leaderboard"><i class="fas fa-list-ul"></i></button>
-                        <button class="main-bar__item menu_btn" href="/payout" data-title="PAYOUT" data-section="payout"><i class="fas fa-wallet"></i></button>
-                        <button class="main-bar__item menu_btn" href="/shop" data-title="SHOP" data-section="shop"><i class="fas fa-shopping-cart"></i></button>
-                    </div>
-                    <div class="menu__profile">
-                        <img src="{{obj.ImgUrl}}" class="profile-avatar"></img>
-                        <div class="profile-info">
-                            <h4 class="profile-nickname">{{obj.nickname}}</h4>
-                            <h4 class="profile-score">{{obj.Points}} $</h4>
-                        </div>
-                    </div>
-                    <button href="/play" class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
-                    <div class="options">
-                        <a href="#" class="options__link">Report bug</a>
-                        <a href="#" class="options__link">Help</a>
-                        <a href="#" class="options__link">Hate with us!</a>
-                    </div>  
+            <div class="menu">
+                <h1 class="menu__title">ADV<a class="hate">HATER</a></h1>
+                <div class="main-bar">
+                    <button class="main-bar__item menu_btn" href="/leaderboard" data-title="LEADERBOARD" data-section="leaderboard"><i class="fas fa-list-ul"></i></button>
+                    <button class="main-bar__item menu_btn" href="/payout" data-title="PAYOUT" data-section="payout"><i class="fas fa-wallet"></i></button>
+                    <button class="main-bar__item menu_btn" href="/shop" data-title="SHOP" data-section="shop"><i class="fas fa-shopping-cart"></i></button>
                 </div>
-            `;
+                <div class="menu__profile">
+                    <img src="{{obj.ImgUrl}}" class="profile-avatar"></img>
+                    <div class="profile-info">
+                        <h4 class="profile-nickname">{{obj.nickname}}</h4>
+                        <h4 class="profile-score">{{obj.Points}} $</h4>
+                    </div>
+                </div>
+                <button href="/play" class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
+                <div class="options">
+                    <a href="#" class="options__link">Report bug</a>
+                    <a href="#" class="options__link">Help</a>
+                    <a href="#" class="options__link">Hate with us!</a>
+                </div>  
+            </div>
+        `;
         } else {
             templateScript = `
                 <div class="chose">
@@ -38,7 +38,7 @@ export default class MenuComponent {
             `;
         }
         const template = Handlebars.compile(templateScript);
-		return template();
+		return template(data);
     }
 
     _doSmt() {

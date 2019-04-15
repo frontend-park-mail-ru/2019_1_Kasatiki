@@ -18,27 +18,53 @@ export default class Game {
 
         // Родительский узел DOM 
         this._root = root;
-
         this._root.innerHTML = '';
-        
+
         // Игровой экран
         this._screen = new Screen(this.root);
 
-        // Очко)
-        this.score = 0;
-
-        this.scoreObj = {value : this.score};
-
-        this.currentTime = 0;
+        // Вспомогательные функции
+        this.CollisionHandler = new CollisionHandler();
+        this.handler = new Handler(this._screen._canvas);
 
         // Массив объектов
         this.eventsMap = {};
 
         this.objects = {
         };
-        
+
+        // Генерация карты
+        this.borderW = 20;
+        this.sectionsCount = 10;
+        this.prm;
+
+        this.advsPos = {
+            0: [this.borderW + 10, Math.floor(this._screen.height/2), 25, 25],
+            1 : [Math.floor(this._screen.width/2), this.borderW + 10, 25, 25],
+            2 : [Math.floor(this._screen.width/2), this._screen.height - this.borderW - 35, 25, 25],
+        }
+
+        // Выстрелы
+        this.lastFire = Date.now();
+
+        // Логика волн
+        this.waveTrigger = true;
+        this.wavePause = false;
+        this.waveCount = 0;
+        this.pauseTimer = 0;
+        this.totalAdvSpawn = 0;
+        this.currentAdvCount = 0;
+
+        // Инициализация объектов
+        this.objects['players'] = [];
+        this.objects['buffers'] = [];
+        this.objects['bullets'] = [];
+        this.objects['barriers'] = [];
+        this.objects['advs'] = [];
+        this.objects['shops'] = [];
+
         this._player = new Player(
-            this._screen.width/2, this._screen.height/2,
+            Math.floor(this._screen.width/2), Math.floor(this._screen.height/2),
             20, 20,
             "none",
             5
@@ -50,73 +76,159 @@ export default class Game {
             "none"
         )
 
-        this.waveTrigger = true;
-        this.wavePause = false;
-        this.waveCount = 0;
-        this.pauseTimer = 0;
-        this.totalAdvSpawn = 0;
-        this.currentAdvCount = 0;
-
-        this.collisions = [];
-
-        this.objects['players'] = [];
-        this.objects['buffers'] = [];
-        this.objects['bullets'] = [];
-        this.objects['barriers'] = [];
-        this.objects['advs'] = [];
-        this.objects['shops'] = [];
-        this._spawnBarriers(10);
-
         this.objects['players'].push(this._player)
         this.objects['buffers'].push(this._buff);
 
-        this.CollisionHandler = new CollisionHandler();
-        this.handler = new Handler(this._screen._canvas);
-
-        // Рисуем канвас
+        // Игровые параметры
+        this.score = 0;
+        this.currentTime = 0;
     }
 
+    // Спасвним соперников
     _spawnAdvs(count) {
         for (let i = 0; i < count; i++) {
             let vel = 3 * Math.random();
-            let adv = new Adv(30, 450, 20, 20, 'none', vel);
+            let pos = Math.floor(3 * Math.random())
+            let adv = new Adv(...(this.advsPos[pos]), 'none', vel);
 
             this.objects['advs'].push(adv);
         }
     }
 
-    _spawnBarriers(count = 10) {
-        const that = this;
-        const xStep = this._screen.width/ count;
-        const yStep = this._screen.height/ 3;
-        console.log(xStep, yStep);
-        for(let j = 0; j < 3; j++) {
-            for (let i = 0; i < count; i++) {
-                // if (!(j == 1 && i == 6) || !(j == 1 && i == 0) || !(j ==1 && i == 5) || !(j == 1 && i ==7)) {
-                    let xPos = Math.floor( i * xStep + Math.random() * xStep );
-                    let yPos = Math.floor( j * yStep + Math.random() * yStep );
+    // Строим границы
+    _createBoards() {
+        let barrierTop = new Barrier(0, 0, this._screen.width, this.borderW);
+        let barrierLeft = new Barrier(0, 0, this.borderW, this._screen.height);
+        let barrierRight = new Barrier(this._screen.width - this.borderW, this.borderW, this._screen.width, this._screen.height);
+        let barrierBottom = new Barrier(this.borderW, this._screen.height - this.borderW, this._screen.width - this.borderW, this._screen.height);
+        this.objects['barriers'].push(barrierTop, barrierLeft, barrierRight, barrierBottom);
+    }
 
-                    let xSize =  Math.floor(  Math.random() * Math.abs((((i+1) * xStep - xPos) - ((i+1) * xStep - xPos) /2) + ((i+1) * xStep - xPos) /2 ));
-                    let ySize =  Math.floor(  Math.random() * Math.abs((((j+1) * yStep - yPos) - ((j+1) * xStep - xPos) /2) + ((j+1) * xStep - xPos) /2 ));
+    // Вычисляем параметры сетки
+    _calculateParams() {
+        // Ширина и высота каждой секции 
+        let xStep = (this._screen.width - 2 * this.borderW) / this.sectionsCount; 
+        let yStep = (this._screen.height - 2 * this.borderW) / this.sectionsCount;
 
-                    let barrier = new Barrier(xPos, yPos, xSize, ySize);
+        // Ширина и высота каждого блока секции
+        let xBlockSize = xStep / 2;
+        let yBlockSize = yStep / 2;
 
-                    this.objects['barriers'].push(barrier);
-                // }
-            }
+        // Количество блоков 
+        let blocksCount = this.sectionsCount * 2;
+
+        const mapsParams = {
+            'xStep' : xStep,
+            'yStep' : yStep,
+            'xBlockSize' : xBlockSize,
+            'yBlockSize' : yBlockSize,
+
+            'blocksCount' : blocksCount,
         }
-        // let barrier = new Barrier(200, 200, 300, 300);
-        // this.objects['barriers'].push(barrier);
+
+        return mapsParams;
     }
 
-    defeat() {
-        this.router.go('/');
-        throw new Error('Ok');
+    // Строим границы по сетке
+    _spawnBarriers() {
+        const that = this;
+
+        for (let i = 1; i < this.sectionsCount - 1; i++) {
+
+            for (let j = 1; j < this.sectionsCount - 1; j++) {
+
+                if (!(i == Math.floor(this.sectionsCount/2) && j == Math.floor(this.sectionsCount/2))) {
+            
+
+                    let xSection = this.borderW + j * that.prm['xStep'];
+                    let ySection = this.borderW + i * that.prm['yStep'];
+
+
+        
+
+                    let barrierCout = Math.floor(Math.random() * 2);
+                    let idxs = [];
+                    
+
+                    for (let k = 0; k < barrierCout; k++) {
+                        let idx;
+                        let check = false;
+                        idx = Math.floor(Math.random() * 4);
+                        if (idxs.length != 0) {
+                            while (!check) {
+                                idx = Math.floor(Math.random() * 4);
+                                console.log('idx',idx);
+                                for (let a = 0; a < idxs.length; a++) {
+                                    if (idxs[a] == idx) {
+                                        check = false;
+                                        break;
+                                    } 
+                                    check = true;
+                                }
+                            }
+                        }
+                        idxs.push(idx);
+                    }
+
+                    
+
+                    for (let p = 0; p < idxs.length; p++) {
+                        let barrier;
+                        switch (idxs[p]) {
+                            case 0: {
+                                barrier = new Barrier(xSection, ySection, that.prm['xBlockSize'], that.prm['yBlockSize']);
+                                that.objects['barriers'].push(barrier);
+                                break;
+                            }
+                            case 1: {
+                                barrier = new Barrier(xSection + that.prm['xBlockSize'], ySection, that.prm['xBlockSize'], that.prm['yBlockSize']);
+                                that.objects['barriers'].push(barrier);
+                                break;
+                            }
+                            case 2: {
+                                barrier = new Barrier(xSection, ySection + that.prm['yBlockSize'], that.prm['xBlockSize'], that.prm['yBlockSize']);
+                                that.objects['barriers'].push(barrier);
+                                break;
+                            }
+                            case 3: {
+                                barrier = new Barrier(xSection + that.prm['xBlockSize'], ySection + that.prm['yBlockSize'], that.prm['xBlockSize'], that.prm['yBlockSize']);
+                                that.objects['barriers'].push(barrier);
+                                break;
+                            }
+                        }
+                    }
+            
+                }
+            }
+
+        }
+        console.log(this.objects['barriers']);
     }
 
-    victory() {
-        this.router.go('/win');
+    // Генерируем карту
+    _generateMap() {
+        this._createBoards();
+        this.prm = this._calculateParams();
+        this._spawnBarriers();
     }
+
+    // Вспомогательная сетка
+    // _drawGrid() {
+    //     const that = this;
+
+    //     for (let i = 0; i < this.sectionsCount*4; i++) {
+
+    //         for (let j = 0; j < this.sectionsCount*4; j++) { 
+    //             that._screen.ctx.strokeStyle = 'red'; 
+    //             that._screen.ctx.moveTo(this.borderW + j*this.prm['xBlockSize'], this.borderW + i*this.prm['yBlockSize']);
+    //             that._screen.ctx.lineTo(this.borderW + j*this.prm['xBlockSize'], this._screen.height - this.borderW);
+    //             that._screen.ctx.stroke();
+    //         }
+    //         that._screen.ctx.moveTo(this.borderW,this.borderW + i*this.prm['yBlockSize']);
+    //         that._screen.ctx.lineTo(this._screen.width - this.borderW, this.borderW + i*this.prm['yBlockSize']);
+    //         that._screen.ctx.stroke();
+    //     }
+    // }
 
     isEmpty(obj) {
         for (var key in obj) {
@@ -140,14 +252,17 @@ export default class Game {
 
         // Стрельба
         if (this.eventsMap['mouseClick']) {
-            let bullet = new Bullet(
-                this.objects['players'][0].centerX,
-                this.objects['players'][0].centerY,
-                2,2,'',
-                7,
-                this.eventsMap['mouseX'], this.eventsMap['mouseY']
-            );
-            this.objects['bullets'].push(bullet);
+            if (Date.now() - this.lastFire > 100) {
+                let bullet = new Bullet(
+                    this.objects['players'][0].centerX,
+                    this.objects['players'][0].centerY,
+                    2,2,'',
+                    7,
+                    this.eventsMap['mouseX'], this.eventsMap['mouseY']
+                );
+                this.objects['bullets'].push(bullet);
+                this.lastFire = Date.now();
+            }
         }
 
         this.objects['bullets'].forEach(element => {
@@ -176,7 +291,7 @@ export default class Game {
             this.currentTime = 0;
             this.pauseTimer = 30 * 60;
             this.wavePause = true;
-            let shop = new Shop(1200, 500, 100, 100);
+            let shop = new Shop(this._screen.width - 120 - this.borderW, this._screen.height/2, 100, 100);
             this.objects['shops'].push(shop);
         }
 
@@ -194,20 +309,32 @@ export default class Game {
         this._screen.showWaveNumber(this.waveCount); 
         this._screen.showInfo(this.score, this.objects['players'][0].hp);
 
-        this.checkDeath();
+        this._checkDeath();
 
         requestAnimationFrame(time => this.frame());
     }
 
-    checkDeath() {
+    _checkDeath() {
         if (this.objects.players[0].hp <= 0) {
             this.defeat();
         }
     }
 
+    // Поражение
+    defeat() {
+        this.router.go('/');
+        throw new Error('Ok');
+    }
+
+    // Победа 
+    victory() {
+        this.router.go('/win');
+    }
+
     // Инит метод : цикл -> отрисовка 
     run() {
         this.canvas = this._screen.createCanvas();
+        this._generateMap();
         requestAnimationFrame(time => this.frame());
     }
 
