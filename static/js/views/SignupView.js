@@ -10,7 +10,6 @@ export default class SignupView extends BaseView {
         super(...arguments);
         this.Validation = new Validation();
         this.SignupComponent = new SignupComponent();
-        this.initSpecialRoutes();
     }
 
     show() {
@@ -18,8 +17,16 @@ export default class SignupView extends BaseView {
         NetworkHandler.doGet({
             // eslint-disable-next-line no-unused-vars
             callback(data) {
-                let isAuth = data['is_auth'];
+                console.log('data on show signup', data);
+                let isAuth;
+                if (data.status === 200) {
+                    isAuth = true;
+                } else {
+                    isAuth = false;
+                }
+                // let isAuth = data['is_auth'];
                 that.root.innerHTML = that.SignupComponent.render(isAuth);
+                that.initSpecialRoutes();
                 let form = document.querySelector('#signup-form');
                 that.SignupComponent.setOnChangeListener(form.nickname);
                 that.SignupComponent.setOnChangeListener(form.email);
@@ -35,6 +42,7 @@ export default class SignupView extends BaseView {
     }
 
     signupUser(that) {
+        console.log('in SpecialRoute'); 
         let form = document.querySelector('#signup-form');
 
         let isValid = that.validateValue(form.nickname, that.Validation.checkNickname, that.SignupComponent);
@@ -64,18 +72,9 @@ export default class SignupView extends BaseView {
         console.log(payload);
         NetworkHandler.doPost({
             callback(data) {
-                if (typeof data === 'undefined') {
+                console.log('Success:',data);
+                if (data === 201) {
                     that.router.go('/');
-                    return;
-                }
-                if (typeof data.Error === 'undefined') {
-                    console.log ('OK answer');
-                    // console.log('data in signup:', data);
-                    // that.router.hankdle('profile', data);
-                    that.router.go('/');
-                } else {
-                    console.log("ERROR");
-                    that.SignupComponent.setErrorText(data.Error);
                 }
             },
             path: '/api/signup',

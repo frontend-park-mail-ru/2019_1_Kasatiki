@@ -15,6 +15,7 @@ export default class MenuView extends BaseView {
         NetworkHandler.doGet({
             // eslint-disable-next-line no-unused-vars
             callback(data) {
+                console.log('menu view', data);
                 if (typeof(data) == 'object') {
                     that.root.innerHTML = that.MenuComponent.render(data);
                 } else {

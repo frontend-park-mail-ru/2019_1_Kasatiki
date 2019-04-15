@@ -62,7 +62,9 @@ export default class LoginView extends BaseView {
 
         NetworkHandler.doPost({
             callback(data) {
-                if (typeof data.Error === 'undefined') {
+                console.log('data in login', data);
+                if (data === 201) {
+                    console.log('doc cookie: ',document.cookie);
                     // console.log('data in login:', data);
                     // that.router.handle('profile', data);
                     that.router.go('/');
