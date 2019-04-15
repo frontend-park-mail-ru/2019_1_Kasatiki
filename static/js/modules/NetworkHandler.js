@@ -46,12 +46,7 @@ export default class NetworkHandler {
 				callback(data);
 			})
 			.catch((error) => {
-<<<<<<< HEAD
 				callback();
-=======
-				console.log(error);
-				callback(response.status);
->>>>>>> newBuilder
 			})
 	}
 
