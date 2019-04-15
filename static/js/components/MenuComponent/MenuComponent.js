@@ -1,5 +1,6 @@
 export default class MenuComponent {
     render(data) {
+        console.log('profile Data:', data)
         let templateScript = ``;
         if (typeof(data) == 'object') {
             templateScript = `
@@ -11,10 +12,12 @@ export default class MenuComponent {
                     <button class="main-bar__item menu_btn" href="/shop" data-title="SHOP" data-section="shop"><i class="fas fa-shopping-cart"></i></button>
                 </div>
                 <div class="menu__profile">
-                    <img src="{{obj.ImgUrl}}" class="profile-avatar"></img>
+                    <img src="{{imgurl}}" class="profile-avatar"></img>
                     <div class="profile-info">
-                        <h4 class="profile-nickname">{{obj.nickname}}</h4>
-                        <h4 class="profile-score">{{obj.Points}} $</h4>
+                        <h4 class="profile-nickname">{{nickname}}</h4>
+                        <h4 class="profile-score">{{points}} $</h4>
+                    </div>
+                    <div class="menu__profile-buttons-section">
                     </div>
                 </div>
                 <button href="/play" class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
@@ -37,9 +40,12 @@ export default class MenuComponent {
                 </div>
             `;
         }
+
         const template = Handlebars.compile(templateScript);
 		return template(data);
     }
+
+
 
     _doSmt() {
         console.log("i am not private");
