@@ -39,6 +39,10 @@ export default class Screen {
 
     render(objects = []) {
         this.ctx.clearRect(0, 0, this.width, this.height);
+
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        
         const that = this;
         objects['players'].forEach(obj => {
             obj.render(that.ctx);

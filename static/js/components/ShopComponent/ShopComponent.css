@@ -1,0 +1,10 @@
+.shop {
+    display: flex;
+    flex-wrap: wrap;
+
+    border: solid 1px red;
+    border-radius: 10px;
+
+    width: 300px;
+    height: 200px;
+}

@@ -9,7 +9,7 @@ import SignupView from './js/views/SignupView.js';
 import CountdownView from './js/views/CountdownView.js';
 import LeaderboardView from './js/views/LeaderboardView.js';
 import GameView from './js/views/GameView.js';
-
+import PaymentsView from './js/views/PaymentsView.js';
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
@@ -29,4 +29,5 @@ router.add('/logout', LogoutView);
 router.add('/signup', SignupView);
 router.add('/leaderboard', LeaderboardView);
 router.add('/play', GameView);
+router.add('/payment', PaymentsView);
 router.run();

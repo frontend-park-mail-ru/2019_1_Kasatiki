@@ -138,13 +138,9 @@ export default class Game {
             for (let j = 1; j < this.sectionsCount - 1; j++) {
 
                 if (!(i == Math.floor(this.sectionsCount/2) && j == Math.floor(this.sectionsCount/2))) {
-            
 
                     let xSection = this.borderW + j * that.prm['xStep'];
-                    let ySection = this.borderW + i * that.prm['yStep'];
-
-
-        
+                    let ySection = this.borderW + i * that.prm['yStep'];        
 
                     let barrierCout = Math.floor(Math.random() * 2);
                     let idxs = [];
@@ -169,8 +165,6 @@ export default class Game {
                         }
                         idxs.push(idx);
                     }
-
-                    
 
                     for (let p = 0; p < idxs.length; p++) {
                         let barrier;
@@ -202,7 +196,6 @@ export default class Game {
             }
 
         }
-        console.log(this.objects['barriers']);
     }
 
     // Генерируем карту

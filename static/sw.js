@@ -20,6 +20,9 @@ this.addEventListener('fetch', (event) => {
         caches
             .match(event.request)
             .then((cachedResponse) => {
+                if (!navigator.onLine && event.request === 'api/isauth') {
+                    return request.status;
+                }
                 if (!navigator.onLine && cachedResponse) {
                     return cachedResponse;
                 }

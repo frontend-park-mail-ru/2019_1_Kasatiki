@@ -8,7 +8,7 @@ export default class MenuComponent {
                 <h1 class="menu__title">ADV<a class="hate">HATER</a></h1>
                 <div class="main-bar">
                     <button class="main-bar__item menu_btn" href="/leaderboard" data-title="LEADERBOARD" data-section="leaderboard"><i class="fas fa-list-ul"></i></button>
-                    <button class="main-bar__item menu_btn" href="/payout" data-title="PAYOUT" data-section="payout"><i class="fas fa-wallet"></i></button>
+                    <button class="main-bar__item menu_btn" href="/payment" data-title="PAYOUT" data-section="payout"><i class="fas fa-wallet"></i></button>
                     <button class="main-bar__item menu_btn" href="/shop" data-title="SHOP" data-section="shop"><i class="fas fa-shopping-cart"></i></button>
                 </div>
                 <div class="menu__profile">
@@ -34,7 +34,7 @@ export default class MenuComponent {
                     <h1 class="chose__title">ADVHATER</h1>
                     <div class="main-bar">
                         <button href="/signup" class="main-bar__item chose_btn" data-title="SIGNUP" data-section="signup"><i href="/signup" class="fas fa-user-plus"></i></button>
-                        <button href="#" class="main-bar__item chose_btn" data-title="QUICK PO" data-section="chose"><i href="#" class="fas fa-wallet"></i></button>
+                        <button href="/payment" class="main-bar__item chose_btn" data-title="QUICK PO" data-section="chose"><i href="#" class="fas fa-wallet"></i></button>
                         <button href="/login" class="main-bar__item chose_btn" data-title="LOGIN" data-section="login"><i href="/login" class="fas fa-sign-in-alt"></i></button>
                     </div> 
                 </div>
