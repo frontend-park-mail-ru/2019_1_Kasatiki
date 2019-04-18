@@ -9,7 +9,7 @@ export default class DynamicEssence {
         xSize = 40,
         ySize = 40,
         URL = "/default_texture",
-        velocity = 100,
+        velocity = 7,
     ) {
         this.keyHandler = new KeyboardControl();
         this.myMath = new MyMath();
@@ -18,6 +18,8 @@ export default class DynamicEssence {
         this.hp = 100; // %
         this.hpCapacity = 100; // у.е
         this.velocity = velocity; // у.е
+        this.vy = velocity;
+        this.vx = velocity;
 
         // Координаты
         this.xPos = xPos;
@@ -48,40 +50,51 @@ export default class DynamicEssence {
     }
 
     // Логика перемещения только для рекламы 
-    logic(screenWidth, screenHeight) {
-        let keys = this.keyHandler.handleKey();
-        let y = this.yPos + this.ySize/2;
-        let x = this.xPos + this.xSize/2;
-        this.teta = this.myMath.get0toCor(x, y, keys['mouseX'], keys['mouseY']);
-
-        if(keys['right']) {
-            this.xPos += this.velocity;
-        }
-        if(keys['left']) {
-            this.xPos -= this.velocity;
-        }
-        if(keys['up']) {
-            this.yPos -= this.velocity;
-        }
-        if(keys['down']) {
-            this.yPos += this.velocity;
-        }
-
-
-        // if (this.xPos < 0) {
-        //     this.xPos = canvas.width;
-        // }
-        // else if (this.xPos > canvas.width)
-        //     this.xPos = 0;
-
-        // if (this.yPos < 0) {
-        //     this.yPos = canvas.height;
-        // }
-        // else if (this.yPos > canvas.height) 
-        //     this.yPos = 0;
+    logic() {
     }
 
     interact() {
 
+    }
+
+    // Геттеры
+
+    get top() {
+        return this.yPos;
+    }
+
+    get right() {
+        return this.xPos + this.xSize;
+    }
+
+    get bottom() {
+        return this.yPos + this.ySize;
+    }
+
+    get left() {
+        return this.xPos;
+    }
+
+    get center() {
+        return {x: this.xPos - this.xSize/2 ,
+                y: this.yPos - this.ySize/2 };
+    }
+
+    // Сетеры
+
+    set top(value) {
+        this.yPos = value;
+    }
+
+    set right(value) {
+        this.xPos = value - this.xSize;
+    }
+
+    set bottom(value) {
+        this.yPos = value - this.ySize;
+    }
+
+    set left(value) {
+        this.xPos = value;
     }
 }

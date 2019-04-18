@@ -36,4 +36,22 @@ export default class Barrier {
     interact() {
     }
 
+    // Геттеры
+
+    get top() {
+        return this.yPos;
+    }
+
+    get right() {
+        return this.xPos + this.xSize;
+    }
+
+    get bottom() {
+        return this.yPos + this.ySize;
+    }
+
+    get left() {
+        return this.xPos;
+    }
+
 }

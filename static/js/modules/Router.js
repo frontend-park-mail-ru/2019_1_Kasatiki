@@ -12,8 +12,8 @@ export default class Router {
     }
 
     run() {
-        this.go(window.location.pathname);
-        // this.go('/');
+        // this.go(window.location.pathname);
+        this.go('/play');
 
         this.app.addEventListener('click', (event) => {
             console.log("CLICK");

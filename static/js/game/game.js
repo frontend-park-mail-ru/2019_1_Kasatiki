@@ -87,7 +87,7 @@ export default class Game {
     // Спасвним соперников
     _spawnAdvs(count) {
         for (let i = 0; i < count; i++) {
-            let vel = 3 * Math.random();
+            let vel = 0.5 + 2 * Math.random();
             let pos = Math.floor(3 * Math.random())
             let adv = new Adv(...(this.advsPos[pos]), 'none', vel);
 
@@ -172,11 +172,13 @@ export default class Game {
                             case 0: {
                                 barrier = new Barrier(xSection, ySection, that.prm['xBlockSize'], that.prm['yBlockSize']);
                                 that.objects['barriers'].push(barrier);
+                                console.log(barrier.left);
                                 break;
                             }
                             case 1: {
                                 barrier = new Barrier(xSection + that.prm['xBlockSize'], ySection, that.prm['xBlockSize'], that.prm['yBlockSize']);
                                 that.objects['barriers'].push(barrier);
+                                console.log(barrier.left);
                                 break;
                             }
                             case 2: {
@@ -189,6 +191,7 @@ export default class Game {
                                 that.objects['barriers'].push(barrier);
                                 break;
                             }
+
                         }
                     }
             
@@ -228,7 +231,7 @@ export default class Game {
           return false;
         }
         return true;
-      }
+    }
 
     frame() {
         this.eventsMap = this.handler.sendEventMap();
@@ -237,8 +240,8 @@ export default class Game {
             this.totalAdvSpawn += 5;
             this.currentAdvCount = this.totalAdvSpawn;
             this.waveCount++;
-            console.log(this.totalAdvSpawn)
-            this._spawnAdvs(this.totalAdvSpawn);
+            // console.log(this.totalAdvSpawn)
+            // this._spawnAdvs(this.totalAdvSpawn);
         }
 
         this.waveTrigger = false;
@@ -258,13 +261,16 @@ export default class Game {
             }
         }
 
-        this.objects['bullets'].forEach(element => {
-            element.go();
-        });
 
+
+        // обработка логики объектов
         this.objects['players'][0].logic(this.eventsMap, this.width, this.height);
         this.objects['advs'].forEach(adv => {
             adv.logic(this.objects['players'][0].xPos, this.objects['players'][0].yPos);
+        });
+        // движение пуль
+        this.objects['bullets'].forEach(element => {
+            element.go();
         });
 
         this._screen.render(this.objects);
@@ -303,6 +309,13 @@ export default class Game {
         this._screen.showInfo(this.score, this.objects['players'][0].hp);
 
         this._checkDeath();
+
+        // console.log(this.objects['players'][0].xPos, this.objects['players'][0].yPos);
+
+        // console.log(this.objects['players'][0].left, this.objects['players'][0].top);
+        // let a = this.objects['barriers'][5].left; let b = this.objects['barriers'][5].top;
+        // console.log(a, b);
+
 
         requestAnimationFrame(time => this.frame());
     }

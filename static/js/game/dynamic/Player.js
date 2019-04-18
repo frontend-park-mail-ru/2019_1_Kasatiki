@@ -8,7 +8,6 @@ export default class Player extends DynamicEssence {
     constructor(
     ) {
         super(...arguments);
-        // this.keyHandler = new KeyboardControl();
 
         this.name = 'player'
 
@@ -33,7 +32,7 @@ export default class Player extends DynamicEssence {
         ctx.closePath();
     }
 
-    logic(eventsMap, cvsWidth, cvsHeight) {
+    logic(eventsMap) {
         const that = this;
         this._logicBuffs();
 
@@ -43,50 +42,105 @@ export default class Player extends DynamicEssence {
 
         // this.teta = this.myMath.getTeta(this.centerX, this.centerY, eventsMap['mouseX'], eventsMap['mouseY']);
         // console.log('this.teta',this.teta);
-        
-
 
         if(eventsMap['right']) {
             this.xPrev = this.xPos;
-            this.xPos += this.velocity;
+            this.vx = this.velocity;
+            this.xPos += this.vx;
         } else if(eventsMap['left']) {
             this.xPrev = this.xPos;
-            this.xPos -= this.velocity;
+            this.vx = - this.velocity;
+            this.xPos += this.vx;
+        } else if (!eventsMap['right'] || !eventsMap['left']) {
+            this.vx = 0;
         }
 
         if(eventsMap['up']) {
             this.yPrev = this.yPos;
-            this.yPos -= this.velocity;
+            this.vy = - this.velocity;
+            this.yPos += this.vy;
         } else if(eventsMap['down']) {
             this.yPrev = this.yPos;
-            this.yPos += this.velocity;
+            this.vy = this.velocity;
+            this.yPos += this.vy;
+        } else if (!eventsMap['up'] || !eventsMap['down']) {
+            this.vy = 0;
         }
+
+        // console.log('vx ', this.vx, 'vy', this.vy);
 
         if (this.inShop) {
             // console.log(this.currentShop);
             if (eventsMap['interact']) {
+                console.log('open shop');
                 this.currentShop.open(this.inShop);
             } else {
                 this.currentShop.close();
             }
         }
 
-        if (this.xPos <= 0 || this.xPos >= cvsWidth || this.yPos <= 0 || this.yPos >= cvsHeight) {
-            this.interact();
-        }
+        // this.vx = 0; this.vy = 0;
+
+        // if (this.xPos <= 0 || this.xPos >= cvsWidth || this.yPos <= 0 || this.yPos >= cvsHeight) {
+        //     this.interact();
+        // }
     }
 
-    interact(name, obj = {}) {
+    interact(obj = {}) {
         // console.log(name);
-        if (name == 'adv'){ 
-            this.hp -= 95;
-        } else if (name == 'shop') {
-            this.inShop = true;
-            this.currentShop = obj;
-        } else {
+        if (obj.name == 'barrier') {
+
+            // if (this.right > obj.left) {   
+            //     this.right = obj.left;
+            // } else if (this.left < obj.right) {
+            //     this.left = obj.right;
+            // }
+
+            // if (this.bottom > obj.top) {
+            //     this.bottom = obj.top;
+            // } else if (this.top < obj.bottom) {
+            //     this.top = obj.bottom;
+            // }
+
+            // if (this.vx > 0) {
+            //     if (this.right > obj.left) {   
+            //         this.right = obj.left;
+            //     }
+            // } else if (this.vx < 0) {
+            //     if (this.left < obj.right) {
+            //         this.left = obj.right;
+            //     }
+            // } 
+            
+            // if (this.vy > 0) {
+            //     if (this.bottom > obj.top) {
+            //         this.bottom = obj.top;
+            //     } 
+            // } else if (this.vy < 0) {
+            //     if (this.top < obj.bottom) {
+            //         this.top = obj.bottom;
+            //     }
+            // }
+
+
+            // if (this.left < obj.right) {
+            //     this.xPos = this.xPrev + 1;
+            // } else if (this.right > obj.left) {
+            //     this.xPos = this.xPrev - 1;
+            // } else if (this.top < obj.bottom) {
+            //     this.yPos = this.yPrev + 1;
+            // } else if (this.bottom > obj.top) {
+            //     this.yPos = this.yPrev - 1;
+            // }
+
             this.xPos = this.xPrev;
             this.yPos = this.yPrev;
-        }  
+        } else if (obj.name == 'adv') { 
+            this.hp -= 50;
+        } else if (obj.name == 'shop') {
+            this.inShop = true;
+            this.currentShop = obj;
+        } 
     }
 
     _addHp(hp) {
@@ -129,17 +183,17 @@ export default class Player extends DynamicEssence {
                     let prevHpCapacity = this.hpCapacity;
                     person.hpCapacity = this.hpCapacity;
                     person.hp *= (1 + this.hpCapacity / prevHpCapacity);
-                    break;
+                    continue;
                 case 'increaseVelocity':
                     person.velocity += buff.value;
                     // console.log(person.velocity);
-                    break;
+                    continue;
             }
         } else {
             switch (buff.name) {
                 case 'health':
                     this._addHp(buff.value);
-                    break;
+                    continue;
             }
         }
     }

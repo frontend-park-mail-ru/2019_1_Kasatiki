@@ -8,6 +8,7 @@ export default class Screen {
 
         // Параметры canvas
         this._canvas = document.createElement('canvas');
+        // this._canvas.style.zIndex = '0';
         this.ctx;
         this._canvas.className = "gameScreen";
 

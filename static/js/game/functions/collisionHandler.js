@@ -5,18 +5,19 @@ export default class CollisionHandler {
      * @param {Array of } secondArr 
      */
     _getPairCollisions(firstArr, secondArr) {
+        let pair;
         let pairs = [];
         firstArr.forEach((firstObj, fidx) => {
             if (typeof firstObj !== 'undefined') {
                 secondArr.forEach((secondObj, sidx) => {
                     if (typeof secondObj !== 'undefined') {
                         if (this._checkCollision(firstObj, secondObj)) {
-                            pairs = {
+                            pair = {
                                 first: {firstObj, fidx},
                                 second: {secondObj, sidx}
                             };
+                            pairs.push(pair);
                         }
-                    } else {
                     }
                 });
             }
@@ -32,45 +33,60 @@ export default class CollisionHandler {
         let BarriersAdvsCollision = this._getPairCollisions(objects['barriers'], objects['advs']);
         let PlayersShopsCollision = this._getPairCollisions(objects['players'], objects['shops']);
 
+
+
         if (PlayerBarrierCollision.length != 0) {
-            PlayerBarrierCollision.first.firstObj.interact();
-            PlayerBarrierCollision.second.secondObj.interact();                
+            PlayerBarrierCollision.forEach( pair => {
+                pair.first.firstObj.interact(pair.second.secondObj);
+                pair.second.secondObj.interact(pair.first.firstObj);
+            });
         }
 
         if (BulletBarrierCollision.length != 0) {
-            BulletBarrierCollision.first.firstObj.interact();
-            objects['bullets'].splice(BulletBarrierCollision.first.fidx, 1);
-            BulletBarrierCollision.second.secondObj.interact();
+            BulletBarrierCollision.forEach( pair =>{
+                pair.first.firstObj.interact();
+                objects['bullets'].splice(pair.first.fidx, 1);
+                pair.second.secondObj.interact();
+            });
+
         }
 
         if (BulletAdvsCollision.length != 0) {
-            BulletAdvsCollision.first.firstObj.interact();
-            objects['bullets'].splice(BulletAdvsCollision.first.fidx, 1);
-            let advHealth = BulletAdvsCollision.second.secondObj.interact(BulletAdvsCollision.first.firstObj);
-            if (advHealth <= 0) {
-                score.value += 100;
-                objects['advs'].splice(BulletAdvsCollision.second.sidx, 1);
-            }                
+            BulletAdvsCollision.forEach( pair => {
+                pair.first.firstObj.interact();
+                objects['bullets'].splice(pair.first.fidx, 1);
+                let advHealth = pair.second.secondObj.interact(pair.first.firstObj);
+                if (advHealth <= 0) {
+                    score.value += 100;
+                    objects['advs'].splice(pair.second.sidx, 1);
+                }            
+            });
         }
 
 
         if (PlayersAdvsCollision.length != 0) {
-            PlayersAdvsCollision.first.firstObj.interact('adv');
-            let advHealth = PlayersAdvsCollision.second.secondObj.interact(PlayersAdvsCollision.first.firstObj);
-            if (advHealth <= 0) {
-                score.value += 100;
-                objects['advs'].splice(PlayersAdvsCollision.second.sidx, 1);
-            }                
+            PlayersAdvsCollision.forEach(pair => {
+                pair.first.firstObj.interact('adv');
+                let advHealth = pair.second.secondObj.interact(pair.first.firstObj);
+                if (advHealth <= 0) {
+                    score.value += 100;
+                    objects['advs'].splice(pair.second.sidx, 1);
+                }     
+            })           
         }
 
         if (BarriersAdvsCollision.length != 0) {
-            BarriersAdvsCollision.first.firstObj.interact();
-            BarriersAdvsCollision.second.secondObj.interact(BarriersAdvsCollision.first.firstObj);            
+            BarriersAdvsCollision.forEach( pair => {
+                pair.first.firstObj.interact();
+                pair.second.secondObj.interact(pair.first.firstObj);      
+            })      
         }
 
         if (PlayersShopsCollision.length != 0) {
-            PlayersShopsCollision.first.firstObj.interact('shop',PlayersShopsCollision.second.secondObj);
-            PlayersShopsCollision.second.secondObj.playerInShop = true;                
+            PlayersShopsCollision.forEach(pair => {
+                pair.first.firstObj.interact(pair.second.secondObj);
+                pair.second.secondObj.playerInShop = true;   
+            })
         } else {
             if (objects['shops'].length != 0) {
                 objects['shops'][0].playerInShop = false;
@@ -95,29 +111,40 @@ export default class CollisionHandler {
     }
 
     _checkCollisionRectangles(obj1, obj2) {
-        let x1 = obj1.xPos;
-        let y1 = obj1.yPos;
-        let xd1 = obj1.xPos + obj1.xSize;
-        let yd1 = obj1.yPos + obj1.ySize;
+        // let x1 = obj1.xPos;
+        // let y1 = obj1.yPos;
+        // let xd1 = obj1.xPos + obj1.xSize;
+        // let yd1 = obj1.yPos + obj1.ySize;
 
-        let x2 = obj2.xPos;
-        let y2 = obj2.yPos;
-        let xd2 = obj2.xPos + obj2.xSize;
-        let yd2 = obj2.yPos + obj2.ySize;
+        // let x2 = obj2.xPos;
+        // let y2 = obj2.yPos;
+        // let xd2 = obj2.xPos + obj2.xSize;
+        // let yd2 = obj2.yPos + obj2.ySize;
 
-        let left = Math.min(x1, x2);
-        let right = Math.max(xd1, xd2);
-        let top = Math.min(y1, y2);
-        let bottom = Math.max(yd1, yd2);
+        // let left = Math.min(x1, x2);
+        // let right = Math.max(xd1, xd2);
+        // let top = Math.min(y1, y2);
+        // let bottom = Math.max(yd1, yd2);
 
-        let width = right - left;
-        let height = bottom - top;
+        // let width = right - left;
+        // let height = bottom - top;
 
-        if (width <= obj1.xSize + obj2.xSize && height <= obj1.ySize + obj2.ySize) {
+        // if (width <= obj1.xSize + obj2.xSize && height <= obj1.ySize + obj2.ySize) {
+        //     return true;
+        // }
+
+        // return false;
+
+        if (obj1.xPos < obj2.xPos + obj2.xSize &&
+            obj1.xPos + obj1.xSize > obj2.xPos &&
+            obj1.yPos < obj2.yPos + obj2.ySize &&
+            obj1.yPos + obj1.ySize > obj2.yPos) {
+        
             return true;
         }
 
         return false;
+
     }
 
     _checkCollisionCirles(obj1, obj2) {

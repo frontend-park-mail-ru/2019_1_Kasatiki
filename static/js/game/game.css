@@ -1,4 +1,6 @@
 .gameScreen {
+
     display:block;
-    position: fixed;
+    position: absolute;
+    z-index: -1;
 }

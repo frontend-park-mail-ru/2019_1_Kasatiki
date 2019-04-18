@@ -1,4 +1,6 @@
-import StaticEssence from "./StaticEssence.js";
+import StaticEssence from './StaticEssence.js';
+import ShopComponent from '../../components/ShopComponent/ShopComponent.js'
+
 
 export default class Shop extends StaticEssence{
     constructor() {
@@ -10,6 +12,13 @@ export default class Shop extends StaticEssence{
         this.ctx;
 
         this.root = document.body;
+
+        this.name = 'shop';
+
+        this.shopDOM = new ShopComponent();
+        this.shop = document.createElement('div');
+        this.shop.className = 'shop';
+        document.body.appendChild(this.shop);
     }
 
     render(ctx) {
@@ -35,17 +44,26 @@ export default class Shop extends StaticEssence{
         this.playerInShop = true;
     }
 
+    _createShopDOM() {
+        this.shop.innerHTML = this.shopDOM.render();
+    }
+
     open() {
         if (this.playerInShop) {
             this.shopOpenStatus = true;
 
             this.ctx.fillStyle = 'E3E3E3';
             this.ctx.fillRect(250, 300, 650, 600);
+
+            if (this.shop.innerHTML === '') {
+                this._createShopDOM();
+            }
         }
     }
 
     close() {
         this.shopOpenStatus = false;
         console.log('Shop closed');
+        this.shop.innerHTML = '';
     }
 }
