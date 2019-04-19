@@ -61,10 +61,9 @@ export default class NetworkHandler {
 			.then(function (data) {
 				callback(data);
 			})
-			// .catch((error) => {
-			// 	// console.log('status', response.status);
-			// 	callback('err');
-			// })
+			.catch((error) => {
+				callback();
+			})
 	}
 
 	doGet({

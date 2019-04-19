@@ -20,21 +20,18 @@ export default class MenuView extends BaseView {
                     that.root.innerHTML = that.MenuComponent.render(data);
 
                     const profileSection = document.querySelector('.menu__profile');
-                    const buttonsSection = document.querySelector('.menu__profile-buttons-section');
+                    const buttonsSection = document.getElementById('menu__profile-buttons-section');
                     profileSection.addEventListener('mouseover', showButtons, false);
                     profileSection.addEventListener('mouseout', hideButtons, false);
         
                     function showButtons(e) {
-                        console.log('on');
-                        buttonsSection.innerHTML += `
-                            <button class="profile-button">Edit</button>
-                            <button class="profile-button">Logout</button>
-                        `
+                        // console.log('on');
+                        console.log();
+                        buttonsSection.style.display = 'flex';
                     }
 
                     function hideButtons(e) {
-                        console.log('out');
-                        buttonsSection.innerHTML = ``;
+                        buttonsSection.style.display = 'none';
                     }
 
                 } else {

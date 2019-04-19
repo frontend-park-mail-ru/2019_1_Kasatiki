@@ -17,7 +17,9 @@ export default class MenuComponent {
                         <h4 class="profile-nickname">{{nickname}}</h4>
                         <h4 class="profile-score">{{points}} $</h4>
                     </div>
-                    <div class="menu__profile-buttons-section">
+                    <div class="menu__profile-buttons-section" id="menu__profile-buttons-section">
+                        <button class="profile-button">Edit</button>
+                        <button href="/logout" class="profile-button">Logout</button>
                     </div>
                 </div>
                 <button href="/play" class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
