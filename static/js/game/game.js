@@ -80,7 +80,9 @@ export default class Game {
         this.objects['buffers'].push(this._buff);
 
         // Игровые параметры
-        this.score = 0;
+        this.objects['players'].forEach(player =>{
+            player.score = 500;
+        }); 
         this.currentTime = 0;
     }
 
@@ -241,22 +243,41 @@ export default class Game {
             this.currentAdvCount = this.totalAdvSpawn;
             this.waveCount++;
             // console.log(this.totalAdvSpawn)
-            // this._spawnAdvs(this.totalAdvSpawn);
+            this._spawnAdvs(this.totalAdvSpawn);
         }
 
         this.waveTrigger = false;
 
         // Стрельба
-        if (this.eventsMap['mouseClick']) {
-            if (Date.now() - this.lastFire > 100) {
-                let bullet = new Bullet(
-                    this.objects['players'][0].centerX,
-                    this.objects['players'][0].centerY,
-                    2,2,'',
-                    7,
-                    this.eventsMap['mouseX'], this.eventsMap['mouseY']
-                );
-                this.objects['bullets'].push(bullet);
+        if (this.eventsMap['mouseClick'] && !this.objects['players'][0].inShop) {
+            if (Date.now() - this.lastFire > this.objects['players'][0].weapon.fireRate) {
+                if (this.objects['players'][0].weapon.name == 'Shotgun') {
+                    for (let i = 0; i < 10; i++) {
+                        let bullet = new Bullet(
+                            this.objects['players'][0].centerX,
+                            this.objects['players'][0].centerY,
+                            this.objects['players'][0].weapon.bulletSize,
+                            this.objects['players'][0].weapon.bulletSize,
+                            this.objects['players'][0].weapon.bulletColor,
+                            this.objects['players'][0].weapon.velocity,
+                            this.objects['players'][0].weapon.damage,
+                            this.eventsMap['mouseX'] + 20 * Math.random()*Math.pow(-1, i), this.eventsMap['mouseY'] + 20 * Math.random()*Math.pow(-1, i)
+                        );
+                        this.objects['bullets'].push(bullet);
+                    }
+                } else {
+                    let bullet = new Bullet(
+                        this.objects['players'][0].centerX,
+                        this.objects['players'][0].centerY,
+                        this.objects['players'][0].weapon.bulletSize,
+                        this.objects['players'][0].weapon.bulletSize,
+                        this.objects['players'][0].weapon.bulletColor,
+                        this.objects['players'][0].weapon.velocity,
+                        this.objects['players'][0].weapon.damage,
+                        this.eventsMap['mouseX'], this.eventsMap['mouseY']
+                    );
+                    this.objects['bullets'].push(bullet);
+                }
                 this.lastFire = Date.now();
             }
         }
@@ -281,14 +302,16 @@ export default class Game {
 
         if (this.currentTime >= 60) {
             this.currentTime = 0;
-            this.score++;
+            this.objects['players'].forEach(player =>{
+                player.score++;
+            }); 
             this.objects['players'][0].hp -= 0.5;
         }
 
         if (this.objects['advs'].length == 0 && !this.wavePause) {
             this.objects['players'][0].hp = 100;
             this.currentTime = 0;
-            this.pauseTimer = 10 * 60;
+            this.pauseTimer = 25 * 60;
             this.wavePause = true;
             let shop = new Shop(this._screen.width - 120 - this.borderW, this._screen.height/2, 100, 100);
             this.objects['shops'].push(shop);
@@ -306,7 +329,7 @@ export default class Game {
         }
 
         this._screen.showWaveNumber(this.waveCount); 
-        this._screen.showInfo(this.score, this.objects['players'][0].hp);
+        this._screen.showInfo(this.objects['players'][0].score, this.objects['players'][0].hp);
 
         this._checkDeath();
 

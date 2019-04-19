@@ -14,7 +14,7 @@ export default class ShopComponent {
                 <div class="shop-container">
                     <div class="shop__menu">
                         {{#each .}}
-                        <div class="shop__menu-item" data-section="{{id}}"><img src="{{icon}}" alt="{{name}}"></div>
+                        <div class="shop__menu-item" data-section="{{id}}"><img src="{{icon}}" alt="{{name}} data-section="{{id}}"></div>
                         {{/each}}
                     </div>
                     <div class="weapon__about">
@@ -33,7 +33,7 @@ export default class ShopComponent {
             <h1 class="weapon__about-name">{{name}}</h1>
             <div class="weapon__about-main">
                 <img src="{{icon}}" alt="weapon" class="weapon__about-main-image">
-                <button class="weapon__about-main-purchase">Buy</button>
+                <button class="weapon__about-main-purchase" data-section="{{id}}">Buy</button>
             </div>
             <div class="weapon__about-info">
                 <div class="weapon__about-info-property">

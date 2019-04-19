@@ -2,10 +2,12 @@ export default class Bulelt {
     constructor(
         xPos,
         yPos,
-        xSize = 40,
-        ySize = 40,
-        URL = "/default_texture",
+        xSize = 3,
+        ySize = 3,
+        color = 'red',
+        // URL = "/default_texture",
         velocity = 100,
+        damage,
         xDestination,
         yDestination,
     ) {
@@ -14,6 +16,9 @@ export default class Bulelt {
 
         this.xPos = xPos;
         this.yPos = yPos;
+
+        this.damage = damage;
+        this.color = color;
 
         this.name = 'bullet'
 
@@ -31,7 +36,7 @@ export default class Bulelt {
     render(ctx) {
         ctx.beginPath();
         ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);
-        ctx.fillStyle = "red";
+        ctx.fillStyle = this.color;
         ctx.fill();
         ctx.closePath();
     }

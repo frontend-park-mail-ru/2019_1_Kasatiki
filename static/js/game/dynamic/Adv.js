@@ -65,10 +65,11 @@ export default class Adv extends DynamicEssence {
 
     interact(obj) {
         if (obj.name == 'bullet') {
-            this.hp -= 5;
+            let deltaColor = 810 / obj.damage;
+            this.hp -= obj.damage;
             this.xPos = this.xPrev;
             this.yPos = this.yPrev;
-            this.color -= 400;
+            this.color -= 50 * deltaColor;
             return this.hp;
         } else if (obj.name == 'player') {
             this.hp = 0;

@@ -13,13 +13,14 @@ export default class SignupView{
         this.weapons = weapons;
         this.ShopComponent = new ShopComponent(this.root, this.weapons);
 
-        document.addEventListener('click', (event) => {
-            if  (event.target.className !== 'shop__menu-item') {
-                return;
-            } 
-
-            console.log(event.target.dataset.section);
-            this.weapon(event.target.dataset.section);
+        document.addEventListener('click', (event) => {          
+            if  (event.target.className === 'shop__menu-item' || event.target.parentElement.className === 'shop__menu-item') {
+                if (event.target.dataset.section === undefined) {
+                    this.weapon(event.target.parentElement.dataset.section);
+                } else {
+                    this.weapon(event.target.dataset.section);
+                }
+            }
         })
     }
 
@@ -29,6 +30,10 @@ export default class SignupView{
 
     weapon(weapon) {
         this.ShopComponent.renderWeaponInfo(weapon)
+    }
+
+    setWeapon(weaponId) {
+        return weaponId;
     }
 
     hide() {

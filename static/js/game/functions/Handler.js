@@ -85,15 +85,6 @@ export default class Handler {
             } 
         }
 
-        // function keyClick(e) {
-        //     if(e.code == 'KeyE') {
-        //         if (this.eventsMap['interact']) {
-        //             this.eventsMap['interact'] = false ;
-        //         } else {   
-        //             this.eventsMap['interact'] = true;
-        //         }
-        //     }
-        // }
     }
 
     addEventListener(eventType, callback) {

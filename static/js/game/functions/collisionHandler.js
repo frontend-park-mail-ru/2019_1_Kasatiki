@@ -53,11 +53,10 @@ export default class CollisionHandler {
 
         if (BulletAdvsCollision.length != 0) {
             BulletAdvsCollision.forEach( pair => {
-                pair.first.firstObj.interact();
                 objects['bullets'].splice(pair.first.fidx, 1);
                 let advHealth = pair.second.secondObj.interact(pair.first.firstObj);
                 if (advHealth <= 0) {
-                    score.value += 100;
+                    objects['players'][0].score += 100;
                     objects['advs'].splice(pair.second.sidx, 1);
                 }            
             });
@@ -69,7 +68,7 @@ export default class CollisionHandler {
                 pair.first.firstObj.interact('adv');
                 let advHealth = pair.second.secondObj.interact(pair.first.firstObj);
                 if (advHealth <= 0) {
-                    score.value += 100;
+                    objects['players'][0].score += 100;
                     objects['advs'].splice(pair.second.sidx, 1);
                 }     
             })           
@@ -85,6 +84,7 @@ export default class CollisionHandler {
         if (PlayersShopsCollision.length != 0) {
             PlayersShopsCollision.forEach(pair => {
                 pair.first.firstObj.interact(pair.second.secondObj);
+                pair.second.secondObj.player = pair.first.firstObj;
                 pair.second.secondObj.playerInShop = true;   
             })
         } else {

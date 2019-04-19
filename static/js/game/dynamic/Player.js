@@ -17,11 +17,26 @@ export default class Player extends DynamicEssence {
         this.centerX;
         this.centerY;
 
+        this.score;
+
         this.inShop;
         this.currentShop;
 
         this.xPrev = this.xPos;
         this.yPrev = this.yPos;
+
+        this.weapon = {
+            id : 0,
+            name : 'Revolver',
+            icon : "../../../icons/revolver.svg",
+            cost : 200,
+            fireRate : 500,
+            damage : 25,
+            velocity : 5,
+            bulletSize : 2,
+            bulletColor : 'red',
+            about : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam quis tempus magna. Nunc eget porttitor turpis. Sed sagittis lacus vel ligula vehicula, id rhoncus ipsum gravida.',
+        };
     }
 
     render(ctx) {
