@@ -288,7 +288,7 @@ export default class Game {
         if (this.objects['advs'].length == 0 && !this.wavePause) {
             this.objects['players'][0].hp = 100;
             this.currentTime = 0;
-            this.pauseTimer = 30 * 60;
+            this.pauseTimer = 10 * 60;
             this.wavePause = true;
             let shop = new Shop(this._screen.width - 120 - this.borderW, this._screen.height/2, 100, 100);
             this.objects['shops'].push(shop);

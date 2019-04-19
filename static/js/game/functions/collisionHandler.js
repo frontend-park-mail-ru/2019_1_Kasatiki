@@ -91,9 +91,9 @@ export default class CollisionHandler {
             if (objects['shops'].length != 0) {
                 objects['shops'][0].playerInShop = false;
                 objects['players'][0].inShop = false;
+                objects['shops'][0].close(); 
             }
         }
-
     }
 
 

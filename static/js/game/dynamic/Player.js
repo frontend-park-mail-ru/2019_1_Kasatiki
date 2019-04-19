@@ -72,12 +72,16 @@ export default class Player extends DynamicEssence {
         if (this.inShop) {
             // console.log(this.currentShop);
             if (eventsMap['interact']) {
-                console.log('open shop');
-                this.currentShop.open(this.inShop);
+                // console.log('open shop');
+                this.currentShop.open();
             } else {
+                eventsMap['interact'] = false;
                 this.currentShop.close();
             }
         }
+
+        // console.log(eventsMap);
+
 
         // this.vx = 0; this.vy = 0;
 

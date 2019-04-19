@@ -1,3 +1,9 @@
+.shop {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+}
+
 .shop-background {
     margin: 0;
     padding: 0;
@@ -42,39 +48,77 @@
     width: 100%;
     height: 100px;
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     border-bottom: 1px solid red;
+
+    transition: 0.2s linear;
+}
+
+.shop__menu-item img {
+    height: 70px;
+    width: 70px;
+
+    filter: invert(24%) sepia(91%) saturate(7411%) hue-rotate(357deg) brightness(96%) contrast(113%);
+}
+
+.shop__menu-item:hover {
+    background-color: red;
+
+    transition: 0.2s linear;
+}
+
+.shop__menu-item:hover img {
+    filter: invert(100%);
 }
 
 .weapon__about {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: center;
 
     width: 70%;
     /* height: 100% */
 }
 
+.weapon__about-name {
+    width: 100%;
+    text-align: center;
+    color: red;
+    margin: 0;
+}
+
 .weapon__about-main {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    /* justify-content: space-around; */
     
-    width: 50%;
+    align-items: center;
+
+    /* width: 50%; */
     padding: 5px;
 }
 
-.weapon__about-image {
+.weapon__about-main-image {
+    margin: auto;
     width: 100px;
     height: 100px;
+
+    justify-self: center;
+
+    filter: invert(24%) sepia(91%) saturate(7411%) hue-rotate(357deg) brightness(96%) contrast(113%);
 }
 
-.weapon__about-info-purchase {
-    font-size: 25px;
+.weapon__about-main-purchase {
+    font-size: 15px;
     
     border-radius: 5px;
     border: solid red 1px;
 
     width: 98%;
+    height: 50px;
 
     color: red;
     background: rgba(255, 255, 255, 0.5);
@@ -84,8 +128,8 @@
     outline: none;
 }
 
-.weapon__about-info-purchase:hover {
-    font-size: 30px;
+.weapon__about-main-purchase:hover {
+    font-size: 20px;
     
     border: solid white 1px;
 
@@ -105,6 +149,39 @@
     padding: 5px;
 }
 
-.weapon__about-info p {
+.weapon__about-info-property {
+    width: 100%;
+
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.weapon__about-info-property-item {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    align-items: baseline;
+}
+
+.weapon__about-info-property-item img {
+    width: 40px;
+    height: 40px;
+
+    filter: invert(24%) sepia(91%) saturate(7411%) hue-rotate(357deg) brightness(96%) contrast(113%);
+}
+
+.weapon__about-info-property-item h2 {
+    color: red;
+    margin: 0;
+}
+
+.weapon__about-info-description {
+    width: 100%;
+    height: 40%;
+}
+
+.weapon__about-info-description h3 {
     text-align: justify;
+    color: red;
+    padding: 5px;
 }
