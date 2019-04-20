@@ -13,7 +13,7 @@ export default class Router {
 
     run() {
         // this.go(window.location.pathname);
-        this.go('/play');
+        this.go('/');
 
         this.app.addEventListener('click', (event) => {
             console.log("CLICK");

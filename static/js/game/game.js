@@ -83,7 +83,7 @@ export default class Game {
 
         // Игровые параметры
         this.objects['players'].forEach(player =>{
-            player.score = Infinity;
+            player.score = 0;
         }); 
         this.currentTime = 0;
     }
