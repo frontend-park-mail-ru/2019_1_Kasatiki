@@ -29,12 +29,12 @@ export default class LeaderboardComponent {
 		// Шаблон без div, так как div прописан в шаблоне борды
 		let templateScript = '';
 		if (this._pagesDict._currentPage > 1) {
-			templateScript += '<button href="/leaderboard?offset={{data.prev}}" class="prev leaderboard_page-button"><i class="fas fa-arrow-left"></i></button>';
+			templateScript += '<button href="/leaderboard?offset={{prev}}" class="prev leaderboard_page-button"><i class="fas fa-arrow-left"></i></button>';
 		}
-		templateScript += '<h1 class="leaderboard_page-pageNumber">{{data.curr}}</h1>';
+		templateScript += '<h1 class="leaderboard_page-pageNumber">{{curr}}</h1>';
 		console.log(this._pagesDict._totalPages, this._pagesDict._currentPage);
 		if (this._pagesDict._currentPage < this._pagesDict._totalPages) {
-			templateScript += '<button href="/leaderboard?offset={{data.next}}" class="next leaderboard_page-button"><i class="fas fa-arrow-right"></i></button>';
+			templateScript += '<button href="/leaderboard?offset={{next}}" class="next leaderboard_page-button"><i class="fas fa-arrow-right"></i></button>';
 		}
 		
 		console.log(templateScript);

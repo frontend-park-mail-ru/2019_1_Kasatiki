@@ -12,8 +12,8 @@ export default class Router {
     }
 
     run() {
-        // this.go(window.location.pathname);
-        this.go('/leaderboard?offset=3');
+        this.go(window.location.pathname);
+        // this.go('/leaderboard?offset=3');
 
         this.app.addEventListener('click', (event) => {
             event.preventDefault();

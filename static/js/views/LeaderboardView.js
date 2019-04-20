@@ -20,6 +20,7 @@ export default class LeaderboardView extends BaseView {
         if (urlData.search !== '') {
             offset = this._getURLParams(urlData.search)[ 'offset' ];
         }
+        offset = parseInt(offset);
         console.log("OFFFFFSET: ", offset);
         NetworkHandler.doGet({
 			callback(data) {
