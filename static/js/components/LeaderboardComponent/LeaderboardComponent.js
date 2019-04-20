@@ -25,16 +25,26 @@ export default class LeaderboardComponent {
 		this._paginatorSection = this._parentElement;
 	}
 
-	_renderPaginator() {
+	_renderPaginator(offset) {
 		// Шаблон без div, так как div прописан в шаблоне борды
-		const templateScript = `
-			<button class="prev leaderboard_page-button"><i class="fas fa-arrow-left"></i></button>
-			<h1 class="leaderboard_page-pageNumber">{{_currentPage}}</h1>
-			<button class="next leaderboard_page-button"><i class="fas fa-arrow-right"></i></button>
-		`;
+		let templateScript = '';
+		if (this._pagesDict._currentPage > 1) {
+			templateScript += '<button href="/leaderboard?offset={{data.prev}}" class="prev leaderboard_page-button"><i class="fas fa-arrow-left"></i></button>';
+		}
+		templateScript += '<h1 class="leaderboard_page-pageNumber">{{data.curr}}</h1>';
+		console.log(this._pagesDict._totalPages, this._pagesDict._currentPage);
+		if (this._pagesDict._currentPage < this._pagesDict._totalPages) {
+			templateScript += '<button href="/leaderboard?offset={{data.next}}" class="next leaderboard_page-button"><i class="fas fa-arrow-right"></i></button>';
+		}
 		
+		console.log(templateScript);
 		const template = Handlebars.compile(templateScript);
-		this._paginatorSection.innerHTML += template(this._pagesDict);
+		let data = {
+			prev: offset-1,
+			curr: offset,
+			next: offset+1,
+		}
+		this._paginatorSection.innerHTML += template(data);
 	}
 
 	// Методы борды
@@ -57,14 +67,16 @@ export default class LeaderboardComponent {
 	 * Метод для отрисоки leader board.
 	 * @param {array} users - массив данных о пользователях.
 	 */
-	render() {
+	render(offset) {
+		this._pagesDict._currentPage = offset;
+
 		// Итерируясь по юзерам, выводим строки таблицы
 		// Зарание создал место для пагинатора: <div class="paginatorSection"></div>
 		const templateScript = `
 		<div class="leaderboard">
 			<h1 class="leaderboard__title">Leaderboard</h1>
 			<div class="board">
-				{{#each .}} 
+				{{#each .}}
 				<div class="board__player">
 					<h3 class="board__player-place">{{ID}}</h3>
 					<h3 class="board__player-nickname">{{nickname}}</h3>
@@ -86,6 +98,6 @@ export default class LeaderboardComponent {
 		this._paginatorSection = this._parentElement.querySelector('.paginator-section');
 
 		// Рендерю пагинатор в _paginatorSection
-		this._renderPaginator();
+		this._renderPaginator(offset);
 	}
 }

@@ -16,20 +16,30 @@ export default class LeaderboardView extends BaseView {
 
     show(urlData) {
         const that = this;
-        let offset = '?offset=1';
+        let offset = 1;
         if (urlData.search !== '') {
-            offset = urlData.search;
+            offset = this._getURLParams(urlData.search)[ 'offset' ];
         }
         console.log("OFFFFFSET: ", offset);
         NetworkHandler.doGet({
 			callback(data) {
                 that.LeaderboardComponent._usersArr = data;
-                console.log(data);
-				that.LeaderboardComponent.render();
+				that.LeaderboardComponent.render(offset);
 			},
-			path: '/api/leaderboard' + offset,
+			path: '/api/leaderboard?offset=' + offset,
 		});
     }
+
+    _getURLParams(url) {
+        let urlParams = {};
+        url.replace(
+            new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+            function($0, $1, $2, $3) {
+                urlParams[$1] = $3;
+            }
+        );
+        return urlParams;
+      }
 
     initSpecialRoutes() {
 
