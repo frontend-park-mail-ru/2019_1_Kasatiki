@@ -19,6 +19,11 @@ export default class Player extends DynamicEssence {
 
         this.score;
 
+        this.inventory = {
+            weapons : [],
+            buffs : [],
+        };
+
         this.inShop;
         this.currentShop;
 

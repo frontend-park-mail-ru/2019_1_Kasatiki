@@ -61,6 +61,9 @@ export default class Screen {
         objects['shops'].forEach(obj => {
             obj.render(that.ctx);
         });
+        objects['buffers'].forEach(obj => {
+            obj.render(that.ctx);
+        });
     }
 
     showInfo(score, health) {

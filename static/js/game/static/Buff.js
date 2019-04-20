@@ -1,27 +1,39 @@
 import StaticEssence from './StaticEssence.js';
 
-import buffConfigs from '../configs/buffConfigs.js';
+export default class Buff {
+    constructor(
+        xPos,
+        yPos,
 
-export default class Buff extends StaticEssence {
-    constructor(buff) {
-        super(...arguments);
-        this.buff = buffConfigs.increaseVelocity;
+        xSize = 50,
+        ySize = 50,
+
+        cfg = {},
+    ) {
+        this.xPos = xPos;
+        this.yPos = yPos;
+
+        // Его размеры 
+        this.xSize = xSize; // vh
+        this.ySize = ySize; // vh
+
+        this.cfg = cfg;
         this.visited = false;
     }
 
-    _render(canvasContext) {
-        canvasContext.fillRect(
-            this.xPos,
-            this.yPos,
-            this.xSize,
-            this.ySize);
+    render(ctx) {
+        ctx.beginPath();
+        ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);
+        ctx.fillStyle = this.cfg.color;
+        ctx.fill();
+        ctx.closePath();
     }
 
-    interact(person, buffObj) {
-        if (!buffObj.visited) {
-            console.log(buffObj.visited);
-            person.addBuff(person, buffObj.buff);
-            buffObj.visited = true;
+    interact(obj) {
+        if (this.cfg.name == 'heal') {
+            obj.hp += this.cfg.value;
+        } else if (this.cfg.name == 'boost') {
+            obj.velocity += this.cfg.value;
         }
     }
 }

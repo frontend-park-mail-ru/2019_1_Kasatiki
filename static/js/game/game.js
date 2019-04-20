@@ -9,6 +9,8 @@ import Bullet from './dynamic/bullet.js'
 import Adv from './dynamic/Adv.js'
 import Shop from './static/Shop.js';
 
+import buffConfigs from '../game/configs/buffConfigs.js';
+
 export default class Game {
     constructor( 
         root = document.body,
@@ -70,18 +72,18 @@ export default class Game {
             5
         );
 
-        this._buff = new Buff(
-            100, 10,
-            20, 20,
-            "none"
-        )
+        // this._buff = new Buff(
+        //     100, 10,
+        //     20, 20,
+        //     "none"
+        // )
 
         this.objects['players'].push(this._player)
-        this.objects['buffers'].push(this._buff);
+        // this.objects['buffers'].push(this._buff);
 
         // Игровые параметры
         this.objects['players'].forEach(player =>{
-            player.score = 500;
+            player.score = Infinity;
         }); 
         this.currentTime = 0;
     }
@@ -210,6 +212,20 @@ export default class Game {
         this._spawnBarriers();
     }
 
+    _spawnBuffs(count) {
+        for (let i = 0; i < count; i++) {
+            let idx = Math.floor(Math.random() * 1.999);
+            let buff = new Buff(
+                Math.floor(Math.random() * this._screen.height),
+                Math.floor(Math.random() * this._screen.width),
+                20, 20,
+                buffConfigs[idx],
+            );
+            console.log(buff.cfg);
+            this.objects['buffers'].push(buff);
+        }
+    }
+
     // Вспомогательная сетка
     // _drawGrid() {
     //     const that = this;
@@ -244,6 +260,8 @@ export default class Game {
             this.waveCount++;
             // console.log(this.totalAdvSpawn)
             this._spawnAdvs(this.totalAdvSpawn);
+            this._spawnBuffs(5);
+            // console.log(this.objects['buffers']);
         }
 
         this.waveTrigger = false;
@@ -267,8 +285,8 @@ export default class Game {
                     }
                 } else {
                     let bullet = new Bullet(
-                        this.objects['players'][0].centerX,
-                        this.objects['players'][0].centerY,
+                        this.objects['players'][0].centerX - this.objects['players'][0].weapon.bulletSize / 2,
+                        this.objects['players'][0].centerY - this.objects['players'][0].weapon.bulletSize / 2,
                         this.objects['players'][0].weapon.bulletSize,
                         this.objects['players'][0].weapon.bulletSize,
                         this.objects['players'][0].weapon.bulletColor,

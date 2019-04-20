@@ -32,8 +32,8 @@ export default class CollisionHandler {
         let PlayersAdvsCollision = this._getPairCollisions(objects['players'], objects['advs']);
         let BarriersAdvsCollision = this._getPairCollisions(objects['barriers'], objects['advs']);
         let PlayersShopsCollision = this._getPairCollisions(objects['players'], objects['shops']);
-
-
+        let PlayersBuffsCollision = this._getPairCollisions(objects['players'], objects['buffers']);
+        let BuffsBarriersCollision = this._getPairCollisions(objects['buffers'], objects['barriers']);
 
         if (PlayerBarrierCollision.length != 0) {
             PlayerBarrierCollision.forEach( pair => {
@@ -93,6 +93,19 @@ export default class CollisionHandler {
                 objects['players'][0].inShop = false;
                 objects['shops'][0].close(); 
             }
+        }
+
+        if (PlayersBuffsCollision.length != 0) {
+            PlayersBuffsCollision.forEach( pair => {
+                pair.second.secondObj.interact(pair.first.firstObj);
+                objects['buffers'].splice(pair.second.sidx, 1);
+            });
+        }
+
+        if (BuffsBarriersCollision.length != 0) {
+            BuffsBarriersCollision.forEach(pair => {
+                objects['buffers'].splice(pair.first.fidx, 1);
+            })
         }
     }
 

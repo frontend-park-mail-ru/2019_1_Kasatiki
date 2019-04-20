@@ -18,8 +18,9 @@ export default class Adv extends DynamicEssence {
         this.advUrl = 'http://ya.ru';
 
         this.teta;
+        this.deltaColor = null;
 
-        this.color = 9100;
+        this.color = 9400;
     }
             // // Геттеры
 
@@ -65,11 +66,14 @@ export default class Adv extends DynamicEssence {
 
     interact(obj) {
         if (obj.name == 'bullet') {
-            let deltaColor = 810 / obj.damage;
+            if (this.deltaColor === null) {
+                this.deltaColor = Math.floor(this.color * obj.damage / this.hp);
+                console.log('damage:',obj.damage,'delta:', this.deltaColor)
+            }
             this.hp -= obj.damage;
             this.xPos = this.xPrev;
             this.yPos = this.yPrev;
-            this.color -= 50 * deltaColor;
+            this.color -= this.deltaColor;
             return this.hp;
         } else if (obj.name == 'player') {
             this.hp = 0;
