@@ -64,7 +64,7 @@ export default class Router {
         if (!route) {
             return;
         }
-        if (window.location.pathname !== path) {
+        if (window.location.pathname !==  urlData.href) {
             window.history.pushState(null, '', urlData.href);
         }
 
