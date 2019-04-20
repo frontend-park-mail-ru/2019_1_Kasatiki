@@ -1,7 +1,5 @@
-const { NetworkHandler } = window;
-
 export default class LeaderboardComponent {
-    	/**
+    /**
 	 * Конструктор
 	 * @param {Object} parentElement - Элемент DOM дерева,
 	 * куда будет отрисовываться leader board.
@@ -9,7 +7,7 @@ export default class LeaderboardComponent {
 	constructor(
 		parentElement = document.body,
 		usersPerPage = 5,
-		totalPages = 2,
+		totalPages = 5,
 	) {
 		// Поля таблицы
 		this._parentElement = parentElement;
@@ -27,58 +25,6 @@ export default class LeaderboardComponent {
 		this._paginatorSection = this._parentElement;
 	}
 
-	// Методы пагинатора
-
-	// Методы пагинатора рендарят борду
-	/**
-	 * Метод отрисовки предыдущей страницы.
-	 */
-	_getPrevPage() {
-		if (this._pagesDict._currentPage > 1) 
-		{ 
-			this._pagesDict._currentPage--;
-
-			// Формирую оффсет, который передается на бэк
-			const offset = this._pagesDict._currentPage * this._usersPerPage;
-
-			const that = this;
-
-			NetworkHandler.doGet({
-				callback(data) {
-					// Принимаю ответ с бэка с отсортирваными пользователями, 
-					// записываю его в _usersArr, отрисовываю борду
-					that._usersArr = data;
-					that.render();
-				},
-				path: `/api/leaderboard?offset=${offset}`,
-			});
-		}
-	}
-
-	/**
-	 * Метод отрисовки следующей страницы.
-	 */
-	_getNextPage() {
-		if (this._pagesDict._currentPage < this._pagesDict._totalPages) 
-		{
-			this._pagesDict._currentPage++;
-
-			const offset = this._pagesDict._currentPage * this._usersPerPage;
-	
-			const that = this;
-	
-			NetworkHandler.doGet({
-				callback(data) {
-					// Принимаю ответ с бэка с отсортирваными пользователями, 
-					// записываю его в _usersArr, отрисовываю борду
-					that._usersArr = data;
-					that.render();
-				},
-				path: `/api/leaderboard?offset=${offset}`,
-			});
-		} 
-	}
-
 	_renderPaginator() {
 		// Шаблон без div, так как div прописан в шаблоне борды
 		const templateScript = `
@@ -89,22 +35,6 @@ export default class LeaderboardComponent {
 		
 		const template = Handlebars.compile(templateScript);
 		this._paginatorSection.innerHTML += template(this._pagesDict);
-
-		const prevButton = this._parentElement.querySelector('.prev');
-		const nextButton = this._parentElement.querySelector('.next');
-
-		// Отрисовываю сначалу борду, создавая тем самым
-		nextButton.addEventListener('click', () => {
-			this._paginatorSection.innerHTML = '';
-			this._getNextPage();
-			this._renderPaginator();
-		});
-
-		prevButton.addEventListener('click', () => {
-			this._paginatorSection.innerHTML = '';
-			this._getPrevPage();
-			this._renderPaginator();
-		});
 	}
 
 	// Методы борды
@@ -128,7 +58,6 @@ export default class LeaderboardComponent {
 	 * @param {array} users - массив данных о пользователях.
 	 */
 	render() {
-		this._parentElement.innerHTML = '';
 		// Итерируясь по юзерам, выводим строки таблицы
 		// Зарание создал место для пагинатора: <div class="paginatorSection"></div>
 		const templateScript = `
@@ -150,7 +79,7 @@ export default class LeaderboardComponent {
 		`;
 
 		const template = Handlebars.compile(templateScript);
-		this._parentElement.innerHTML += template(this._usersArr);
+		this._parentElement.innerHTML = template(this._usersArr);
 
 		// Вытаскиваю из DOM'а <div class="paginatorSection"></div>, записываю его в 
 		// _paginatorSection: 

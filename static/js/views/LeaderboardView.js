@@ -14,14 +14,20 @@ export default class LeaderboardView extends BaseView {
         this.initSpecialRoutes();
     }
 
-    show() {
+    show(urlData) {
         const that = this;
+        let offset = '?offset=1';
+        if (urlData.search !== '') {
+            offset = urlData.search;
+        }
+        console.log("OFFFFFSET: ", offset);
         NetworkHandler.doGet({
 			callback(data) {
-				that.LeaderboardComponent._usersArr = data;
+                that.LeaderboardComponent._usersArr = data;
+                console.log(data);
 				that.LeaderboardComponent.render();
 			},
-			path: '/api/leaderboard?offset=1',
+			path: '/api/leaderboard' + offset,
 		});
     }
 
