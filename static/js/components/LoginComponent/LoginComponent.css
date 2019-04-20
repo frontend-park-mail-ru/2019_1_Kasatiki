@@ -38,6 +38,11 @@
     outline: none;
 }
 
+.login_error_text {
+    font-size: 16px;
+    color: red;
+}
+
 .login__btn-section {
     display: flex;
     flex-wrap: wrap;

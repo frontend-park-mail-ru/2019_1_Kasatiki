@@ -75,6 +75,8 @@ export default class SignupView extends BaseView {
                 console.log('Success:',data);
                 if (data === 201) {
                     that.router.go('/');
+                } else if (data === 409) {
+                    that.SignupComponent.setErrorText("This email/nickname is already registered");                    
                 }
             },
             path: '/api/signup',

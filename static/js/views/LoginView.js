@@ -68,8 +68,8 @@ export default class LoginView extends BaseView {
                     // console.log('data in login:', data);
                     // that.router.handle('profile', data);
                     that.router.go('/');
-                } else {
-                    that.LoginComponent.setErrorText(data.Error);
+                } else if (data === 404) {
+                    that.LoginComponent.setErrorText("Wrong login or password");
                 }
             },
             path: '/api/login',
