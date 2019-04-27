@@ -31,8 +31,10 @@ export default class MenuComponent {
             </div>
             <div class="chat">
                 <div class="chat__chatbox"></div>
-                <input type="text" class="chat__input">
-                <input type="submit" class="chat__submit" value="send">
+                <form class="chat__form">
+                    <input type="text" class="chat__input">
+                    <button type="submit" class="chat__submit">Send</button>
+                </form>
             </div>
         `;
         } else {
@@ -51,8 +53,6 @@ export default class MenuComponent {
         const template = Handlebars.compile(templateScript);
 		return template(data);
     }
-
-
 
     _doSmt() {
         console.log("i am not private");

@@ -1,6 +1,7 @@
 import BaseView from './View.js';
 
 import MenuComponent from '../components/MenuComponent/MenuComponent.js';
+import ws from '../modules/ws.js';
 
 const { NetworkHandler } = window;
 
@@ -23,6 +24,16 @@ export default class MenuView extends BaseView {
                     const buttonsSection = document.getElementById('menu__profile-buttons-section');
                     profileSection.addEventListener('mouseover', showButtons, false);
                     profileSection.addEventListener('mouseout', hideButtons, false);
+
+                    // const sendButton = document.querySelector('.chat__submit');
+                    const chatForm = document.querySelector('.chat__form');
+                    const chatInput = document.querySelector('.chat__input');
+                    console.log(sendButton, chatInput);
+                    chatForm.onsubmit('click', () => {
+                        let message = chatInput.value;
+
+                        ws.send(message);
+                    })
         
                     function showButtons(e) {
                         // console.log('on');
