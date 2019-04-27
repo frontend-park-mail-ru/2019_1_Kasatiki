@@ -29,6 +29,11 @@ export default class MenuComponent {
                     <a href="#" class="options__link">Hate with us!</a>
                 </div>  
             </div>
+            <div class="chat">
+                <div class="chat__chatbox"></div>
+                <input type="text" class="chat__input">
+                <input type="submit" class="chat__submit" value="send">
+            </div>
         `;
         } else {
             templateScript = `

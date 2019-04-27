@@ -21,6 +21,9 @@ export default class Barrier {
         // Его размеры 
         this.xSize = xSize; // vh
         this.ySize = ySize; // vh
+
+        this.centerX = this.xPos + this.xSize / 2;
+        this.centerY = this.yPos + this.ySize / 2;
     }
 
     render(ctx) {

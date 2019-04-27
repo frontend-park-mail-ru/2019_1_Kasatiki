@@ -157,8 +157,25 @@ export default class Player extends DynamicEssence {
             //     this.yPos = this.yPrev - 1;
             // }
 
-            this.xPos = this.xPrev;
-            this.yPos = this.yPrev;
+            let vecX = this.centerX - obj.centerX;
+            let vecY = this.centerY - obj.centerY;
+
+            if (vecY * vecY > vecX * vecX) {
+                if (vecY < 0) {
+                    this.bottom = obj.top;
+                } else if (vecY > 0){
+                    this.top = obj.bottom;
+                } 
+            } else if (vecY * vecY < vecX * vecX) {
+                if (vecX > 0) {
+                    this.left = obj.right;
+                } else if (vecX < 0) {
+                    this.right = obj.left;
+                }
+            }
+
+            // this.xPos = this.xPrev;
+            // this.yPos = this.yPrev;
         } else if (obj.name == 'adv') { 
             this.hp -= 50;
         } else if (obj.name == 'shop') {

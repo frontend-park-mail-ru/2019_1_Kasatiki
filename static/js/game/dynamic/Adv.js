@@ -84,16 +84,7 @@ export default class Adv extends DynamicEssence {
             // this.xPos = this.xPrev;
             // this.yPos = this.yPrev;
 
-            // if (this.left < obj.right) {
-            //     this.xPos = this.xPrev + 1;
-            // } else if (this.right > obj.left) {
-            //     console.log('sprava');
-            //     this.xPos = this.xPrev - 1;
-            // } else if (this.top < obj.bottom) {
-            //     this.yPos = this.yPrev + 1;
-            // } else if (this.bottom > obj.top) {
-            //     this.yPos = this.yPrev - 1;
-            // }
+            // prev
 
             if (this.curTargetX - this.center.x > 0) {
                 if (this.right >= obj.left) {
@@ -119,41 +110,22 @@ export default class Adv extends DynamicEssence {
                 }
             }
 
-            // if (this.left < obj.right || this.right > obj.left) {
-            //     if (this.center.y - obj.top >= this.center.y - obj.bottom) {
-            //         // this.yPos = this.yPrev;
-            //         this.yPos -= this.velocity;
-            //     } else if (this.center.y - obj.top <= this.center.y - obj.bottom) {
-            //         // this.yPos = this.yPrev;
-            //         this.yPos += this.velocity;
-            //     }
-            // } 
-            
-            // if (this.top < obj.bottom || this.bottom > obj.top) {
-            //     if (this.center.x - obj.left >= this.center.x - obj.right) {
-            //         // this.xPos = this.xPrev;
-            //         this.xPos += this.velocity;
-            //     } else if (this.center.x - obj.left <= this.center.x - obj.right){
-            //         // this.xPos = this.xPrev;   
-            //         this.xPos -= this.velocity;
-            //     }
-            // }
+            let vecX = this.centerX - obj.centerX;
+            let vecY = this.centerY - obj.centerY;
 
-            // if (Math.abs(obj.xPos - this.curTargetX) >= Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {
-            //     this.xPos = this.xPrev + this.velocity;
-            //     this.yPos = this.yPrev;
-            // } else if (Math.abs(obj.xPos - this.curTargetX) < Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {
-            //     this.xPos = this.xPrev - this.velocity;
-            //     this.yPos = this.yPrev
-            // }
-
-            // if (Math.abs(obj.yPos - this.curTargetY) >= Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {
-            //     this.yPos = this.yPrev + this.velocity;
-            //     this.xPos = this.xPrev;
-            // } else if (Math.abs(obj.yPos - this.curTargetY) < Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {
-            //     this.yPos = this.yPrev - this.velocity;
-            //     this.xPos = this.xPrev;
-            // }
+            if (vecY * vecY > vecX * vecX) {
+                if (vecY < 0) {
+                    this.bottom = obj.top;
+                } else if (vecY > 0){
+                    this.top = obj.bottom;
+                } 
+            } else if (vecY * vecY < vecX * vecX) {
+                if (vecX > 0) {
+                    this.left = obj.right;
+                } else if (vecX < 0) {
+                    this.right = obj.left;
+                }
+            }
 
         }
     }

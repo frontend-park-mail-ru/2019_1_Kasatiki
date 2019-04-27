@@ -1,4 +1,4 @@
-// // const ws = new WebSocket('127.0.0.1:8080/ws');
+// const ws = new WebSocket('127.0.0.1:8080/ws');
 // // const ws = new WebSocket('https://advhater.ru/ws');
 
 // ws.onopen = () => {

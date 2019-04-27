@@ -260,7 +260,7 @@ export default class Game {
             this.waveCount++;
             // console.log(this.totalAdvSpawn)
             this._spawnAdvs(this.totalAdvSpawn);
-            this._spawnBuffs(5);
+            // this._spawnBuffs(5);
             // console.log(this.objects['buffers']);
         }
 
