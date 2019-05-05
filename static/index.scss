@@ -1,6 +1,10 @@
-@import 'const';
-@import 'form';
-@import 'LoginComponent';
+@import 'styles/const';
+@import 'styles/form';
+
+@import 'js/components/LoginComponent/LoginComponent';
+@import 'js/components/SignupComponent/SignupComponent';
+@import 'js/components/LeaderboardComponent/LeaderboardComponent';
+@import 'js/components/MenuComponent/MenuComponent';
 
 html, body {
     display: flex;
@@ -8,6 +12,8 @@ html, body {
     width: 100vw;
     height: 100vh;
 
-    color: $main-font-color;
+    margin: 0px;
+
+    color: $main-color;
     font-family: $main-font-family;
 }

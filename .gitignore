@@ -21,6 +21,7 @@ _testmain.go
 ./idea
 *.xml
 *.iml
+*.css
 
 /VERSION.cache
 /bin/

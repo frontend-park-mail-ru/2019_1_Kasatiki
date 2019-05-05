@@ -1,3 +1,6 @@
+@import '../../../styles/const';
+@import '../../../styles/form';
+
 .leaderboard {
     display: flex;
     flex-wrap: wrap;
@@ -20,7 +23,7 @@
 
     text-align: center;
 
-    color: red;
+    color: $main-color;
 }
 
 .paginator-section {
@@ -45,7 +48,7 @@
     margin: none;
     width: 32%;
 
-    border: solid 1px red;
+    border: $main-border;
 }
 
 .board__player {
@@ -57,7 +60,7 @@
     margin: 0px 0px 2px 0px;
 
     border-radius: 5px;
-    border: solid 1px red;
+    border: $main-border;
 
     transition: 0.2s linear;
 }
@@ -74,9 +77,9 @@
     font-size: 25px;
 
     border-radius: 5px;
-    border: solid red 1px;
+    border: $main-border;
 
-    color: red;
+    color: $main-color;
     background: rgba(255, 255, 255, 0.5);
 
     transition: 0.2s linear;
@@ -87,10 +90,10 @@
 .leaderboard_back-button:hover {
     font-size: 30px;
 
-    border: solid white 1px;
+    border: $main-alternative-border;
 
-    background-color: red;
-    color: white;
+    background-color: $main-color;
+    color: $main-alternative-color;
 
     transition: 0.2s linear;
 }
@@ -103,9 +106,9 @@
     font-size: 10px;
 
     border-radius: 5px;
-    border: solid red 1px;
+    border: $main-border;
 
-    color: red;
+    color: $main-color;
     background: rgba(255, 255, 255, 0.5);
 
     transition: 0.2s linear;
@@ -117,10 +120,10 @@
 .leaderboard_page-button:hover {
     font-size: 15px;
 
-    border: solid white 1px;
+    border: $main-alternative-border;
 
-    background-color: red;
-    color: white;
+    background-color: $main-color;
+    color: $main-alternative-color;
 
     transition: 0.2s linear;
 }

@@ -1,4 +1,6 @@
-.signup {
+@import 'const';
+
+@mixin main-form-section {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -8,30 +10,27 @@
     height: 150px;
 }
 
-@media screen and (max-width: 600px) {
-    .signup {
-        width: 90vw;
-    }
-}
-
-.signup-form {
+@mixin main-form {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-
-    /* width: 100%; */
 }
 
-.signup-btn {
+@mixin main-form__title {
+    width: 100%;
+    text-align: center;
+}
+
+@mixin main-form-btn {
     font-size: 25px;
 
     width: 48%;
     height: 50px;
 
     border-radius: 5px;
-    border: solid red 1px;
+    border: $main-border;
 
-    color: red;
+    color: $main-color;
     background: rgba(255, 255, 255, 0.5);
 
     transition: 0.2s linear;
@@ -44,12 +43,12 @@
     outline: none;
 }
 
-.signup_error_text {
+@mixin main-form_error_text {
     font-size: 16px;
-    color: red;
+    color: $main-color;
 }
 
-.signup__btn-section {
+@mixin main-form__btn-section {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
@@ -58,68 +57,62 @@
     width: 100%;
 }
 
-.signup-btn:hover {
+@mixin main-form-btn_hover {
     font-size: 30px;
 
-    border: solid white 1px;
+    border: $main-alternative-border;
 
-    background-color: red;
-    color: white;
+    background-color: $main-color;
+    color: $main-alternative-color;
 
     transition: 0.2s linear;
 }
 
-.signup__input-border {
+@mixin main-form__input-border {
     display: flex;
 
     margin: 5px;
     width: 100%;
     height: 50px;
     
-    border: solid 1px red;
+    border: $main-border;
     border-radius: 5px;
 
     background: rgba(255, 255, 255, 0.5);
 }
 
-.signup__input {
+@mixin main-form__input {
     margin: 5px;
     width: 100%;
 
     border: 0px;
+    border-radius: 5px;
     
     background: rgba(255, 255, 255, 0.5);
-    color: red;
+    color: $main-color;
 
     outline: none;
 
     transition: 0.2s linear;
 }
 
-.signup__input:valid {
-    background: white;
-    color: red;
+@mixin main-form__input_valid {
+    color: $main-color;
+    background: $main-alternative-color;
 }
 
-.signup__input:invalid {
-    background: red;
-    color: white;
+@mixin main-form__input_invalid {
+    color: $main-alternative-color;
+    background: $main-color;
 }
 
-.signup__input:hover {
-    background: rgba(255, 255, 255, 0.5);
-    color: red;
-
-    transition: 0.2s linear;
-}
-
-::placeholder {
+@mixin main-form__placeholder {
     color: #D2CFCF;
 }
 
-.signup__title {
-    width: 100%;
-    text-align: center;
+@mixin main-form__input_hover {
+    background: rgba(255, 255, 255, 0.5);
+    color: $main-color;
 
-    color: red;
+    transition: 0.2s linear;
 }
