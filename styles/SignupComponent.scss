@@ -1,7 +1,7 @@
 @import 'form';
 
 .signup {
-    @extend %main-form-section;
+    @include main-form-section;
 }
 
 @media screen and (max-width: 600px) {
@@ -11,49 +11,49 @@
 }
 
 .signup-form {
-    @extend %main-form;
+    @include main-form;
 }
 
 .signup-btn {
-    @extend %main-form-btn;
+    @include main-form-btn;
 }
 
 .signup_error_text {
-    @extend %main-form_error_text;
+    @include main-form_error_text;
 }
 
 .signup__btn-section {
-    @extend %main-form__btn-section;
+    @include main-form__btn-section;
 }
 
 .signup-btn:hover {
-    @extend %main-form-btn_hover;
+    @include main-form-btn_hover;
 }
 
 .signup__input-border {
-    @extend %main-form__input-border;
+    @include main-form__input-border;
 }
 
 .signup__input {
-    @extend %main-form__input;
+    @include main-form__input;
 }
 
 .signup__input:valid {
-    @extend %main-form__input_valid;
+    @include main-form__input_valid;
 }
 
 .signup__input:invalid {
-    @extend %main-form__input_invalid;
+    @include main-form__input_invalid;
 }
 
 .signup__input:hover {
-    @extend %main-form__input_hover;
+    @include main-form__input_hover;
 }
 
 ::placeholder {
-    @extend %main-form__placeholder;
+    @include main-form__placeholder;
 }
 
 .signup__title {
-    @extend %main-form__title;
+    @include main-form__title;
 }
