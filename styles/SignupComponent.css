@@ -1,4 +1,4 @@
-.login {
+.signup {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -9,12 +9,12 @@
 }
 
 @media screen and (max-width: 600px) {
-    .login {
+    .signup {
         width: 90vw;
     }
 }
 
-.login-form {
+.signup-form {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -22,7 +22,7 @@
     /* width: 100%; */
 }
 
-.login-btn {
+.signup-btn {
     font-size: 25px;
 
     width: 48%;
@@ -44,12 +44,12 @@
     outline: none;
 }
 
-.login_error_text {
+.signup_error_text {
     font-size: 16px;
     color: red;
 }
 
-.login__btn-section {
+.signup__btn-section {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
@@ -58,7 +58,7 @@
     width: 100%;
 }
 
-.login-btn:hover {
+.signup-btn:hover {
     font-size: 30px;
 
     border: solid white 1px;
@@ -69,7 +69,7 @@
     transition: 0.2s linear;
 }
 
-.login__input-border {
+.signup__input-border {
     display: flex;
 
     margin: 5px;
@@ -82,7 +82,7 @@
     background: rgba(255, 255, 255, 0.5);
 }
 
-.login__input {
+.signup__input {
     margin: 5px;
     width: 100%;
 
@@ -96,17 +96,17 @@
     transition: 0.2s linear;
 }
 
-.login__input:valid {
+.signup__input:valid {
     background: white;
     color: red;
 }
 
-.login__input:invalid {
+.signup__input:invalid {
     background: red;
     color: white;
 }
 
-.login__input:hover {
+.signup__input:hover {
     background: rgba(255, 255, 255, 0.5);
     color: red;
 
@@ -117,7 +117,7 @@
     color: #D2CFCF;
 }
 
-.login__title {
+.signup__title {
     width: 100%;
     text-align: center;
 
