@@ -52,4 +52,6 @@ _testmain.go
 /node_modules
 package-lock.json
 2019_1_Kasatiki
+*.js.map
+*.css.map
 # /static/bundle.js
