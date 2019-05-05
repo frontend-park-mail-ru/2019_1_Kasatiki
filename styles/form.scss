@@ -1,0 +1,117 @@
+@import 'const';
+
+%main-form-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    margin: 20vh auto auto auto;
+    width: 450px;
+    height: 150px;
+}
+
+%main-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+%main-form__title {
+    width: 100%;
+    text-align: center;
+}
+
+%main-form-btn {
+    font-size: 25px;
+
+    width: 48%;
+    height: 50px;
+
+    border-radius: 5px;
+    border: $main-border;
+
+    color: $main-font-color;
+    background: rgba(255, 255, 255, 0.5);
+
+    transition: 0.2s linear;
+
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+
+    outline: none;
+}
+
+%main-form_error_text {
+    font-size: 16px;
+    color: $main-font-color;
+}
+
+%main-form__btn-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    margin: 5px;
+    width: 100%;
+}
+
+%main-form-btn_hover {
+    font-size: 30px;
+
+    border: $main-alternative-border;
+
+    background-color: $main-font-color;
+    color: $main-alternative-color;
+
+    transition: 0.2s linear;
+}
+
+%main-form__input-border {
+    display: flex;
+
+    margin: 5px;
+    width: 100%;
+    height: 50px;
+    
+    border: $main-border;
+    border-radius: 5px;
+
+    background: rgba(255, 255, 255, 0.5);
+}
+
+%main-form__input {
+    margin: 5px;
+    width: 100%;
+
+    border: 0px;
+    
+    background: rgba(255, 255, 255, 0.5);
+    color: $main-font-color;
+
+    outline: none;
+
+    transition: 0.2s linear;
+}
+
+%main-form__input_valid {
+    color: $main-font-color;
+    background: $main-alternative-color;
+}
+
+%main-form__input_invalid {
+    color: $main-alternative-font-color;
+    background: $main-color;
+}
+
+%main-form__placeholder {
+    color: #D2CFCF;
+}
+
+%main-form__input_hover {
+    background: rgba(255, 255, 255, 0.5);
+    color: $main-font-color;
+
+    transition: 0.2s linear;
+}

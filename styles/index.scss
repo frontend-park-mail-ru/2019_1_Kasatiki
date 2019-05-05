@@ -1,0 +1,13 @@
+@import 'const';
+@import 'form';
+@import 'LoginComponent';
+
+html, body {
+    display: flex;
+
+    width: 100vw;
+    height: 100vh;
+
+    color: $main-font-color;
+    font-family: $main-font-family;
+}
