@@ -1,7 +1,6 @@
 import BaseView from './View.js';
 
 import MenuComponent from '../components/MenuComponent/MenuComponent.js';
-import ws from '../modules/ws.js';
 
 const { NetworkHandler } = window;
 
@@ -28,12 +27,20 @@ export default class MenuView extends BaseView {
                     // const sendButton = document.querySelector('.chat__submit');
                     const chatForm = document.querySelector('.chat__form');
                     const chatInput = document.querySelector('.chat__input');
-                    console.log(sendButton, chatInput);
-                    chatForm.onsubmit('click', () => {
+                    
+                    console.log(chatForm);
+                    that.router.ws.setChatbox(document.querySelector('.chat__chatbox'));
+
+                    chatForm.addEventListener('click', () => {
                         let message = chatInput.value;
 
-                        ws.send(message);
+                        if (message !== '') {
+                            that.router.ws.send(message);
+
+                            chatInput.value = '';
+                        }
                     })
+
         
                     function showButtons(e) {
                         // console.log('on');

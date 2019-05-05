@@ -22,7 +22,7 @@ export default class MenuComponent {
                         <button href="/logout" class="profile-button">Logout</button>
                     </div>
                 </div>
-                <button href="/play" class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
+                <button href="/chosemode" class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
                 <div class="options">
                     <a href="#" class="options__link">Report bug</a>
                     <a href="#" class="options__link">Help</a>
@@ -33,7 +33,7 @@ export default class MenuComponent {
                 <div class="chat__chatbox"></div>
                 <form class="chat__form">
                     <input type="text" class="chat__input">
-                    <button type="submit" class="chat__submit">Send</button>
+                    <input type="submit" class="chat__submit" value="Allo">
                 </form>
             </div>
         `;

@@ -1,6 +1,6 @@
 import Router from './js/modules/Router.js';
 import './js/modules/NetworkHandler.js';
-import './js/modules/ws.js';
+// import './js/modules/ws.js';
 
 import MenuView from './js/views/MenuView.js';
 import LoginView from './js/views/LoginView.js';
@@ -10,6 +10,7 @@ import CountdownView from './js/views/CountdownView.js';
 import LeaderboardView from './js/views/LeaderboardView.js';
 import GameView from './js/views/GameView.js';
 import PaymentsView from './js/views/PaymentsView.js';
+import MpSpChose from './js/views/MpSpChose.js'
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
@@ -30,4 +31,5 @@ router.add('/signup', SignupView);
 router.add('/leaderboard', LeaderboardView);
 router.add('/play', GameView);
 router.add('/payment', PaymentsView);
+router.add('/chosemode', MpSpChose);
 router.run();
