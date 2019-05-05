@@ -30,7 +30,7 @@
     border-radius: 5px;
     border: $main-border;
 
-    color: $main-font-color;
+    color: $main-color;
     background: rgba(255, 255, 255, 0.5);
 
     transition: 0.2s linear;
@@ -45,7 +45,7 @@
 
 %main-form_error_text {
     font-size: 16px;
-    color: $main-font-color;
+    color: $main-color;
 }
 
 %main-form__btn-section {
@@ -62,7 +62,7 @@
 
     border: $main-alternative-border;
 
-    background-color: $main-font-color;
+    background-color: $main-color;
     color: $main-alternative-color;
 
     transition: 0.2s linear;
@@ -86,9 +86,10 @@
     width: 100%;
 
     border: 0px;
+    border-radius: 5px;
     
     background: rgba(255, 255, 255, 0.5);
-    color: $main-font-color;
+    color: $main-color;
 
     outline: none;
 
@@ -96,12 +97,12 @@
 }
 
 %main-form__input_valid {
-    color: $main-font-color;
+    color: $main-color;
     background: $main-alternative-color;
 }
 
 %main-form__input_invalid {
-    color: $main-alternative-font-color;
+    color: $main-alternative-color;
     background: $main-color;
 }
 
@@ -111,7 +112,7 @@
 
 %main-form__input_hover {
     background: rgba(255, 255, 255, 0.5);
-    color: $main-font-color;
+    color: $main-color;
 
     transition: 0.2s linear;
 }
