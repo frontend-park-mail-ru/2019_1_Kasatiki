@@ -8,6 +8,12 @@
     height: 154px;
 }
 
+@media screen and (max-width: 650px) {
+    .leaderboard {
+        width: 90vw;
+    }
+}
+
 .leaderboard__title {
     margin: none;
     width: 100%;

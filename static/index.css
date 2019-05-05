@@ -1,8 +1,8 @@
 @import url('js/components/MenuComponent/MenuComponent.css');
 @import url('js/components/LoginComponent/LoginComponent.css');
 @import url('js/components/SignupComponent/SignupComponent.css');
+@import url('js/components/LeaderboardComponent/LeaderboardComponent.css');
 /* @import url('js/components/CountdownComponent/CountdownComponent.css'); */
-/* @import url('js/components/LeaderboardComponent/LeaderboardComponent.css'); */
 
 html, body {
     width: 100vw;
