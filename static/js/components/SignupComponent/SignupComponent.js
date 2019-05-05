@@ -7,41 +7,49 @@ export default class SignupComponent {
         let templateScript = '';
 		if (isAuth) {
 			templateScript = `
-                <h1 class="title">Вы уже авторизованы</h1>
+                <h1 class="signup__title">Вы уже авторизованы</h1>
 				<a href="/" class="btn">Назад</a>
             `;
 		} else {
-			templateScript = `
+            templateScript = `
                 <div class="signup">
-                    <h1 class="title">Sign Up</h1>
-                    <form id="signup-form">
-                        <input
-                            name="nickname"
-                            type="text"
-                            placeholder="Username"
-                            class="signup__input"
-                            autocomplete="on"
+                    <h1 class="signup__title">Sign Up</h1>	
+                    <form id="signup-form" class="signup-form">
+                        <div class="signup__input-border">
+                            <input
+                                name="nickname"
+                                type="text"
+                                placeholder="Username"
+                                class="signup__input"
+                                autocomplete="on"
                             >
-                        <input
-                            name="email"
-                            type="text"
-                            placeholder="Email"
-                            class="signup__input"
-                            autocomplete="on"
+                        </div>
+                        <div class="signup__input-border">
+                            <input
+                                name="email"
+                                type="text"
+                                placeholder="Email"
+                                class="signup__input"
+                                autocomplete="on"
                             >
-                        <input
-                            name="password"
-                            type="password"
-                            placeholder="Password"
-                            class="signup__input"
-                            autocomplete="on"
+                        </div>
+                        <div class="signup__input-border">
+                            <input
+                                name="password"
+                                type="password"
+                                placeholder="Password"
+                                class="signup__input"
+                                autocomplete="on"
                             >
-                        <input
-                            name="password_repeat"
-                            type="password"
-                            placeholder="Repeat Password"
-                            class="signup__input"
+                        </div>
+                        <div class="signup__input-border">
+                            <input
+                                name="password_repeat"
+                                type="password"
+                                placeholder="Repeat Password"
+                                class="signup__input"
                             >
+                        </div>
                         <div id="signup-form__error-text-field" class="signup_error_text"></div>  
                         <div class="signup__btn-section">
                             <button href="/" class="signup-btn"><i href="/" class="fas fa-undo-alt"></i></button>
