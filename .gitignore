@@ -54,4 +54,6 @@ package-lock.json
 2019_1_Kasatiki
 *.js.map
 *.css.map
+bundle.js
+*.css
 # /static/bundle.js
