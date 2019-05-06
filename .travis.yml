@@ -1,4 +1,11 @@
 --- 
+addons: 
+  ssh_known_hosts: advhater.ru
+before_deploy: 
+  - "openssl aes-256-cbc -K $encrypted_<...>_key -iv $encrypted_<...>_iv -in tr_rsa.enc -out /tmp/tr_rsa -d"
+  - "eval \"$(ssh-agent -s)\""
+  - "chmod 600 /tmp/tr_rsa"
+  - "ssh-add /tmp/tr_rsa"
 deploy: 
   provider: script
   skip_cleanup: true
