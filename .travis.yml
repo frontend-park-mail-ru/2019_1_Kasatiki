@@ -1,6 +1,7 @@
-language:node_js
-install: true
-deploy:
+--- 
+deploy: 
   provider: script
   skip_cleanup: true
-  script: scp -r $TRAVIS_BUILD_DIR/static evv@advhater.ru:/home/evv/test
+install: true
+language: node_js
+script: "scp -r $TRAVIS_BUILD_DIR/static evv@advhater.ru:/home/evv/test"
