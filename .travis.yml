@@ -11,4 +11,4 @@ deploy:
   skip_cleanup: true
 install: true
 language: node_js
-script: rsync -r $TRAVIS_BUILD_DIR/<dir> evv@advhater.ru:home/evv/test
+script: rsync -r $TRAVIS_BUILD_DIR/static evv@advhater.ru:home/evv/test
