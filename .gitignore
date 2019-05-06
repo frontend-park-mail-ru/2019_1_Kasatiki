@@ -51,4 +51,7 @@ _testmain.go
 
 /node_modules
 2019_1_Kasatiki
+*.js.map
+*.css.map
+# *.css
 # /static/bundle.js
