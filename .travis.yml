@@ -2,13 +2,13 @@
 addons: 
   ssh_known_hosts: advhater.ru
 before_deploy:
-- openssl aes-256-cbc -K $encrypted_<...>_key -iv $encrypted_<...>_iv -in deploy_rsa.enc -out /tmp/deploy_rsa -d
-- eval "$(ssh-agent -s)"
-- chmod 600 /tmp/deploy_rsa
-- ssh-add /tmp/deploy_rsa
+- openssl aes-256-cbc ...
+ - eval "$(ssh-agent -s)"
+ - chmod 600 .travis_deploy_key
+ - ssh-add .travis_deploy_key
 deploy: 
   provider: script
   skip_cleanup: true
 install: true
 language: node_js
-script: scp -r -i /tmp/deploy_rsa $TRAVIS_BUILD_DIR/static  evv@advhater.ru:/home/evv/test
+script: scp -r $TRAVIS_BUILD_DIR/static  evv@advhater.ru:/home/evv/test
