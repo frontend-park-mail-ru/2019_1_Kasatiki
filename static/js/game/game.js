@@ -1,3 +1,5 @@
+import GameView from '../views/GameView.js';
+
 import Screen from './functions/Screen.js'
 
 import CollisionHandler from './functions/collisionHandler.js';
@@ -311,7 +313,7 @@ export default class Game {
 
         this._checkDeath();
 
-        requestAnimationFrame(time => this.frame());
+        this.requestId = requestAnimationFrame(time => this.frame());
     }
 
     _checkDeath() {
@@ -322,6 +324,8 @@ export default class Game {
 
     // Поражение
     defeat() {
+        this.router.routes['/play'] = null;
+        this.router.add('/play', GameView);
         this.router.go('/');
         throw new Error('Ok');
     }
@@ -335,7 +339,7 @@ export default class Game {
     run() {
         this.canvas = this._screen.createCanvas();
         this._generateMap();
-        requestAnimationFrame(time => this.frame());
+        this.requestId = requestAnimationFrame(time => this.frame());
     }
 
 

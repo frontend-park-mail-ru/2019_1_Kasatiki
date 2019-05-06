@@ -2220,15 +2220,16 @@ function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Game; });
-/* harmony import */ var _functions_Screen_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./functions/Screen.js */ "./static/js/game/functions/Screen.js");
-/* harmony import */ var _functions_collisionHandler_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./functions/collisionHandler.js */ "./static/js/game/functions/collisionHandler.js");
-/* harmony import */ var _dynamic_Player_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./dynamic/Player.js */ "./static/js/game/dynamic/Player.js");
-/* harmony import */ var _static_Buff_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./static/Buff.js */ "./static/js/game/static/Buff.js");
-/* harmony import */ var _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./static/Barrier.js */ "./static/js/game/static/Barrier.js");
-/* harmony import */ var _functions_Handler_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./functions/Handler.js */ "./static/js/game/functions/Handler.js");
-/* harmony import */ var _dynamic_bullet_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./dynamic/bullet.js */ "./static/js/game/dynamic/bullet.js");
-/* harmony import */ var _dynamic_Adv_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./dynamic/Adv.js */ "./static/js/game/dynamic/Adv.js");
-/* harmony import */ var _static_Shop_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./static/Shop.js */ "./static/js/game/static/Shop.js");
+/* harmony import */ var _views_GameView_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../views/GameView.js */ "./static/js/views/GameView.js");
+/* harmony import */ var _functions_Screen_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./functions/Screen.js */ "./static/js/game/functions/Screen.js");
+/* harmony import */ var _functions_collisionHandler_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./functions/collisionHandler.js */ "./static/js/game/functions/collisionHandler.js");
+/* harmony import */ var _dynamic_Player_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./dynamic/Player.js */ "./static/js/game/dynamic/Player.js");
+/* harmony import */ var _static_Buff_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./static/Buff.js */ "./static/js/game/static/Buff.js");
+/* harmony import */ var _static_Barrier_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./static/Barrier.js */ "./static/js/game/static/Barrier.js");
+/* harmony import */ var _functions_Handler_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./functions/Handler.js */ "./static/js/game/functions/Handler.js");
+/* harmony import */ var _dynamic_bullet_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./dynamic/bullet.js */ "./static/js/game/dynamic/bullet.js");
+/* harmony import */ var _dynamic_Adv_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./dynamic/Adv.js */ "./static/js/game/dynamic/Adv.js");
+/* harmony import */ var _static_Shop_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./static/Shop.js */ "./static/js/game/static/Shop.js");
 function isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _construct(Parent, args, Class) { if (isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
@@ -2259,6 +2260,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var Game =
 /*#__PURE__*/
 function () {
@@ -2273,10 +2275,10 @@ function () {
     this._root = root;
     this._root.innerHTML = ''; // Игровой экран
 
-    this._screen = new _functions_Screen_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.root); // Вспомогательные функции
+    this._screen = new _functions_Screen_js__WEBPACK_IMPORTED_MODULE_1__["default"](this.root); // Вспомогательные функции
 
-    this.CollisionHandler = new _functions_collisionHandler_js__WEBPACK_IMPORTED_MODULE_1__["default"]();
-    this.handler = new _functions_Handler_js__WEBPACK_IMPORTED_MODULE_5__["default"](this._screen._canvas); // Массив объектов
+    this.CollisionHandler = new _functions_collisionHandler_js__WEBPACK_IMPORTED_MODULE_2__["default"]();
+    this.handler = new _functions_Handler_js__WEBPACK_IMPORTED_MODULE_6__["default"](this._screen._canvas); // Массив объектов
 
     this.eventsMap = {};
     this.objects = {}; // Генерация карты
@@ -2305,8 +2307,8 @@ function () {
     this.objects['barriers'] = [];
     this.objects['advs'] = [];
     this.objects['shops'] = [];
-    this._player = new _dynamic_Player_js__WEBPACK_IMPORTED_MODULE_2__["default"](Math.floor(this._screen.width / 2), Math.floor(this._screen.height / 2), 20, 20, "none", 5);
-    this._buff = new _static_Buff_js__WEBPACK_IMPORTED_MODULE_3__["default"](100, 10, 20, 20, "none");
+    this._player = new _dynamic_Player_js__WEBPACK_IMPORTED_MODULE_3__["default"](Math.floor(this._screen.width / 2), Math.floor(this._screen.height / 2), 20, 20, "none", 5);
+    this._buff = new _static_Buff_js__WEBPACK_IMPORTED_MODULE_4__["default"](100, 10, 20, 20, "none");
     this.objects['players'].push(this._player);
     this.objects['buffers'].push(this._buff); // Игровые параметры
 
@@ -2322,7 +2324,7 @@ function () {
         var vel = 3 * Math.random();
         var pos = Math.floor(3 * Math.random());
 
-        var adv = _construct(_dynamic_Adv_js__WEBPACK_IMPORTED_MODULE_7__["default"], _toConsumableArray(this.advsPos[pos]).concat(['none', vel]));
+        var adv = _construct(_dynamic_Adv_js__WEBPACK_IMPORTED_MODULE_8__["default"], _toConsumableArray(this.advsPos[pos]).concat(['none', vel]));
 
         this.objects['advs'].push(adv);
       }
@@ -2331,10 +2333,10 @@ function () {
   }, {
     key: "_createBoards",
     value: function _createBoards() {
-      var barrierTop = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](0, 0, this._screen.width, this.borderW);
-      var barrierLeft = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](0, 0, this.borderW, this._screen.height);
-      var barrierRight = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](this._screen.width - this.borderW, this.borderW, this._screen.width, this._screen.height);
-      var barrierBottom = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](this.borderW, this._screen.height - this.borderW, this._screen.width - this.borderW, this._screen.height);
+      var barrierTop = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_5__["default"](0, 0, this._screen.width, this.borderW);
+      var barrierLeft = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_5__["default"](0, 0, this.borderW, this._screen.height);
+      var barrierRight = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_5__["default"](this._screen.width - this.borderW, this.borderW, this._screen.width, this._screen.height);
+      var barrierBottom = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_5__["default"](this.borderW, this._screen.height - this.borderW, this._screen.width - this.borderW, this._screen.height);
       this.objects['barriers'].push(barrierTop, barrierLeft, barrierRight, barrierBottom);
     } // Вычисляем параметры сетки
 
@@ -2402,28 +2404,28 @@ function () {
               switch (idxs[p]) {
                 case 0:
                   {
-                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](xSection, ySection, that.prm['xBlockSize'], that.prm['yBlockSize']);
+                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_5__["default"](xSection, ySection, that.prm['xBlockSize'], that.prm['yBlockSize']);
                     that.objects['barriers'].push(barrier);
                     break;
                   }
 
                 case 1:
                   {
-                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](xSection + that.prm['xBlockSize'], ySection, that.prm['xBlockSize'], that.prm['yBlockSize']);
+                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_5__["default"](xSection + that.prm['xBlockSize'], ySection, that.prm['xBlockSize'], that.prm['yBlockSize']);
                     that.objects['barriers'].push(barrier);
                     break;
                   }
 
                 case 2:
                   {
-                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](xSection, ySection + that.prm['yBlockSize'], that.prm['xBlockSize'], that.prm['yBlockSize']);
+                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_5__["default"](xSection, ySection + that.prm['yBlockSize'], that.prm['xBlockSize'], that.prm['yBlockSize']);
                     that.objects['barriers'].push(barrier);
                     break;
                   }
 
                 case 3:
                   {
-                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](xSection + that.prm['xBlockSize'], ySection + that.prm['yBlockSize'], that.prm['xBlockSize'], that.prm['yBlockSize']);
+                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_5__["default"](xSection + that.prm['xBlockSize'], ySection + that.prm['yBlockSize'], that.prm['xBlockSize'], that.prm['yBlockSize']);
                     that.objects['barriers'].push(barrier);
                     break;
                   }
@@ -2489,7 +2491,7 @@ function () {
 
       if (this.eventsMap['mouseClick']) {
         if (Date.now() - this.lastFire > 100) {
-          var bullet = new _dynamic_bullet_js__WEBPACK_IMPORTED_MODULE_6__["default"](this.objects['players'][0].centerX, this.objects['players'][0].centerY, 2, 2, '', 7, this.eventsMap['mouseX'], this.eventsMap['mouseY']);
+          var bullet = new _dynamic_bullet_js__WEBPACK_IMPORTED_MODULE_7__["default"](this.objects['players'][0].centerX, this.objects['players'][0].centerY, 2, 2, '', 7, this.eventsMap['mouseX'], this.eventsMap['mouseY']);
           this.objects['bullets'].push(bullet);
           this.lastFire = Date.now();
         }
@@ -2519,7 +2521,7 @@ function () {
         this.currentTime = 0;
         this.pauseTimer = 30 * 60;
         this.wavePause = true;
-        var shop = new _static_Shop_js__WEBPACK_IMPORTED_MODULE_8__["default"](this._screen.width - 120 - this.borderW, this._screen.height / 2, 100, 100);
+        var shop = new _static_Shop_js__WEBPACK_IMPORTED_MODULE_9__["default"](this._screen.width - 120 - this.borderW, this._screen.height / 2, 100, 100);
         this.objects['shops'].push(shop);
       }
 
@@ -2542,7 +2544,7 @@ function () {
 
       this._checkDeath();
 
-      requestAnimationFrame(function (time) {
+      this.requestId = requestAnimationFrame(function (time) {
         return _this.frame();
       });
     }
@@ -2557,6 +2559,8 @@ function () {
   }, {
     key: "defeat",
     value: function defeat() {
+      this.router.routes['/play'] = null;
+      this.router.add('/play', _views_GameView_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
       this.router.go('/');
       throw new Error('Ok');
     } // Победа 
@@ -2576,7 +2580,7 @@ function () {
 
       this._generateMap();
 
-      requestAnimationFrame(function (time) {
+      this.requestId = requestAnimationFrame(function (time) {
         return _this2.frame();
       });
     }
