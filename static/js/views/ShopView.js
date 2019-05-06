@@ -4,7 +4,7 @@ import ShopComponent from '../components/ShopComponent/ShopComponent.js';
 
 // const { NetworkHandler } = window;
 
-export default class SignupView{
+export default class ShopView {
     constructor(
         root,
         weapons

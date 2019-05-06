@@ -9,10 +9,14 @@ export default class PaymentsComponent {
 			templateScript = `
                 <div class="payments">
                     <h1 class="payments__title">Payments</h1>
-                    <form class="payments__input-section" onsubmit="this.send()" method="post" id="contact_form" required=""> 
-                        <input class="payments__input-section-input" type="text" name="phone" class="payments__phonenumber" placeholder="9xxxxxxxxx" required="">
-                        <input class="payments__input-section-input" type="text" name="amount" placeholder="100 $">
-                        <button href="/"><i class="fas fa-angle-left"></i></button>
+                    <form class="payments__input-section" onsubmit="this.send()" method="post" id="contact_form" required="">
+                        <div class="payments__input-border">
+                            <input class="payments__input-section-input" type="text" name="phone" class="payments__phonenumber" placeholder="9xxxxxxxxx" required="">
+                        </div>
+                        <div class="payments__input-border">
+                            <input class="payments__input-section-input" type="text" name="amount" placeholder="100 $">
+                        </div>
+                        <button href="/" class="payments__input-section-submit" ><i class="fas fa-angle-left"></i></button>
                         <button href="/payout" class="payments__input-section-submit" type="submit" id="form_button">Submit</button>
                     </form>
                 </div>
