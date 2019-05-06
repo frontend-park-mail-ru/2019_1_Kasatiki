@@ -81,10 +81,530 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./static/index.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ({
+
+/***/ "./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/src/index.js!./node_modules/sass-loader/lib/loader.js!./static/index.scss":
+/*!**************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/src!./node_modules/sass-loader/lib/loader.js!./static/index.scss ***!
+  \**************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/lib/addStyles.js":
+/*!****************************************************!*\
+  !*** ./node_modules/style-loader/lib/addStyles.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+var stylesInDom = {};
+
+var	memoize = function (fn) {
+	var memo;
+
+	return function () {
+		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+		return memo;
+	};
+};
+
+var isOldIE = memoize(function () {
+	// Test for IE <= 9 as proposed by Browserhacks
+	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+	// Tests for existence of standard globals is to allow style-loader
+	// to operate correctly into non-standard environments
+	// @see https://github.com/webpack-contrib/style-loader/issues/177
+	return window && document && document.all && !window.atob;
+});
+
+var getTarget = function (target, parent) {
+  if (parent){
+    return parent.querySelector(target);
+  }
+  return document.querySelector(target);
+};
+
+var getElement = (function (fn) {
+	var memo = {};
+
+	return function(target, parent) {
+                // If passing function in options, then use it for resolve "head" element.
+                // Useful for Shadow Root style i.e
+                // {
+                //   insertInto: function () { return document.querySelector("#foo").shadowRoot }
+                // }
+                if (typeof target === 'function') {
+                        return target();
+                }
+                if (typeof memo[target] === "undefined") {
+			var styleTarget = getTarget.call(this, target, parent);
+			// Special case to return head of iframe instead of iframe itself
+			if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
+				try {
+					// This will throw an exception if access to iframe is blocked
+					// due to cross-origin restrictions
+					styleTarget = styleTarget.contentDocument.head;
+				} catch(e) {
+					styleTarget = null;
+				}
+			}
+			memo[target] = styleTarget;
+		}
+		return memo[target]
+	};
+})();
+
+var singleton = null;
+var	singletonCounter = 0;
+var	stylesInsertedAtTop = [];
+
+var	fixUrls = __webpack_require__(/*! ./urls */ "./node_modules/style-loader/lib/urls.js");
+
+module.exports = function(list, options) {
+	if (typeof DEBUG !== "undefined" && DEBUG) {
+		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+
+	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
+
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (!options.singleton && typeof options.singleton !== "boolean") options.singleton = isOldIE();
+
+	// By default, add <style> tags to the <head> element
+        if (!options.insertInto) options.insertInto = "head";
+
+	// By default, add <style> tags to the bottom of the target
+	if (!options.insertAt) options.insertAt = "bottom";
+
+	var styles = listToStyles(list, options);
+
+	addStylesToDom(styles, options);
+
+	return function update (newList) {
+		var mayRemove = [];
+
+		for (var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+
+		if(newList) {
+			var newStyles = listToStyles(newList, options);
+			addStylesToDom(newStyles, options);
+		}
+
+		for (var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+
+			if(domStyle.refs === 0) {
+				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
+
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+};
+
+function addStylesToDom (styles, options) {
+	for (var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+
+		if(domStyle) {
+			domStyle.refs++;
+
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles (list, options) {
+	var styles = [];
+	var newStyles = {};
+
+	for (var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = options.base ? item[0] + options.base : item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+
+		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
+		else newStyles[id].parts.push(part);
+	}
+
+	return styles;
+}
+
+function insertStyleElement (options, style) {
+	var target = getElement(options.insertInto)
+
+	if (!target) {
+		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
+	}
+
+	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
+
+	if (options.insertAt === "top") {
+		if (!lastStyleElementInsertedAtTop) {
+			target.insertBefore(style, target.firstChild);
+		} else if (lastStyleElementInsertedAtTop.nextSibling) {
+			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			target.appendChild(style);
+		}
+		stylesInsertedAtTop.push(style);
+	} else if (options.insertAt === "bottom") {
+		target.appendChild(style);
+	} else if (typeof options.insertAt === "object" && options.insertAt.before) {
+		var nextSibling = getElement(options.insertAt.before, target);
+		target.insertBefore(style, nextSibling);
+	} else {
+		throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
+	}
+}
+
+function removeStyleElement (style) {
+	if (style.parentNode === null) return false;
+	style.parentNode.removeChild(style);
+
+	var idx = stylesInsertedAtTop.indexOf(style);
+	if(idx >= 0) {
+		stylesInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement (options) {
+	var style = document.createElement("style");
+
+	if(options.attrs.type === undefined) {
+		options.attrs.type = "text/css";
+	}
+
+	if(options.attrs.nonce === undefined) {
+		var nonce = getNonce();
+		if (nonce) {
+			options.attrs.nonce = nonce;
+		}
+	}
+
+	addAttrs(style, options.attrs);
+	insertStyleElement(options, style);
+
+	return style;
+}
+
+function createLinkElement (options) {
+	var link = document.createElement("link");
+
+	if(options.attrs.type === undefined) {
+		options.attrs.type = "text/css";
+	}
+	options.attrs.rel = "stylesheet";
+
+	addAttrs(link, options.attrs);
+	insertStyleElement(options, link);
+
+	return link;
+}
+
+function addAttrs (el, attrs) {
+	Object.keys(attrs).forEach(function (key) {
+		el.setAttribute(key, attrs[key]);
+	});
+}
+
+function getNonce() {
+	if (false) {}
+
+	return __webpack_require__.nc;
+}
+
+function addStyle (obj, options) {
+	var style, update, remove, result;
+
+	// If a transform function was defined, run it on the css
+	if (options.transform && obj.css) {
+	    result = typeof options.transform === 'function'
+		 ? options.transform(obj.css) 
+		 : options.transform.default(obj.css);
+
+	    if (result) {
+	    	// If transform returns a value, use that instead of the original css.
+	    	// This allows running runtime transformations on the css.
+	    	obj.css = result;
+	    } else {
+	    	// If the transform function returns a falsy value, don't add this css.
+	    	// This allows conditional loading of css
+	    	return function() {
+	    		// noop
+	    	};
+	    }
+	}
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+
+		style = singleton || (singleton = createStyleElement(options));
+
+		update = applyToSingletonTag.bind(null, style, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
+
+	} else if (
+		obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function"
+	) {
+		style = createLinkElement(options);
+		update = updateLink.bind(null, style, options);
+		remove = function () {
+			removeStyleElement(style);
+
+			if(style.href) URL.revokeObjectURL(style.href);
+		};
+	} else {
+		style = createStyleElement(options);
+		update = applyToTag.bind(null, style);
+		remove = function () {
+			removeStyleElement(style);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle (newObj) {
+		if (newObj) {
+			if (
+				newObj.css === obj.css &&
+				newObj.media === obj.media &&
+				newObj.sourceMap === obj.sourceMap
+			) {
+				return;
+			}
+
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag (style, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (style.styleSheet) {
+		style.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = style.childNodes;
+
+		if (childNodes[index]) style.removeChild(childNodes[index]);
+
+		if (childNodes.length) {
+			style.insertBefore(cssNode, childNodes[index]);
+		} else {
+			style.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag (style, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		style.setAttribute("media", media)
+	}
+
+	if(style.styleSheet) {
+		style.styleSheet.cssText = css;
+	} else {
+		while(style.firstChild) {
+			style.removeChild(style.firstChild);
+		}
+
+		style.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink (link, options, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	/*
+		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
+		and there is no publicPath defined then lets turn convertToAbsoluteUrls
+		on by default.  Otherwise default to the convertToAbsoluteUrls option
+		directly
+	*/
+	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
+
+	if (options.convertToAbsoluteUrls || autoFixUrls) {
+		css = fixUrls(css);
+	}
+
+	if (sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = link.href;
+
+	link.href = URL.createObjectURL(blob);
+
+	if(oldSrc) URL.revokeObjectURL(oldSrc);
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/lib/urls.js":
+/*!***********************************************!*\
+  !*** ./node_modules/style-loader/lib/urls.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+
+/**
+ * When source maps are enabled, `style-loader` uses a link element with a data-uri to
+ * embed the css on the page. This breaks all relative urls because now they are relative to a
+ * bundle instead of the current page.
+ *
+ * One solution is to only use full urls, but that may be impossible.
+ *
+ * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
+ *
+ * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
+ *
+ */
+
+module.exports = function (css) {
+  // get current location
+  var location = typeof window !== "undefined" && window.location;
+
+  if (!location) {
+    throw new Error("fixUrls requires window.location");
+  }
+
+	// blank or null?
+	if (!css || typeof css !== "string") {
+	  return css;
+  }
+
+  var baseUrl = location.protocol + "//" + location.host;
+  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
+
+	// convert each url(...)
+	/*
+	This regular expression is just a way to recursively match brackets within
+	a string.
+
+	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
+	   (  = Start a capturing group
+	     (?:  = Start a non-capturing group
+	         [^)(]  = Match anything that isn't a parentheses
+	         |  = OR
+	         \(  = Match a start parentheses
+	             (?:  = Start another non-capturing groups
+	                 [^)(]+  = Match anything that isn't a parentheses
+	                 |  = OR
+	                 \(  = Match a start parentheses
+	                     [^)(]*  = Match anything that isn't a parentheses
+	                 \)  = Match a end parentheses
+	             )  = End Group
+              *\) = Match anything and then a close parens
+          )  = Close non-capturing group
+          *  = Match anything
+       )  = Close capturing group
+	 \)  = Match a close parens
+
+	 /gi  = Get all matches, not the first.  Be case insensitive.
+	 */
+	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
+		// strip quotes (if they exist)
+		var unquotedOrigUrl = origUrl
+			.trim()
+			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
+			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
+
+		// already a full url? no change
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/|\s*$)/i.test(unquotedOrigUrl)) {
+		  return fullMatch;
+		}
+
+		// convert the url to a full url
+		var newUrl;
+
+		if (unquotedOrigUrl.indexOf("//") === 0) {
+		  	//TODO: should we add protocol?
+			newUrl = unquotedOrigUrl;
+		} else if (unquotedOrigUrl.indexOf("/") === 0) {
+			// path should be relative to the base url
+			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
+		} else {
+			// path should be relative to current directory
+			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
+		}
+
+		// send back the fixed url(...)
+		return "url(" + JSON.stringify(newUrl) + ")";
+	});
+
+	// send back the fixed css
+	return fixedCss;
+};
+
+
+/***/ }),
 
 /***/ "./static/index.js":
 /*!*************************!*\
@@ -94,7 +614,79 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _js_modules_Router_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./js/modules/Router.js */ \"./static/js/modules/Router.js\");\n/* harmony import */ var _js_modules_NetworkHandler_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/modules/NetworkHandler.js */ \"./static/js/modules/NetworkHandler.js\");\n/* harmony import */ var _js_views_MenuView_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/views/MenuView.js */ \"./static/js/views/MenuView.js\");\n/* harmony import */ var _js_views_LoginView_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./js/views/LoginView.js */ \"./static/js/views/LoginView.js\");\n/* harmony import */ var _js_views_LogoutView_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./js/views/LogoutView.js */ \"./static/js/views/LogoutView.js\");\n/* harmony import */ var _js_views_SignupView_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./js/views/SignupView.js */ \"./static/js/views/SignupView.js\");\n/* harmony import */ var _js_views_LeaderboardView_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./js/views/LeaderboardView.js */ \"./static/js/views/LeaderboardView.js\");\n/* harmony import */ var _js_views_GameView_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./js/views/GameView.js */ \"./static/js/views/GameView.js\");\n/* harmony import */ var _js_views_PaymentsView_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./js/views/PaymentsView.js */ \"./static/js/views/PaymentsView.js\");\n/* harmony import */ var _js_views_ShopView_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./js/views/ShopView.js */ \"./static/js/views/ShopView.js\");\n\n // import './js/modules/ws.js';\n\n\n\n\n // import CountdownView from './js/views/CountdownView.js';\n\n\n\n\n\n\nif ('serviceWorker' in navigator) {\n  navigator.serviceWorker.register('sw.js').then(function (reg) {\n    console.log('sw reg success:', reg);\n  })[\"catch\"](function (err) {\n    console.error('sw reg err:', err);\n  });\n}\n\nvar router = new _js_modules_Router_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](document.body);\nrouter.add('/', _js_views_MenuView_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"]); // router.add('/countdown', CountdownView);\n\nrouter.add('/login', _js_views_LoginView_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"]);\nrouter.add('/logout', _js_views_LogoutView_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"]);\nrouter.add('/signup', _js_views_SignupView_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"]);\nrouter.add('/leaderboard', _js_views_LeaderboardView_js__WEBPACK_IMPORTED_MODULE_6__[\"default\"]);\nrouter.add('/play', _js_views_GameView_js__WEBPACK_IMPORTED_MODULE_7__[\"default\"]);\nrouter.add('/payout', _js_views_PaymentsView_js__WEBPACK_IMPORTED_MODULE_8__[\"default\"]);\nrouter.add('/shop', _js_views_ShopView_js__WEBPACK_IMPORTED_MODULE_9__[\"default\"]);\nrouter.run();\n\n//# sourceURL=webpack:///./static/index.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _js_modules_Router_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./js/modules/Router.js */ "./static/js/modules/Router.js");
+/* harmony import */ var _js_modules_NetworkHandler_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./js/modules/NetworkHandler.js */ "./static/js/modules/NetworkHandler.js");
+/* harmony import */ var _js_views_MenuView_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/views/MenuView.js */ "./static/js/views/MenuView.js");
+/* harmony import */ var _js_views_LoginView_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./js/views/LoginView.js */ "./static/js/views/LoginView.js");
+/* harmony import */ var _js_views_LogoutView_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./js/views/LogoutView.js */ "./static/js/views/LogoutView.js");
+/* harmony import */ var _js_views_SignupView_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./js/views/SignupView.js */ "./static/js/views/SignupView.js");
+/* harmony import */ var _js_views_LeaderboardView_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./js/views/LeaderboardView.js */ "./static/js/views/LeaderboardView.js");
+/* harmony import */ var _js_views_GameView_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./js/views/GameView.js */ "./static/js/views/GameView.js");
+/* harmony import */ var _js_views_PaymentsView_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./js/views/PaymentsView.js */ "./static/js/views/PaymentsView.js");
+/* harmony import */ var _js_views_ShopView_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./js/views/ShopView.js */ "./static/js/views/ShopView.js");
+
+ // import './js/modules/ws.js';
+
+
+
+
+ // import CountdownView from './js/views/CountdownView.js';
+
+
+
+
+ // if ('serviceWorker' in navigator) {
+//     navigator.serviceWorker.register('sw.js')
+//     .then((reg) => {
+//         console.log('sw reg success:', reg);
+//     })
+//     .catch((err) => {
+//         console.error('sw reg err:', err);
+//     });
+// }
+
+var router = new _js_modules_Router_js__WEBPACK_IMPORTED_MODULE_0__["default"](document.body);
+router.add('/', _js_views_MenuView_js__WEBPACK_IMPORTED_MODULE_2__["default"]); // router.add('/countdown', CountdownView);
+
+router.add('/login', _js_views_LoginView_js__WEBPACK_IMPORTED_MODULE_3__["default"]);
+router.add('/logout', _js_views_LogoutView_js__WEBPACK_IMPORTED_MODULE_4__["default"]);
+router.add('/signup', _js_views_SignupView_js__WEBPACK_IMPORTED_MODULE_5__["default"]);
+router.add('/leaderboard', _js_views_LeaderboardView_js__WEBPACK_IMPORTED_MODULE_6__["default"]);
+router.add('/play', _js_views_GameView_js__WEBPACK_IMPORTED_MODULE_7__["default"]);
+router.add('/payout', _js_views_PaymentsView_js__WEBPACK_IMPORTED_MODULE_8__["default"]);
+router.add('/shop', _js_views_ShopView_js__WEBPACK_IMPORTED_MODULE_9__["default"]);
+router.run();
+
+/***/ }),
+
+/***/ "./static/index.scss":
+/*!***************************!*\
+  !*** ./static/index.scss ***!
+  \***************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../node_modules/mini-css-extract-plugin/dist/loader.js!../node_modules/css-loader/dist/cjs.js!../node_modules/postcss-loader/src!../node_modules/sass-loader/lib/loader.js!./index.scss */ "./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/src/index.js!./node_modules/sass-loader/lib/loader.js!./static/index.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
 
 /***/ }),
 
@@ -106,7 +698,116 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _js_
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return LeaderboardComponent; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar LeaderboardComponent =\n/*#__PURE__*/\nfunction () {\n  /**\n  * Конструктор\n  * @param {Object} parentElement - Элемент DOM дерева,\n  * куда будет отрисовываться leader board.\n  */\n  function LeaderboardComponent() {\n    var parentElement = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document.body;\n    var usersPerPage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 5;\n    var totalPages = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 5;\n\n    _classCallCheck(this, LeaderboardComponent);\n\n    // Поля таблицы\n    this._parentElement = parentElement;\n    this._usersArr = {}; // Поля пагинатора\n\n    this._usersPerPage = usersPerPage;\n    this._pagesDict = {\n      _currentPage: 1,\n      _totalPages: totalPages\n    }; // Блок пагинатора\n\n    this._paginatorSection = this._parentElement;\n  }\n\n  _createClass(LeaderboardComponent, [{\n    key: \"_renderPaginator\",\n    value: function _renderPaginator(offset) {\n      // Шаблон без div, так как div прописан в шаблоне борды\n      var templateScript = '';\n\n      if (this._pagesDict._currentPage > 1) {\n        templateScript += '<button href=\"/leaderboard?offset={{prev}}\" class=\"prev leaderboard_page-button\"><i class=\"fas fa-arrow-left\"></i></button>';\n      } else {\n        templateScript += '<button class=\"leaderboard_page-button-inactive\"><i class=\"fas fa-arrow-left\"></i></button>';\n      }\n\n      templateScript += '<h1 class=\"leaderboard_page-pageNumber\">{{curr}}</h1>';\n      console.log(this._pagesDict._totalPages, this._pagesDict._currentPage);\n\n      if (this._pagesDict._currentPage < this._pagesDict._totalPages) {\n        templateScript += '<button href=\"/leaderboard?offset={{next}}\" class=\"next leaderboard_page-button\"><i class=\"fas fa-arrow-right\"></i></button>';\n      } else {\n        templateScript += '<button class=\"leaderboard_page-button-inactive\"><i class=\"fas fa-arrow-right\"></i></button>';\n      }\n\n      console.log(templateScript);\n      var template = Handlebars.compile(templateScript);\n      var data = {\n        prev: offset - 1,\n        curr: offset,\n        next: offset + 1\n      };\n      this._paginatorSection.innerHTML += template(data);\n    } // Методы борды\n\n    /**\n     * Геттер данных о пользователях.\n     */\n\n  }, {\n    key: \"render\",\n\n    /**\n     * Метод для отрисоки leader board.\n     * @param {array} users - массив данных о пользователях.\n     */\n    value: function render(offset) {\n      this._pagesDict._currentPage = offset; // Итерируясь по юзерам, выводим строки таблицы\n      // Зарание создал место для пагинатора: <div class=\"paginatorSection\"></div>\n\n      var templateScript = \"\\n\\t\\t<div class=\\\"leaderboard\\\">\\n\\t\\t\\t<h1 class=\\\"leaderboard__title\\\">LEADERBOARD</h1>\\n\\t\\t\\t<div class=\\\"board\\\">\\n\\t\\t\\t\\t{{#each .}}\\n\\t\\t\\t\\t<div class=\\\"board__player\\\">\\n\\t\\t\\t\\t\\t<h3 class=\\\"board__player-place\\\">{{ID}}</h3>\\n\\t\\t\\t\\t\\t<h3 class=\\\"board__player-nickname\\\">{{nickname}}</h3>\\n\\t\\t\\t\\t\\t<h3 class=\\\"board__player-points\\\">{{Points}}</h3>\\n\\t\\t\\t\\t</div>\\n\\t\\t\\t\\t{{/each}} \\n\\t\\t\\t</div>\\n\\t\\t\\t<div class=\\\"paginator-section\\\"></div>\\n\\t\\t\\t<button class=\\\"leaderboard_back-button\\\" href=\\\"/\\\" data-section=\\\"menu\\\"><i href=\\\"/\\\" class=\\\"fas fa-chevron-left\\\"></i>\\n\\t\\t\\t</button>\\n\\t\\t</div>\\n\\t\\t\";\n      var template = Handlebars.compile(templateScript);\n      this._parentElement.innerHTML = template(this._usersArr); // Вытаскиваю из DOM'а <div class=\"paginatorSection\"></div>, записываю его в \n      // _paginatorSection: \n\n      this._paginatorSection = this._parentElement.querySelector('.paginator-section'); // Рендерю пагинатор в _paginatorSection\n\n      this._renderPaginator(offset);\n    }\n  }, {\n    key: \"users\",\n    get: function get() {\n      return this._usersArr;\n    }\n    /**\n     * Сеттер данных о пользователях.\n    */\n    ,\n    set: function set() {\n      var users = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];\n      this._usersArr = users;\n    }\n  }]);\n\n  return LeaderboardComponent;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/components/LeaderboardComponent/LeaderboardComponent.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LeaderboardComponent; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var LeaderboardComponent =
+/*#__PURE__*/
+function () {
+  /**
+  * Конструктор
+  * @param {Object} parentElement - Элемент DOM дерева,
+  * куда будет отрисовываться leader board.
+  */
+  function LeaderboardComponent() {
+    var parentElement = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document.body;
+    var usersPerPage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 5;
+    var totalPages = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 5;
+
+    _classCallCheck(this, LeaderboardComponent);
+
+    // Поля таблицы
+    this._parentElement = parentElement;
+    this._usersArr = {}; // Поля пагинатора
+
+    this._usersPerPage = usersPerPage;
+    this._pagesDict = {
+      _currentPage: 1,
+      _totalPages: totalPages
+    }; // Блок пагинатора
+
+    this._paginatorSection = this._parentElement;
+  }
+
+  _createClass(LeaderboardComponent, [{
+    key: "_renderPaginator",
+    value: function _renderPaginator(offset) {
+      // Шаблон без div, так как div прописан в шаблоне борды
+      var templateScript = '';
+
+      if (this._pagesDict._currentPage > 1) {
+        templateScript += '<button href="/leaderboard?offset={{prev}}" class="prev leaderboard_page-button"><i class="fas fa-arrow-left"></i></button>';
+      } else {
+        templateScript += '<button class="leaderboard_page-button-inactive"><i class="fas fa-arrow-left"></i></button>';
+      }
+
+      templateScript += '<h1 class="leaderboard_page-pageNumber">{{curr}}</h1>';
+      console.log(this._pagesDict._totalPages, this._pagesDict._currentPage);
+
+      if (this._pagesDict._currentPage < this._pagesDict._totalPages) {
+        templateScript += '<button href="/leaderboard?offset={{next}}" class="next leaderboard_page-button"><i class="fas fa-arrow-right"></i></button>';
+      } else {
+        templateScript += '<button class="leaderboard_page-button-inactive"><i class="fas fa-arrow-right"></i></button>';
+      }
+
+      console.log(templateScript);
+      var template = Handlebars.compile(templateScript);
+      var data = {
+        prev: offset - 1,
+        curr: offset,
+        next: offset + 1
+      };
+      this._paginatorSection.innerHTML += template(data);
+    } // Методы борды
+
+    /**
+     * Геттер данных о пользователях.
+     */
+
+  }, {
+    key: "render",
+
+    /**
+     * Метод для отрисоки leader board.
+     * @param {array} users - массив данных о пользователях.
+     */
+    value: function render(offset) {
+      this._pagesDict._currentPage = offset; // Итерируясь по юзерам, выводим строки таблицы
+      // Зарание создал место для пагинатора: <div class="paginatorSection"></div>
+
+      var templateScript = "\n\t\t<div class=\"leaderboard\">\n\t\t\t<h1 class=\"leaderboard__title\">LEADERBOARD</h1>\n\t\t\t<div class=\"board\">\n\t\t\t\t{{#each .}}\n\t\t\t\t<div class=\"board__player\">\n\t\t\t\t\t<h3 class=\"board__player-place\">{{ID}}</h3>\n\t\t\t\t\t<h3 class=\"board__player-nickname\">{{nickname}}</h3>\n\t\t\t\t\t<h3 class=\"board__player-points\">{{Points}}</h3>\n\t\t\t\t</div>\n\t\t\t\t{{/each}} \n\t\t\t</div>\n\t\t\t<div class=\"paginator-section\"></div>\n\t\t\t<button class=\"leaderboard_back-button\" href=\"/\" data-section=\"menu\"><i href=\"/\" class=\"fas fa-chevron-left\"></i>\n\t\t\t</button>\n\t\t</div>\n\t\t";
+      var template = Handlebars.compile(templateScript);
+      this._parentElement.innerHTML = template(this._usersArr); // Вытаскиваю из DOM'а <div class="paginatorSection"></div>, записываю его в 
+      // _paginatorSection: 
+
+      this._paginatorSection = this._parentElement.querySelector('.paginator-section'); // Рендерю пагинатор в _paginatorSection
+
+      this._renderPaginator(offset);
+    }
+  }, {
+    key: "users",
+    get: function get() {
+      return this._usersArr;
+    }
+    /**
+     * Сеттер данных о пользователях.
+    */
+    ,
+    set: function set() {
+      var users = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      this._usersArr = users;
+    }
+  }]);
+
+  return LeaderboardComponent;
+}();
+
+
 
 /***/ }),
 
@@ -118,7 +819,88 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return LoginComponent; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar LoginComponent =\n/*#__PURE__*/\nfunction () {\n  function LoginComponent() {\n    _classCallCheck(this, LoginComponent);\n  }\n\n  _createClass(LoginComponent, [{\n    key: \"render\",\n\n    /**\n     * Функция, возвращающая строку в формате html с формой логина.\n     * @param {boolean} isAuth - Статус авторизации пользователя.\n     */\n    value: function render(isAuth) {\n      var templateScript = \"\";\n\n      if (isAuth) {\n        templateScript = \"\\n                <h1 class=\\\"title\\\">\\u0412\\u044B \\u0443\\u0436\\u0435 \\u0430\\u0432\\u0442\\u043E\\u0440\\u0438\\u0437\\u043E\\u0432\\u0430\\u043D\\u044B</h1>\\n\\t\\t\\t\\t<a href=\\\"/\\\" class=\\\"btn\\\">\\u041D\\u0430\\u0437\\u0430\\u0434</a>\\n            \";\n      } else {\n        templateScript = \"\\n\\t\\t\\t\\t<div class=\\\"login\\\">\\n\\t\\t\\t\\t\\t<h1 class=\\\"login__title\\\">Login</h1>\\t\\n\\t\\t\\t\\t\\t<form id=\\\"login-form\\\" class=\\\"login-form\\\">\\n\\t\\t\\t\\t\\t\\t<div class = \\\"login__input-border\\\">\\n\\t\\t\\t\\t\\t\\t\\t<input\\n\\t\\t\\t\\t\\t\\t\\t\\tname=\\\"login\\\"\\n\\t\\t\\t\\t\\t\\t\\t\\ttype=\\\"text\\\"\\n\\t\\t\\t\\t\\t\\t\\t\\tplaceholder=\\\"Nickname\\\"\\n\\t\\t\\t\\t\\t\\t\\t\\tclass=\\\"login__input\\\"\\n\\t\\t\\t\\t\\t\\t\\t\\tid=\\\"login__input-login\\\"\\n\\t\\t\\t\\t\\t\\t\\t\\tautocomplete=\\\"on\\\"\\n\\t\\t\\t\\t\\t\\t\\t>\\n\\t\\t\\t\\t\\t\\t</div>\\n\\t\\t\\t\\t\\t\\t<div class = \\\"login__input-border\\\">\\n\\t\\t\\t\\t\\t\\t\\t<input\\n\\t\\t\\t\\t\\t\\t\\t\\tname=\\\"password\\\"\\n\\t\\t\\t\\t\\t\\t\\t\\ttype=\\\"password\\\"\\n\\t\\t\\t\\t\\t\\t\\t\\tplaceholder=\\\"Password\\\"\\n\\t\\t\\t\\t\\t\\t\\t\\tclass=\\\"login__input\\\"\\n\\t\\t\\t\\t\\t\\t\\t\\tid=\\\"login__input-password\\\"\\n\\t\\t\\t\\t\\t\\t\\t\\tautocomplete=\\\"on\\\"\\n\\t\\t\\t\\t\\t\\t\\t>\\n\\t\\t\\t\\t\\t\\t</div>\\n                        <div id=\\\"login__authorization-error-field\\\" class=\\\"login_error_text\\\"></div>\\n                        <div class=\\\"login__btn\\\">\\n                        </div>\\n\\t\\t\\t\\t\\t\\t<div class=\\\"login__btn-section\\\">\\n\\t\\t\\t\\t\\t\\t\\t<button href=\\\"/\\\" class=\\\"login-btn\\\"><i href=\\\"/\\\" class=\\\"fas fa-chevron-left\\\"></i></button>\\n\\t\\t\\t\\t\\t\\t\\t<button href=\\\"/authorizeuser\\\" class=\\\"login-btn\\\"><i href=\\\"/authorizeuser\\\" class=\\\"fas fa-angle-double-right\\\"></i></button>\\n\\t\\t\\t\\t\\t\\t</div>\\n\\t\\t\\t\\t\\t</form>\\n\\t\\t\\t\\t</div>\\n\\t\\t\\t\";\n      }\n\n      var template = Handlebars.compile(templateScript);\n      return template();\n    }\n  }, {\n    key: \"setOnChangeListener\",\n    value: function setOnChangeListener(input) {\n      var _this = this;\n\n      input.addEventListener(\"input\", function () {\n        _this.goodField(input); // this.setErrorText(\"\");\n        // this.style.background-color = 'white';\n\n      });\n    }\n  }, {\n    key: \"setErrorText\",\n    value: function setErrorText(text) {\n      if (typeof text !== 'string') {\n        console.log('NOTE: text is not string');\n        return;\n      }\n\n      var errorField = document.getElementById('login__authorization-error-field');\n      errorField.textContent = text;\n    }\n  }, {\n    key: \"goodField\",\n    value: function goodField(input) {\n      input.setCustomValidity(\"\");\n    }\n  }, {\n    key: \"errorField\",\n    value: function errorField(input) {\n      input.setCustomValidity(\"-_-\");\n    }\n  }, {\n    key: \"login\",\n    get: function get() {\n      return document.getElementById('login__input-login');\n    }\n  }, {\n    key: \"password\",\n    get: function get() {\n      return document.getElementById('login__input-password');\n    }\n  }]);\n\n  return LoginComponent;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/components/LoginComponent/LoginComponent.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LoginComponent; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var LoginComponent =
+/*#__PURE__*/
+function () {
+  function LoginComponent() {
+    _classCallCheck(this, LoginComponent);
+  }
+
+  _createClass(LoginComponent, [{
+    key: "render",
+
+    /**
+     * Функция, возвращающая строку в формате html с формой логина.
+     * @param {boolean} isAuth - Статус авторизации пользователя.
+     */
+    value: function render(isAuth) {
+      var templateScript = "";
+
+      if (isAuth) {
+        templateScript = "\n                <h1 class=\"title\">\u0412\u044B \u0443\u0436\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D\u044B</h1>\n\t\t\t\t<a href=\"/\" class=\"btn\">\u041D\u0430\u0437\u0430\u0434</a>\n            ";
+      } else {
+        templateScript = "\n\t\t\t\t<div class=\"login\">\n\t\t\t\t\t<h1 class=\"login__title\">Login</h1>\t\n\t\t\t\t\t<form id=\"login-form\" class=\"login-form\">\n\t\t\t\t\t\t<div class = \"login__input-border\">\n\t\t\t\t\t\t\t<input\n\t\t\t\t\t\t\t\tname=\"login\"\n\t\t\t\t\t\t\t\ttype=\"text\"\n\t\t\t\t\t\t\t\tplaceholder=\"Nickname\"\n\t\t\t\t\t\t\t\tclass=\"login__input\"\n\t\t\t\t\t\t\t\tid=\"login__input-login\"\n\t\t\t\t\t\t\t\tautocomplete=\"on\"\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div class = \"login__input-border\">\n\t\t\t\t\t\t\t<input\n\t\t\t\t\t\t\t\tname=\"password\"\n\t\t\t\t\t\t\t\ttype=\"password\"\n\t\t\t\t\t\t\t\tplaceholder=\"Password\"\n\t\t\t\t\t\t\t\tclass=\"login__input\"\n\t\t\t\t\t\t\t\tid=\"login__input-password\"\n\t\t\t\t\t\t\t\tautocomplete=\"on\"\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t</div>\n                        <div id=\"login__authorization-error-field\" class=\"login_error_text\"></div>\n                        <div class=\"login__btn\">\n                        </div>\n\t\t\t\t\t\t<div class=\"login__btn-section\">\n\t\t\t\t\t\t\t<button href=\"/\" class=\"login-btn\"><i href=\"/\" class=\"fas fa-chevron-left\"></i></button>\n\t\t\t\t\t\t\t<button href=\"/authorizeuser\" class=\"login-btn\"><i href=\"/authorizeuser\" class=\"fas fa-angle-double-right\"></i></button>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</form>\n\t\t\t\t</div>\n\t\t\t";
+      }
+
+      var template = Handlebars.compile(templateScript);
+      return template();
+    }
+  }, {
+    key: "setOnChangeListener",
+    value: function setOnChangeListener(input) {
+      var _this = this;
+
+      input.addEventListener("input", function () {
+        _this.goodField(input); // this.setErrorText("");
+        // this.style.background-color = 'white';
+
+      });
+    }
+  }, {
+    key: "setErrorText",
+    value: function setErrorText(text) {
+      if (typeof text !== 'string') {
+        console.log('NOTE: text is not string');
+        return;
+      }
+
+      var errorField = document.getElementById('login__authorization-error-field');
+      errorField.textContent = text;
+    }
+  }, {
+    key: "goodField",
+    value: function goodField(input) {
+      input.setCustomValidity("");
+    }
+  }, {
+    key: "errorField",
+    value: function errorField(input) {
+      input.setCustomValidity("-_-");
+    }
+  }, {
+    key: "login",
+    get: function get() {
+      return document.getElementById('login__input-login');
+    }
+  }, {
+    key: "password",
+    get: function get() {
+      return document.getElementById('login__input-password');
+    }
+  }]);
+
+  return LoginComponent;
+}();
+
+
 
 /***/ }),
 
@@ -130,7 +912,49 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return MenuComponent; });\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar MenuComponent =\n/*#__PURE__*/\nfunction () {\n  function MenuComponent() {\n    _classCallCheck(this, MenuComponent);\n  }\n\n  _createClass(MenuComponent, [{\n    key: \"render\",\n    value: function render(data) {\n      console.log('profile Data:', data);\n      var templateScript = \"\";\n\n      if (_typeof(data) == 'object') {\n        templateScript = \"\\n            <div class=\\\"menu\\\">\\n                <h1 class=\\\"menu__title\\\">ADV<a class=\\\"hate\\\">HATER</a></h1>\\n                <div class=\\\"main-bar\\\">\\n                    <button class=\\\"main-bar__item menu_btn\\\" href=\\\"/leaderboard\\\" data-title=\\\"LEADERBOARD\\\" data-section=\\\"leaderboard\\\"><i class=\\\"fas fa-list-ul\\\"></i></button>\\n                    <button class=\\\"main-bar__item menu_btn\\\" href=\\\"/payout\\\" data-title=\\\"PAYOUT\\\" data-section=\\\"payout\\\"><i class=\\\"fas fa-wallet\\\"></i></button>\\n                    <button class=\\\"main-bar__item menu_btn\\\" href=\\\"/shop\\\" data-title=\\\"SHOP\\\" data-section=\\\"shop\\\"><i class=\\\"fas fa-shopping-cart\\\"></i></button>\\n                </div>\\n                <div class=\\\"menu__profile\\\">\\n                    <img src=\\\"{{imgurl}}\\\" class=\\\"profile-avatar\\\"></img>\\n                    <div class=\\\"profile-info\\\">\\n                        <h4 class=\\\"profile-nickname\\\">{{nickname}}</h4>\\n                        <h4 class=\\\"profile-score\\\">{{points}} $</h4>\\n                    </div>\\n                    <div class=\\\"menu__profile-buttons-section\\\" id=\\\"menu__profile-buttons-section\\\">\\n                        <button class=\\\"profile-button\\\">Edit</button>\\n                        <button href=\\\"/logout\\\" class=\\\"profile-button\\\">Logout</button>\\n                    </div>\\n                </div>\\n                <button href=\\\"/play\\\" class=\\\"menu__play-btn\\\" data-section=\\\"play\\\"><i href=\\\"/play\\\" class=\\\"fas fa-play\\\"></i></button>\\n                <div class=\\\"options\\\">\\n                    <a href=\\\"#\\\" class=\\\"options__link\\\">Report bug</a>\\n                    <a href=\\\"#\\\" class=\\\"options__link\\\">Help</a>\\n                    <a href=\\\"#\\\" class=\\\"options__link\\\">Hate with us!</a>\\n                </div>  \\n            </div>\\n        \";\n      } else {\n        templateScript = \"\\n                <div class=\\\"chose\\\">\\n                    <h1 class=\\\"chose__title\\\">ADVHATER</h1>\\n                    <div class=\\\"main-bar\\\">\\n                        <button href=\\\"/signup\\\" class=\\\"main-bar__item chose_btn\\\" data-title=\\\"SIGNUP\\\" data-section=\\\"signup\\\"><i href=\\\"/signup\\\" class=\\\"fas fa-user-plus\\\"></i></button>\\n                        <button href=\\\"/payout\\\" class=\\\"main-bar__item chose_btn\\\" data-title=\\\"QUICK PO\\\" data-section=\\\"chose\\\"><i href=\\\"/payout\\\" class=\\\"fas fa-wallet\\\"></i></button>\\n                        <button href=\\\"/login\\\" class=\\\"main-bar__item chose_btn\\\" data-title=\\\"LOGIN\\\" data-section=\\\"login\\\"><i href=\\\"/login\\\" class=\\\"fas fa-sign-in-alt\\\"></i></button>\\n                    </div> \\n                </div>\\n            \";\n      }\n\n      var template = Handlebars.compile(templateScript);\n      return template(data);\n    }\n  }, {\n    key: \"_doSmt\",\n    value: function _doSmt() {\n      console.log(\"i am not private\");\n    }\n  }]);\n\n  return MenuComponent;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/components/MenuComponent/MenuComponent.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MenuComponent; });
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var MenuComponent =
+/*#__PURE__*/
+function () {
+  function MenuComponent() {
+    _classCallCheck(this, MenuComponent);
+  }
+
+  _createClass(MenuComponent, [{
+    key: "render",
+    value: function render(data) {
+      console.log('profile Data:', data);
+      var templateScript = "";
+
+      if (_typeof(data) == 'object') {
+        templateScript = "\n            <div class=\"menu\">\n                <h1 class=\"menu__title\">ADV<a class=\"hate\">HATER</a></h1>\n                <div class=\"main-bar\">\n                    <button class=\"main-bar__item menu_btn\" href=\"/leaderboard\" data-title=\"LEADERBOARD\" data-section=\"leaderboard\"><i class=\"fas fa-list-ul\"></i></button>\n                    <button class=\"main-bar__item menu_btn\" href=\"/payout\" data-title=\"PAYOUT\" data-section=\"payout\"><i class=\"fas fa-wallet\"></i></button>\n                    <button class=\"main-bar__item menu_btn\" href=\"/shop\" data-title=\"SHOP\" data-section=\"shop\"><i class=\"fas fa-shopping-cart\"></i></button>\n                </div>\n                <div class=\"menu__profile\">\n                    <img src=\"{{imgurl}}\" class=\"profile-avatar\"></img>\n                    <div class=\"profile-info\">\n                        <h4 class=\"profile-nickname\">{{nickname}}</h4>\n                        <h4 class=\"profile-score\">{{points}} $</h4>\n                    </div>\n                    <div class=\"menu__profile-buttons-section\" id=\"menu__profile-buttons-section\">\n                        <button class=\"profile-button\">Edit</button>\n                        <button href=\"/logout\" class=\"profile-button\">Logout</button>\n                    </div>\n                </div>\n                <button href=\"/play\" class=\"menu__play-btn\" data-section=\"play\"><i href=\"/play\" class=\"fas fa-play\"></i></button>\n                <div class=\"options\">\n                    <a href=\"#\" class=\"options__link\">Report bug</a>\n                    <a href=\"#\" class=\"options__link\">Help</a>\n                    <a href=\"#\" class=\"options__link\">Hate with us!</a>\n                </div>  \n            </div>\n        ";
+      } else {
+        templateScript = "\n                <div class=\"chose\">\n                    <h1 class=\"chose__title\">ADVHATER</h1>\n                    <div class=\"main-bar\">\n                        <button href=\"/signup\" class=\"main-bar__item chose_btn\" data-title=\"SIGNUP\" data-section=\"signup\"><i href=\"/signup\" class=\"fas fa-user-plus\"></i></button>\n                        <button href=\"/payout\" class=\"main-bar__item chose_btn\" data-title=\"QUICK PO\" data-section=\"chose\"><i href=\"/payout\" class=\"fas fa-wallet\"></i></button>\n                        <button href=\"/login\" class=\"main-bar__item chose_btn\" data-title=\"LOGIN\" data-section=\"login\"><i href=\"/login\" class=\"fas fa-sign-in-alt\"></i></button>\n                    </div> \n                </div>\n            ";
+      }
+
+      var template = Handlebars.compile(templateScript);
+      return template(data);
+    }
+  }, {
+    key: "_doSmt",
+    value: function _doSmt() {
+      console.log("i am not private");
+    }
+  }]);
+
+  return MenuComponent;
+}();
+
+
 
 /***/ }),
 
@@ -142,7 +966,46 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return PaymentsComponent; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar PaymentsComponent =\n/*#__PURE__*/\nfunction () {\n  function PaymentsComponent() {\n    _classCallCheck(this, PaymentsComponent);\n  }\n\n  _createClass(PaymentsComponent, [{\n    key: \"render\",\n\n    /**\n     * Функция, возвращающая строку в формате html с формой выплаты.\n     * @param {boolean} isAuth - Статус авторизации пользователя.\n     */\n    value: function render(isAuth) {\n      var templateScript = \"\";\n\n      if (isAuth) {\n        templateScript = \"\\n                <div class=\\\"payments\\\">\\n                    <h1 class=\\\"payments__title\\\">Payments</h1>\\n                    <form class=\\\"payments__input-section\\\" onsubmit=\\\"this.send()\\\" method=\\\"post\\\" id=\\\"contact_form\\\" required=\\\"\\\">\\n                        <div class=\\\"payments__input-border\\\">\\n                            <input class=\\\"payments__input-section-input\\\" type=\\\"text\\\" name=\\\"phone\\\" class=\\\"payments__phonenumber\\\" placeholder=\\\"9xxxxxxxxx\\\" required=\\\"\\\">\\n                        </div>\\n                        <div class=\\\"payments__input-border\\\">\\n                            <input class=\\\"payments__input-section-input\\\" type=\\\"text\\\" name=\\\"amount\\\" placeholder=\\\"100 $\\\">\\n                        </div>\\n                        <button href=\\\"/\\\" class=\\\"payments__input-section-submit\\\" ><i class=\\\"fas fa-angle-left\\\"></i></button>\\n                        <button href=\\\"/payout\\\" class=\\\"payments__input-section-submit\\\" type=\\\"submit\\\" id=\\\"form_button\\\">Submit</button>\\n                    </form>\\n                </div>\\n            \";\n      } else {\n        templateScript = \"\\n                <div class=\\\"chose\\\">\\n                    <h1 class=\\\"chose__title\\\">Payment</h1>\\n                    <div class=\\\"main-bar\\\">\\n                        <button href=\\\"/signup\\\" class=\\\"main-bar__item chose_btn_pay\\\" data-title=\\\"SIGNUP\\\" data-section=\\\"signup\\\"><i href=\\\"/signup\\\" class=\\\"fas fa-user-plus\\\"></i></button>\\n                        <button href=\\\"/login\\\" class=\\\"main-bar__item chose_btn_pay\\\" data-title=\\\"LOGIN\\\" data-section=\\\"login\\\"><i href=\\\"/login\\\" class=\\\"fas fa-sign-in-alt\\\"></i></button>\\n                    </div> \\n                    <h3 class=\\\"chose__title\\\">login or signup please</h3>\\n                </div>\\n\\t\\t\\t\";\n      }\n\n      var template = Handlebars.compile(templateScript);\n      return template();\n    }\n  }]);\n\n  return PaymentsComponent;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/components/PaymentsComponent/PaymentsComponents.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return PaymentsComponent; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var PaymentsComponent =
+/*#__PURE__*/
+function () {
+  function PaymentsComponent() {
+    _classCallCheck(this, PaymentsComponent);
+  }
+
+  _createClass(PaymentsComponent, [{
+    key: "render",
+
+    /**
+     * Функция, возвращающая строку в формате html с формой выплаты.
+     * @param {boolean} isAuth - Статус авторизации пользователя.
+     */
+    value: function render(isAuth) {
+      var templateScript = "";
+
+      if (isAuth) {
+        templateScript = "\n                <div class=\"payments\">\n                    <h1 class=\"payments__title\">Payments</h1>\n                    <form class=\"payments__input-section\" onsubmit=\"this.send()\" method=\"post\" id=\"contact_form\" required=\"\">\n                        <div class=\"payments__input-border\">\n                            <input class=\"payments__input-section-input\" type=\"text\" name=\"phone\" class=\"payments__phonenumber\" placeholder=\"9xxxxxxxxx\" required=\"\">\n                        </div>\n                        <div class=\"payments__input-border\">\n                            <input class=\"payments__input-section-input\" type=\"text\" name=\"amount\" placeholder=\"100 $\">\n                        </div>\n                        <button href=\"/\" class=\"payments__input-section-submit\" ><i class=\"fas fa-angle-left\"></i></button>\n                        <button href=\"/payout\" class=\"payments__input-section-submit\" type=\"submit\" id=\"form_button\">Submit</button>\n                    </form>\n                </div>\n            ";
+      } else {
+        templateScript = "\n                <div class=\"chose\">\n                    <h1 class=\"chose__title\">Payment</h1>\n                    <div class=\"main-bar\">\n                        <button href=\"/signup\" class=\"main-bar__item chose_btn_pay\" data-title=\"SIGNUP\" data-section=\"signup\"><i href=\"/signup\" class=\"fas fa-user-plus\"></i></button>\n                        <button href=\"/login\" class=\"main-bar__item chose_btn_pay\" data-title=\"LOGIN\" data-section=\"login\"><i href=\"/login\" class=\"fas fa-sign-in-alt\"></i></button>\n                    </div> \n                    <h3 class=\"chose__title\">login or signup please</h3>\n                </div>\n\t\t\t";
+      }
+
+      var template = Handlebars.compile(templateScript);
+      return template();
+    }
+  }]);
+
+  return PaymentsComponent;
+}();
+
+
 
 /***/ }),
 
@@ -154,7 +1017,46 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return ShopComponent; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar ShopComponent =\n/*#__PURE__*/\nfunction () {\n  function ShopComponent(root, weapons) {\n    _classCallCheck(this, ShopComponent);\n\n    this.weapons = weapons;\n    this.root = root;\n  }\n\n  _createClass(ShopComponent, [{\n    key: \"render\",\n    value: function render() {\n      var templateScript = \"\\n            <div class=\\\"shop-background\\\">\\n                <div class=\\\"shop-container\\\">\\n                    <div class=\\\"shop__menu\\\">\\n                        {{#each .}}\\n                        <div class=\\\"shop__menu-item\\\" data-section=\\\"{{id}}\\\"><img src=\\\"{{icon}}\\\" alt=\\\"{{name}} data-section=\\\"{{id}}\\\"></div>\\n                        {{/each}}\\n                    </div>\\n                    <div class=\\\"weapon__about\\\">\\n                    </div>\\n                </div>\\n            </div>\\n        \";\n      var template = Handlebars.compile(templateScript);\n      this.root.innerHTML = template(this.weapons);\n    }\n  }, {\n    key: \"renderWeaponInfo\",\n    value: function renderWeaponInfo(id) {\n      var about = document.querySelector('.weapon__about');\n      var templateScript = \"\\n            <h1 class=\\\"weapon__about-name\\\">{{name}}</h1>\\n            <div class=\\\"weapon__about-main\\\">\\n                <img src=\\\"{{icon}}\\\" alt=\\\"weapon\\\" class=\\\"weapon__about-main-image\\\">\\n                <button class=\\\"weapon__about-main-purchase\\\" data-section=\\\"{{id}}\\\">Buy</button>\\n            </div>\\n            <div class=\\\"weapon__about-info\\\">\\n                <div class=\\\"weapon__about-info-property\\\">\\n                    <div class=\\\"weapon__about-info-property-item\\\">\\n                        <img src=\\\"../../../icons/property/cost.svg\\\" alt=\\\"cost\\\">\\n                        <h2>{{cost}}</h2>\\n                    </div>\\n                    <div class=\\\"weapon__about-info-property-item\\\">\\n                        <img src=\\\"../../../icons/property/damage.svg\\\" alt=\\\"damage\\\">\\n                        <h2>{{damage}}</h2>\\n                    </div>\\n                    <div class=\\\"weapon__about-info-property-item\\\">\\n                        <img src=\\\"../../../icons/property/firerate.svg\\\" alt=\\\"firerate\\\">\\n                        <h2>{{fireRate}}</h2>\\n                    </div>\\n                </div>\\n            </div>\\n            <div class=\\\"weapon__about-info-description\\\">\\n                <h3>{{about}}</h3>\\t\\n            </div>\\n        \";\n      var template = Handlebars.compile(templateScript);\n      about.innerHTML = '';\n      about.innerHTML = template(this.weapons[id]);\n    }\n  }]);\n\n  return ShopComponent;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/components/ShopComponent/ShopComponent.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ShopComponent; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var ShopComponent =
+/*#__PURE__*/
+function () {
+  function ShopComponent(root, weapons) {
+    _classCallCheck(this, ShopComponent);
+
+    this.weapons = weapons;
+    this.root = root;
+  }
+
+  _createClass(ShopComponent, [{
+    key: "render",
+    value: function render() {
+      var templateScript = "\n            <div class=\"shop-background\">\n                <div class=\"shop-container\">\n                    <div class=\"shop__menu\">\n                        {{#each .}}\n                        <div class=\"shop__menu-item\" data-section=\"{{id}}\"><img src=\"{{icon}}\" alt=\"{{name}} data-section=\"{{id}}\"></div>\n                        {{/each}}\n                    </div>\n                    <div class=\"weapon__about\">\n                    </div>\n                </div>\n            </div>\n        ";
+      var template = Handlebars.compile(templateScript);
+      this.root.innerHTML = template(this.weapons);
+    }
+  }, {
+    key: "renderWeaponInfo",
+    value: function renderWeaponInfo(id) {
+      var about = document.querySelector('.weapon__about');
+      var templateScript = "\n            <h1 class=\"weapon__about-name\">{{name}}</h1>\n            <div class=\"weapon__about-main\">\n                <img src=\"{{icon}}\" alt=\"weapon\" class=\"weapon__about-main-image\">\n                <button class=\"weapon__about-main-purchase\" data-section=\"{{id}}\">Buy</button>\n            </div>\n            <div class=\"weapon__about-info\">\n                <div class=\"weapon__about-info-property\">\n                    <div class=\"weapon__about-info-property-item\">\n                        <img src=\"../../../icons/property/cost.svg\" alt=\"cost\">\n                        <h2>{{cost}}</h2>\n                    </div>\n                    <div class=\"weapon__about-info-property-item\">\n                        <img src=\"../../../icons/property/damage.svg\" alt=\"damage\">\n                        <h2>{{damage}}</h2>\n                    </div>\n                    <div class=\"weapon__about-info-property-item\">\n                        <img src=\"../../../icons/property/firerate.svg\" alt=\"firerate\">\n                        <h2>{{fireRate}}</h2>\n                    </div>\n                </div>\n            </div>\n            <div class=\"weapon__about-info-description\">\n                <h3>{{about}}</h3>\t\n            </div>\n        ";
+      var template = Handlebars.compile(templateScript);
+      about.innerHTML = '';
+      about.innerHTML = template(this.weapons[id]);
+    }
+  }]);
+
+  return ShopComponent;
+}();
+
+
 
 /***/ }),
 
@@ -166,7 +1068,81 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return SignupComponent; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar SignupComponent =\n/*#__PURE__*/\nfunction () {\n  function SignupComponent() {\n    _classCallCheck(this, SignupComponent);\n  }\n\n  _createClass(SignupComponent, [{\n    key: \"render\",\n\n    /**\n     * Функция, возвращающая строку html с формой логина.\n     * @param {boolean} isAuth - Статус авторизации пользователя.\n     */\n    value: function render(isAuth) {\n      var templateScript = '';\n\n      if (isAuth) {\n        templateScript = \"\\n                <h1 class=\\\"signup__title\\\">\\u0412\\u044B \\u0443\\u0436\\u0435 \\u0430\\u0432\\u0442\\u043E\\u0440\\u0438\\u0437\\u043E\\u0432\\u0430\\u043D\\u044B</h1>\\n\\t\\t\\t\\t<a href=\\\"/\\\" class=\\\"btn\\\">\\u041D\\u0430\\u0437\\u0430\\u0434</a>\\n            \";\n      } else {\n        templateScript = \"\\n                <div class=\\\"signup\\\">\\n                    <h1 class=\\\"signup__title\\\">Sign Up</h1>\\t\\n                    <form id=\\\"signup-form\\\" class=\\\"signup-form\\\">\\n                        <div class=\\\"signup__input-border\\\">\\n                            <input\\n                                name=\\\"nickname\\\"\\n                                type=\\\"text\\\"\\n                                placeholder=\\\"Username\\\"\\n                                class=\\\"signup__input\\\"\\n                                autocomplete=\\\"on\\\"\\n                            >\\n                        </div>\\n                        <div class=\\\"signup__input-border\\\">\\n                            <input\\n                                name=\\\"email\\\"\\n                                type=\\\"text\\\"\\n                                placeholder=\\\"Email\\\"\\n                                class=\\\"signup__input\\\"\\n                                autocomplete=\\\"on\\\"\\n                            >\\n                        </div>\\n                        <div class=\\\"signup__input-border\\\">\\n                            <input\\n                                name=\\\"password\\\"\\n                                type=\\\"password\\\"\\n                                placeholder=\\\"Password\\\"\\n                                class=\\\"signup__input\\\"\\n                                autocomplete=\\\"on\\\"\\n                            >\\n                        </div>\\n                        <div class=\\\"signup__input-border\\\">\\n                            <input\\n                                name=\\\"password_repeat\\\"\\n                                type=\\\"password\\\"\\n                                placeholder=\\\"Repeat Password\\\"\\n                                class=\\\"signup__input\\\"\\n                            >\\n                        </div>\\n                        <div id=\\\"signup-form__error-text-field\\\" class=\\\"signup_error_text\\\"></div>  \\n                        <div class=\\\"signup__btn-section\\\">\\n                            <button href=\\\"/\\\" class=\\\"signup-btn\\\"><i href=\\\"/\\\" class=\\\"fas fa-chevron-left\\\"></i></button>\\n                            <button href=\\\"/signupuser\\\" class=\\\"signup-btn\\\"><i href=\\\"/signupuser\\\" class=\\\"fas fa-angle-double-right\\\"></i></button>\\n                        </div>\\n                    </form>\\n                </div>\\n            \";\n      }\n\n      var template = Handlebars.compile(templateScript);\n      return template();\n    }\n  }, {\n    key: \"setOnChangeListener\",\n    value: function setOnChangeListener(input) {\n      var _this = this;\n\n      input.addEventListener(\"input\", function () {\n        _this.goodField(input);\n      });\n    }\n  }, {\n    key: \"setErrorText\",\n    value: function setErrorText(text) {\n      if (typeof text !== 'string') {\n        console.log('NOTE: text is not string');\n        return;\n      }\n\n      var errorField = document.getElementById('signup-form__error-text-field');\n      errorField.textContent = text;\n    }\n  }, {\n    key: \"goodField\",\n    value: function goodField(input) {\n      input.setCustomValidity(\"\");\n    }\n  }, {\n    key: \"errorField\",\n    value: function errorField(input) {\n      input.setCustomValidity(\"-_-\");\n    }\n  }, {\n    key: \"form\",\n    get: function get() {\n      return document.querySelector('#signup-form');\n    }\n  }]);\n\n  return SignupComponent;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/components/SignupComponent/SignupComponent.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SignupComponent; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var SignupComponent =
+/*#__PURE__*/
+function () {
+  function SignupComponent() {
+    _classCallCheck(this, SignupComponent);
+  }
+
+  _createClass(SignupComponent, [{
+    key: "render",
+
+    /**
+     * Функция, возвращающая строку html с формой логина.
+     * @param {boolean} isAuth - Статус авторизации пользователя.
+     */
+    value: function render(isAuth) {
+      var templateScript = '';
+
+      if (isAuth) {
+        templateScript = "\n                <h1 class=\"signup__title\">\u0412\u044B \u0443\u0436\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D\u044B</h1>\n\t\t\t\t<a href=\"/\" class=\"btn\">\u041D\u0430\u0437\u0430\u0434</a>\n            ";
+      } else {
+        templateScript = "\n                <div class=\"signup\">\n                    <h1 class=\"signup__title\">Sign Up</h1>\t\n                    <form id=\"signup-form\" class=\"signup-form\">\n                        <div class=\"signup__input-border\">\n                            <input\n                                name=\"nickname\"\n                                type=\"text\"\n                                placeholder=\"Username\"\n                                class=\"signup__input\"\n                                autocomplete=\"on\"\n                            >\n                        </div>\n                        <div class=\"signup__input-border\">\n                            <input\n                                name=\"email\"\n                                type=\"text\"\n                                placeholder=\"Email\"\n                                class=\"signup__input\"\n                                autocomplete=\"on\"\n                            >\n                        </div>\n                        <div class=\"signup__input-border\">\n                            <input\n                                name=\"password\"\n                                type=\"password\"\n                                placeholder=\"Password\"\n                                class=\"signup__input\"\n                                autocomplete=\"on\"\n                            >\n                        </div>\n                        <div class=\"signup__input-border\">\n                            <input\n                                name=\"password_repeat\"\n                                type=\"password\"\n                                placeholder=\"Repeat Password\"\n                                class=\"signup__input\"\n                            >\n                        </div>\n                        <div id=\"signup-form__error-text-field\" class=\"signup_error_text\"></div>  \n                        <div class=\"signup__btn-section\">\n                            <button href=\"/\" class=\"signup-btn\"><i href=\"/\" class=\"fas fa-chevron-left\"></i></button>\n                            <button href=\"/signupuser\" class=\"signup-btn\"><i href=\"/signupuser\" class=\"fas fa-angle-double-right\"></i></button>\n                        </div>\n                    </form>\n                </div>\n            ";
+      }
+
+      var template = Handlebars.compile(templateScript);
+      return template();
+    }
+  }, {
+    key: "setOnChangeListener",
+    value: function setOnChangeListener(input) {
+      var _this = this;
+
+      input.addEventListener("input", function () {
+        _this.goodField(input);
+      });
+    }
+  }, {
+    key: "setErrorText",
+    value: function setErrorText(text) {
+      if (typeof text !== 'string') {
+        console.log('NOTE: text is not string');
+        return;
+      }
+
+      var errorField = document.getElementById('signup-form__error-text-field');
+      errorField.textContent = text;
+    }
+  }, {
+    key: "goodField",
+    value: function goodField(input) {
+      input.setCustomValidity("");
+    }
+  }, {
+    key: "errorField",
+    value: function errorField(input) {
+      input.setCustomValidity("-_-");
+    }
+  }, {
+    key: "form",
+    get: function get() {
+      return document.querySelector('#signup-form');
+    }
+  }]);
+
+  return SignupComponent;
+}();
+
+
 
 /***/ }),
 
@@ -178,7 +1154,27 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\nvar buffConfigs = {\n  health: {\n    name: 'health',\n    value: 20,\n    isTemporary: false\n  },\n  increaseHpCapacity: {\n    name: 'increaseHpCapacity',\n    value: 20,\n    isTemporary: true,\n    time: 30 * 1000\n  },\n  increaseVelocity: {\n    name: 'increaseVelocity',\n    value: 20,\n    isTemporary: true,\n    time: 15 * 1000\n  }\n};\n/* harmony default export */ __webpack_exports__[\"default\"] = (buffConfigs);\n\n//# sourceURL=webpack:///./static/js/game/configs/buffConfigs.js?");
+__webpack_require__.r(__webpack_exports__);
+var buffConfigs = {
+  health: {
+    name: 'health',
+    value: 20,
+    isTemporary: false
+  },
+  increaseHpCapacity: {
+    name: 'increaseHpCapacity',
+    value: 20,
+    isTemporary: true,
+    time: 30 * 1000
+  },
+  increaseVelocity: {
+    name: 'increaseVelocity',
+    value: 20,
+    isTemporary: true,
+    time: 15 * 1000
+  }
+};
+/* harmony default export */ __webpack_exports__["default"] = (buffConfigs);
 
 /***/ }),
 
@@ -190,7 +1186,112 @@ eval("__webpack_require__.r(__webpack_exports__);\nvar buffConfigs = {\n  health
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Adv; });\n/* harmony import */ var _DynamicEssence_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DynamicEssence.js */ \"./static/js/game/dynamic/DynamicEssence.js\");\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nfunction _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \"object\" || typeof call === \"function\")) { return call; } return _assertThisInitialized(self); }\n\nfunction _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return self; }\n\nfunction _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }\n\nfunction _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }\n\n\n\nvar Adv =\n/*#__PURE__*/\nfunction (_DynamicEssence) {\n  _inherits(Adv, _DynamicEssence);\n\n  function Adv() {\n    var _this;\n\n    _classCallCheck(this, Adv);\n\n    _this = _possibleConstructorReturn(this, _getPrototypeOf(Adv).apply(this, arguments));\n    _this.xPrev = _this.xPos;\n    _this.yPrev = _this.yPos;\n    _this.curTargetX;\n    _this.curTargetY;\n    _this.centerX;\n    _this.centerY;\n    _this.advUrl = 'http://ya.ru';\n    _this.teta;\n    _this.color = 9100;\n    return _this;\n  }\n\n  _createClass(Adv, [{\n    key: \"render\",\n    value: function render(ctx) {\n      ctx.beginPath();\n      ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);\n      ctx.fillStyle = '#ff' + this.color;\n      ctx.fill();\n      ctx.closePath();\n    }\n  }, {\n    key: \"logic\",\n    value: function logic(curTargetX, curTargetY) {\n      this.centerY = this.yPos + this.ySize / 2;\n      this.centerX = this.xPos + this.xSize / 2;\n      this.curTargetX = curTargetX;\n      this.curTargetY = curTargetY;\n      this.teta = Math.atan2(this.curTargetX - this.xPos, this.curTargetY - this.yPos);\n      this.xPrev = this.xPos;\n      this.yPrev = this.yPos;\n      this.xPos += this.velocity * Math.sin(this.teta);\n      this.yPos += this.velocity * Math.cos(this.teta);\n    }\n  }, {\n    key: \"interact\",\n    value: function interact(obj) {\n      if (obj.name == 'bullet') {\n        this.hp -= 5;\n        this.xPos = this.xPrev;\n        this.yPos = this.yPrev;\n        this.color -= 400;\n        return this.hp;\n      } else if (obj.name == 'player') {\n        this.hp = 0;\n        window.open(this.advUrl);\n        return this.hp;\n      } else if (obj.name == 'barrier') {\n        // if (Math.abs(obj.xPos - this.curTargetX) >= Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {\n        //     this.xPos = this.xPrev + this.velocity;\n        //     this.yPos = this.yPrev;\n        // } else if (Math.abs(obj.xPos - this.curTargetX) < Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {\n        //     this.xPos = this.xPrev - this.velocity;\n        //     this.yPos = this.yPrev\n        // }\n        // if (Math.abs(obj.yPos - this.curTargetY) >= Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {\n        //     this.yPos = this.yPrev + this.velocity;\n        //     this.xPos = this.xPrev;\n        // } else if (Math.abs(obj.yPos - this.curTargetY) < Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {\n        //     this.yPos = this.yPrev - this.velocity;\n        //     this.xPos = this.xPrev;\n        // }\n        this.xPos = this.xPrev;\n        this.yPos = this.yPrev;\n      }\n    }\n  }]);\n\n  return Adv;\n}(_DynamicEssence_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n\n\n\n//# sourceURL=webpack:///./static/js/game/dynamic/Adv.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Adv; });
+/* harmony import */ var _DynamicEssence_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DynamicEssence.js */ "./static/js/game/dynamic/DynamicEssence.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var Adv =
+/*#__PURE__*/
+function (_DynamicEssence) {
+  _inherits(Adv, _DynamicEssence);
+
+  function Adv() {
+    var _this;
+
+    _classCallCheck(this, Adv);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Adv).apply(this, arguments));
+    _this.xPrev = _this.xPos;
+    _this.yPrev = _this.yPos;
+    _this.curTargetX;
+    _this.curTargetY;
+    _this.centerX;
+    _this.centerY;
+    _this.advUrl = 'http://ya.ru';
+    _this.teta;
+    _this.color = 9100;
+    return _this;
+  }
+
+  _createClass(Adv, [{
+    key: "render",
+    value: function render(ctx) {
+      ctx.beginPath();
+      ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);
+      ctx.fillStyle = '#ff' + this.color;
+      ctx.fill();
+      ctx.closePath();
+    }
+  }, {
+    key: "logic",
+    value: function logic(curTargetX, curTargetY) {
+      this.centerY = this.yPos + this.ySize / 2;
+      this.centerX = this.xPos + this.xSize / 2;
+      this.curTargetX = curTargetX;
+      this.curTargetY = curTargetY;
+      this.teta = Math.atan2(this.curTargetX - this.xPos, this.curTargetY - this.yPos);
+      this.xPrev = this.xPos;
+      this.yPrev = this.yPos;
+      this.xPos += this.velocity * Math.sin(this.teta);
+      this.yPos += this.velocity * Math.cos(this.teta);
+    }
+  }, {
+    key: "interact",
+    value: function interact(obj) {
+      if (obj.name == 'bullet') {
+        this.hp -= 5;
+        this.xPos = this.xPrev;
+        this.yPos = this.yPrev;
+        this.color -= 400;
+        return this.hp;
+      } else if (obj.name == 'player') {
+        this.hp = 0;
+        window.open(this.advUrl);
+        return this.hp;
+      } else if (obj.name == 'barrier') {
+        // if (Math.abs(obj.xPos - this.curTargetX) >= Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {
+        //     this.xPos = this.xPrev + this.velocity;
+        //     this.yPos = this.yPrev;
+        // } else if (Math.abs(obj.xPos - this.curTargetX) < Math.abs(obj.xPos + obj.xSize - this.curTargetX)) {
+        //     this.xPos = this.xPrev - this.velocity;
+        //     this.yPos = this.yPrev
+        // }
+        // if (Math.abs(obj.yPos - this.curTargetY) >= Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {
+        //     this.yPos = this.yPrev + this.velocity;
+        //     this.xPos = this.xPrev;
+        // } else if (Math.abs(obj.yPos - this.curTargetY) < Math.abs(obj.yPos + obj.ySize - this.curTargetY)) {
+        //     this.yPos = this.yPrev - this.velocity;
+        //     this.xPos = this.xPrev;
+        // }
+        this.xPos = this.xPrev;
+        this.yPos = this.yPrev;
+      }
+    }
+  }]);
+
+  return Adv;
+}(_DynamicEssence_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ }),
 
@@ -202,7 +1303,106 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return DynamicEssence; });\n/* harmony import */ var _functions_KeyboardControl_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../functions/KeyboardControl.js */ \"./static/js/game/functions/KeyboardControl.js\");\n/* harmony import */ var _functions_myMath_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../functions/myMath.js */ \"./static/js/game/functions/myMath.js\");\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\n\n\n\nvar DynamicEssence =\n/*#__PURE__*/\nfunction () {\n  function DynamicEssence(xPos, yPos) {\n    var xSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 40;\n    var ySize = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 40;\n    var URL = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : \"/default_texture\";\n    var velocity = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 100;\n\n    _classCallCheck(this, DynamicEssence);\n\n    this.keyHandler = new _functions_KeyboardControl_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]();\n    this.myMath = new _functions_myMath_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"](); // Основные параметры\n\n    this.hp = 100; // %\n\n    this.hpCapacity = 100; // у.е\n\n    this.velocity = velocity; // у.е\n    // Координаты\n\n    this.xPos = xPos;\n    this.yPos = yPos; // Позиция прицела - только у плеера\n\n    this.xAim = 0;\n    this.yAim = 0; // Его размеры \n\n    this.xSize = xSize; // vh\n\n    this.ySize = ySize; // vh\n\n    this.teta = 0; // Тип оружия - только для usera \n    // this.melle = true;\n    // this.gunId = 0; // 0 - knife\n    // Бафы - только для usera \n    // this.bufs = {} // \"key\" : {}\n    // Шмот\n    // this.skinId = 0; // для игрока\n\n    this.texture = URL; // URL \n    // this.immortal = false; // для рекламы\n  } // Логика перемещения только для рекламы \n\n\n  _createClass(DynamicEssence, [{\n    key: \"logic\",\n    value: function logic(screenWidth, screenHeight) {\n      var keys = this.keyHandler.handleKey();\n      var y = this.yPos + this.ySize / 2;\n      var x = this.xPos + this.xSize / 2;\n      this.teta = this.myMath.get0toCor(x, y, keys['mouseX'], keys['mouseY']);\n\n      if (keys['right']) {\n        this.xPos += this.velocity;\n      }\n\n      if (keys['left']) {\n        this.xPos -= this.velocity;\n      }\n\n      if (keys['up']) {\n        this.yPos -= this.velocity;\n      }\n\n      if (keys['down']) {\n        this.yPos += this.velocity;\n      } // if (this.xPos < 0) {\n      //     this.xPos = canvas.width;\n      // }\n      // else if (this.xPos > canvas.width)\n      //     this.xPos = 0;\n      // if (this.yPos < 0) {\n      //     this.yPos = canvas.height;\n      // }\n      // else if (this.yPos > canvas.height) \n      //     this.yPos = 0;\n\n    }\n  }, {\n    key: \"interact\",\n    value: function interact() {}\n  }]);\n\n  return DynamicEssence;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/game/dynamic/DynamicEssence.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DynamicEssence; });
+/* harmony import */ var _functions_KeyboardControl_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../functions/KeyboardControl.js */ "./static/js/game/functions/KeyboardControl.js");
+/* harmony import */ var _functions_myMath_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../functions/myMath.js */ "./static/js/game/functions/myMath.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+var DynamicEssence =
+/*#__PURE__*/
+function () {
+  function DynamicEssence(xPos, yPos) {
+    var xSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 40;
+    var ySize = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 40;
+    var URL = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "/default_texture";
+    var velocity = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 100;
+
+    _classCallCheck(this, DynamicEssence);
+
+    this.keyHandler = new _functions_KeyboardControl_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
+    this.myMath = new _functions_myMath_js__WEBPACK_IMPORTED_MODULE_1__["default"](); // Основные параметры
+
+    this.hp = 100; // %
+
+    this.hpCapacity = 100; // у.е
+
+    this.velocity = velocity; // у.е
+    // Координаты
+
+    this.xPos = xPos;
+    this.yPos = yPos; // Позиция прицела - только у плеера
+
+    this.xAim = 0;
+    this.yAim = 0; // Его размеры 
+
+    this.xSize = xSize; // vh
+
+    this.ySize = ySize; // vh
+
+    this.teta = 0; // Тип оружия - только для usera 
+    // this.melle = true;
+    // this.gunId = 0; // 0 - knife
+    // Бафы - только для usera 
+    // this.bufs = {} // "key" : {}
+    // Шмот
+    // this.skinId = 0; // для игрока
+
+    this.texture = URL; // URL 
+    // this.immortal = false; // для рекламы
+  } // Логика перемещения только для рекламы 
+
+
+  _createClass(DynamicEssence, [{
+    key: "logic",
+    value: function logic(screenWidth, screenHeight) {
+      var keys = this.keyHandler.handleKey();
+      var y = this.yPos + this.ySize / 2;
+      var x = this.xPos + this.xSize / 2;
+      this.teta = this.myMath.get0toCor(x, y, keys['mouseX'], keys['mouseY']);
+
+      if (keys['right']) {
+        this.xPos += this.velocity;
+      }
+
+      if (keys['left']) {
+        this.xPos -= this.velocity;
+      }
+
+      if (keys['up']) {
+        this.yPos -= this.velocity;
+      }
+
+      if (keys['down']) {
+        this.yPos += this.velocity;
+      } // if (this.xPos < 0) {
+      //     this.xPos = canvas.width;
+      // }
+      // else if (this.xPos > canvas.width)
+      //     this.xPos = 0;
+      // if (this.yPos < 0) {
+      //     this.yPos = canvas.height;
+      // }
+      // else if (this.yPos > canvas.height) 
+      //     this.yPos = 0;
+
+    }
+  }, {
+    key: "interact",
+    value: function interact() {}
+  }]);
+
+  return DynamicEssence;
+}();
+
+
 
 /***/ }),
 
@@ -214,7 +1414,192 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Player; });\n/* harmony import */ var _bullet_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bullet.js */ \"./static/js/game/dynamic/bullet.js\");\n/* harmony import */ var _DynamicEssence_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DynamicEssence.js */ \"./static/js/game/dynamic/DynamicEssence.js\");\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nfunction _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \"object\" || typeof call === \"function\")) { return call; } return _assertThisInitialized(self); }\n\nfunction _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return self; }\n\nfunction _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }\n\nfunction _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }\n\n// import KeyboardControl from '../functions/KeyboardControl.js'\n\n\n\nvar Player =\n/*#__PURE__*/\nfunction (_DynamicEssence) {\n  _inherits(Player, _DynamicEssence);\n\n  function Player() {\n    var _this;\n\n    _classCallCheck(this, Player);\n\n    _this = _possibleConstructorReturn(this, _getPrototypeOf(Player).apply(this, arguments)); // this.keyHandler = new KeyboardControl();\n\n    _this.name = 'player';\n    _this.defaultVelocity = _this.velocity;\n    _this.buffs = [];\n    _this.centerX;\n    _this.centerY;\n    _this.inShop;\n    _this.currentShop;\n    _this.xPrev = _this.xPos;\n    _this.yPrev = _this.yPos;\n    return _this;\n  }\n\n  _createClass(Player, [{\n    key: \"render\",\n    value: function render(ctx) {\n      ctx.beginPath();\n      ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);\n      ctx.fillStyle = \"#48F67F\";\n      ctx.fill();\n      ctx.closePath();\n    }\n  }, {\n    key: \"logic\",\n    value: function logic(eventsMap, cvsWidth, cvsHeight) {\n      var that = this;\n\n      this._logicBuffs();\n\n      this.centerY = this.yPos + this.ySize / 2;\n      this.centerX = this.xPos + this.xSize / 2; // console.log(eventsMap['mouseX'], eventsMap['mouseY'])\n      // this.teta = this.myMath.getTeta(this.centerX, this.centerY, eventsMap['mouseX'], eventsMap['mouseY']);\n      // console.log('this.teta',this.teta);\n\n      if (eventsMap['right']) {\n        this.xPrev = this.xPos;\n        this.xPos += this.velocity;\n      } else if (eventsMap['left']) {\n        this.xPrev = this.xPos;\n        this.xPos -= this.velocity;\n      }\n\n      if (eventsMap['up']) {\n        this.yPrev = this.yPos;\n        this.yPos -= this.velocity;\n      } else if (eventsMap['down']) {\n        this.yPrev = this.yPos;\n        this.yPos += this.velocity;\n      }\n\n      if (this.inShop) {\n        // console.log(this.currentShop);\n        if (eventsMap['interact']) {\n          this.currentShop.open(this.inShop);\n        } else {\n          this.currentShop.close();\n        }\n      }\n\n      if (this.xPos <= 0 || this.xPos >= cvsWidth || this.yPos <= 0 || this.yPos >= cvsHeight) {\n        this.interact();\n      }\n    }\n  }, {\n    key: \"interact\",\n    value: function interact(name) {\n      var obj = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};\n\n      // console.log(name);\n      if (name == 'adv') {\n        this.hp -= 95;\n      } else if (name == 'shop') {\n        this.inShop = true;\n        this.currentShop = obj;\n      } else {\n        this.xPos = this.xPrev;\n        this.yPos = this.yPrev;\n      }\n    }\n  }, {\n    key: \"_addHp\",\n    value: function _addHp(hp) {\n      if (this.hp + hp >= this.hpCapacity) {\n        this.hp = this.hpCapacity;\n      } else {\n        this.hp += hp;\n      }\n    }\n  }, {\n    key: \"_logicBuffs\",\n    value: function _logicBuffs() {\n      var _this2 = this;\n\n      var buffs = this.buffs;\n      this.buffs = []; // // console.log(buffs);\n\n      buffs.forEach(function (buff) {\n        if (Date.now() - buff.startTime < buff.buff.time) {\n          _this2.buffs[_this2.buffs.length] = buff;\n        } else {\n          if (buff.buff.name == 'increaseHpCapacity') {\n            _this2.hpCapacity = buff.buff.value;\n\n            if (_this2.hp > _this2.hpCapacity) {\n              _this2.hp = _this2.hpCapacity;\n            }\n          } else if (buff.buff.name == 'increaseVelocity') {\n            _this2.velocity -= buff.buff.value;\n          }\n        }\n      });\n    }\n  }, {\n    key: \"addBuff\",\n    value: function addBuff(person, buff) {\n      if (buff.isTemporary) {\n        this.buffs[this.buffs.length] = {\n          buff: buff,\n          startTime: Date.now()\n        };\n\n        switch (buff.name) {\n          case 'increaseHpCapacity':\n            // eslint-disable-next-line no-case-declarations\n            var prevHpCapacity = this.hpCapacity;\n            person.hpCapacity = this.hpCapacity;\n            person.hp *= 1 + this.hpCapacity / prevHpCapacity;\n            break;\n\n          case 'increaseVelocity':\n            person.velocity += buff.value; // console.log(person.velocity);\n\n            break;\n        }\n      } else {\n        switch (buff.name) {\n          case 'health':\n            this._addHp(buff.value);\n\n            break;\n        }\n      }\n    }\n  }]);\n\n  return Player;\n}(_DynamicEssence_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"]);\n\n\n\n//# sourceURL=webpack:///./static/js/game/dynamic/Player.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Player; });
+/* harmony import */ var _bullet_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bullet.js */ "./static/js/game/dynamic/bullet.js");
+/* harmony import */ var _DynamicEssence_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DynamicEssence.js */ "./static/js/game/dynamic/DynamicEssence.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+// import KeyboardControl from '../functions/KeyboardControl.js'
+
+
+
+var Player =
+/*#__PURE__*/
+function (_DynamicEssence) {
+  _inherits(Player, _DynamicEssence);
+
+  function Player() {
+    var _this;
+
+    _classCallCheck(this, Player);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Player).apply(this, arguments)); // this.keyHandler = new KeyboardControl();
+
+    _this.name = 'player';
+    _this.defaultVelocity = _this.velocity;
+    _this.buffs = [];
+    _this.centerX;
+    _this.centerY;
+    _this.inShop;
+    _this.currentShop;
+    _this.xPrev = _this.xPos;
+    _this.yPrev = _this.yPos;
+    return _this;
+  }
+
+  _createClass(Player, [{
+    key: "render",
+    value: function render(ctx) {
+      ctx.beginPath();
+      ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);
+      ctx.fillStyle = "#48F67F";
+      ctx.fill();
+      ctx.closePath();
+    }
+  }, {
+    key: "logic",
+    value: function logic(eventsMap, cvsWidth, cvsHeight) {
+      var that = this;
+
+      this._logicBuffs();
+
+      this.centerY = this.yPos + this.ySize / 2;
+      this.centerX = this.xPos + this.xSize / 2; // console.log(eventsMap['mouseX'], eventsMap['mouseY'])
+      // this.teta = this.myMath.getTeta(this.centerX, this.centerY, eventsMap['mouseX'], eventsMap['mouseY']);
+      // console.log('this.teta',this.teta);
+
+      if (eventsMap['right']) {
+        this.xPrev = this.xPos;
+        this.xPos += this.velocity;
+      } else if (eventsMap['left']) {
+        this.xPrev = this.xPos;
+        this.xPos -= this.velocity;
+      }
+
+      if (eventsMap['up']) {
+        this.yPrev = this.yPos;
+        this.yPos -= this.velocity;
+      } else if (eventsMap['down']) {
+        this.yPrev = this.yPos;
+        this.yPos += this.velocity;
+      }
+
+      if (this.inShop) {
+        // console.log(this.currentShop);
+        if (eventsMap['interact']) {
+          this.currentShop.open(this.inShop);
+        } else {
+          this.currentShop.close();
+        }
+      }
+
+      if (this.xPos <= 0 || this.xPos >= cvsWidth || this.yPos <= 0 || this.yPos >= cvsHeight) {
+        this.interact();
+      }
+    }
+  }, {
+    key: "interact",
+    value: function interact(name) {
+      var obj = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      // console.log(name);
+      if (name == 'adv') {
+        this.hp -= 95;
+      } else if (name == 'shop') {
+        this.inShop = true;
+        this.currentShop = obj;
+      } else {
+        this.xPos = this.xPrev;
+        this.yPos = this.yPrev;
+      }
+    }
+  }, {
+    key: "_addHp",
+    value: function _addHp(hp) {
+      if (this.hp + hp >= this.hpCapacity) {
+        this.hp = this.hpCapacity;
+      } else {
+        this.hp += hp;
+      }
+    }
+  }, {
+    key: "_logicBuffs",
+    value: function _logicBuffs() {
+      var _this2 = this;
+
+      var buffs = this.buffs;
+      this.buffs = []; // // console.log(buffs);
+
+      buffs.forEach(function (buff) {
+        if (Date.now() - buff.startTime < buff.buff.time) {
+          _this2.buffs[_this2.buffs.length] = buff;
+        } else {
+          if (buff.buff.name == 'increaseHpCapacity') {
+            _this2.hpCapacity = buff.buff.value;
+
+            if (_this2.hp > _this2.hpCapacity) {
+              _this2.hp = _this2.hpCapacity;
+            }
+          } else if (buff.buff.name == 'increaseVelocity') {
+            _this2.velocity -= buff.buff.value;
+          }
+        }
+      });
+    }
+  }, {
+    key: "addBuff",
+    value: function addBuff(person, buff) {
+      if (buff.isTemporary) {
+        this.buffs[this.buffs.length] = {
+          buff: buff,
+          startTime: Date.now()
+        };
+
+        switch (buff.name) {
+          case 'increaseHpCapacity':
+            // eslint-disable-next-line no-case-declarations
+            var prevHpCapacity = this.hpCapacity;
+            person.hpCapacity = this.hpCapacity;
+            person.hp *= 1 + this.hpCapacity / prevHpCapacity;
+            break;
+
+          case 'increaseVelocity':
+            person.velocity += buff.value; // console.log(person.velocity);
+
+            break;
+        }
+      } else {
+        switch (buff.name) {
+          case 'health':
+            this._addHp(buff.value);
+
+            break;
+        }
+      }
+    }
+  }]);
+
+  return Player;
+}(_DynamicEssence_js__WEBPACK_IMPORTED_MODULE_1__["default"]);
+
+
 
 /***/ }),
 
@@ -226,7 +1611,68 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Bulelt; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar Bulelt =\n/*#__PURE__*/\nfunction () {\n  function Bulelt(xPos, yPos) {\n    var xSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 40;\n    var ySize = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 40;\n    var URL = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : \"/default_texture\";\n    var velocity = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 100;\n    var xDestination = arguments.length > 6 ? arguments[6] : undefined;\n    var yDestination = arguments.length > 7 ? arguments[7] : undefined;\n\n    _classCallCheck(this, Bulelt);\n\n    this.xSize = xSize; // vh\n\n    this.ySize = ySize; // vh\n\n    this.xPos = xPos;\n    this.yPos = yPos;\n    this.name = 'bullet';\n    this.texture = URL; // URL \n\n    this.velocity = velocity; // у.е\n\n    this.xDestination = xDestination;\n    this.yDestination = yDestination;\n    this.teta = Math.atan2(this.xDestination - this.xPos, this.yDestination - this.yPos);\n    console.log(this.xDestination, this.yDestination);\n  }\n\n  _createClass(Bulelt, [{\n    key: \"render\",\n    value: function render(ctx) {\n      ctx.beginPath();\n      ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);\n      ctx.fillStyle = \"red\";\n      ctx.fill();\n      ctx.closePath();\n    }\n  }, {\n    key: \"go\",\n    value: function go() {\n      this.xPos += this.velocity * Math.sin(this.teta);\n      this.yPos += this.velocity * Math.cos(this.teta);\n    }\n  }, {\n    key: \"interact\",\n    value: function interact() {}\n  }]);\n\n  return Bulelt;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/game/dynamic/bullet.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Bulelt; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Bulelt =
+/*#__PURE__*/
+function () {
+  function Bulelt(xPos, yPos) {
+    var xSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 40;
+    var ySize = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 40;
+    var URL = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "/default_texture";
+    var velocity = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 100;
+    var xDestination = arguments.length > 6 ? arguments[6] : undefined;
+    var yDestination = arguments.length > 7 ? arguments[7] : undefined;
+
+    _classCallCheck(this, Bulelt);
+
+    this.xSize = xSize; // vh
+
+    this.ySize = ySize; // vh
+
+    this.xPos = xPos;
+    this.yPos = yPos;
+    this.name = 'bullet';
+    this.texture = URL; // URL 
+
+    this.velocity = velocity; // у.е
+
+    this.xDestination = xDestination;
+    this.yDestination = yDestination;
+    this.teta = Math.atan2(this.xDestination - this.xPos, this.yDestination - this.yPos);
+    console.log(this.xDestination, this.yDestination);
+  }
+
+  _createClass(Bulelt, [{
+    key: "render",
+    value: function render(ctx) {
+      ctx.beginPath();
+      ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);
+      ctx.fillStyle = "red";
+      ctx.fill();
+      ctx.closePath();
+    }
+  }, {
+    key: "go",
+    value: function go() {
+      this.xPos += this.velocity * Math.sin(this.teta);
+      this.yPos += this.velocity * Math.cos(this.teta);
+    }
+  }, {
+    key: "interact",
+    value: function interact() {}
+  }]);
+
+  return Bulelt;
+}();
+
+
 
 /***/ }),
 
@@ -238,7 +1684,124 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Handler; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar Handler =\n/*#__PURE__*/\nfunction () {\n  function Handler(canvas) {\n    _classCallCheck(this, Handler);\n\n    this.canvas = canvas;\n    this.eventsMap = {\n      // Нажатие клавиш\n      'up': false,\n      'left': false,\n      'down': false,\n      'right': false,\n      'interact': false,\n      // Нажатие мышки\n      'mouseClick': false,\n      // Координаты мышки\n      'mouseX': 0,\n      'mouseY': 0\n    };\n    this.bounds = this.canvas.getBoundingClientRect();\n\n    this._listenEvents();\n  }\n\n  _createClass(Handler, [{\n    key: \"_listenEvents\",\n    value: function _listenEvents() {\n      var that = this;\n      document.addEventListener('keydown', keyDownHandler, false);\n      document.addEventListener('keyup', keyUpHandler, false);\n      document.addEventListener('mousedown', mouseClickDown, false);\n      document.addEventListener('mouseup', mouseClickUp, false);\n      document.addEventListener('mousedown', keyDownHandler, false);\n\n      document.body.onmousemove = function (evt) {\n        that.eventsMap.mouseX = evt.pageX - that.bounds.left;\n        that.eventsMap.mouseY = evt.pageY - that.bounds.top;\n      };\n\n      function mouseClickDown() {\n        that.eventsMap.mouseClick = true;\n      }\n\n      function mouseClickUp() {\n        that.eventsMap.mouseClick = false;\n      }\n\n      function keyDownHandler(e) {\n        if (e.code == \"KeyD\" || e.code == \"ArrowRight\") {\n          that.eventsMap['right'] = true;\n        } else if (e.code == \"KeyA\" || e.code == \"ArrowLeft\") {\n          that.eventsMap['left'] = true;\n        } else if (e.code == \"KeyW\" || e.code == \"ArrowUp\") {\n          that.eventsMap['up'] = true;\n        } else if (e.code == \"KeyS\" || e.code == \"ArrowDown\") {\n          that.eventsMap['down'] = true;\n        }\n\n        if (e.code == 'KeyE') {\n          if (that.eventsMap['interact']) {\n            that.eventsMap['interact'] = false;\n          } else {\n            that.eventsMap['interact'] = true;\n          }\n        }\n      }\n\n      function keyUpHandler(e) {\n        if (e.code == \"KeyD\" || e.code == \"ArrowRight\") {\n          that.eventsMap['right'] = false;\n        } else if (e.code == \"KeyA\" || e.code == \"ArrowLeft\") {\n          that.eventsMap['left'] = false;\n        } else if (e.code == \"KeyW\" || e.code == \"ArrowUp\") {\n          that.eventsMap['up'] = false;\n        } else if (e.code == \"KeyS\" || e.code == \"ArrowDown\") {\n          that.eventsMap['down'] = false;\n        }\n      } // function keyClick(e) {\n      //     if(e.code == 'KeyE') {\n      //         if (this.eventsMap['interact']) {\n      //             this.eventsMap['interact'] = false ;\n      //         } else {   \n      //             this.eventsMap['interact'] = true;\n      //         }\n      //     }\n      // }\n\n    }\n  }, {\n    key: \"addEventListener\",\n    value: function addEventListener(eventType, callback) {\n      document.addEventListener(eventType, callback, false);\n    }\n  }, {\n    key: \"addObject\",\n    value: function addObject(name, obj) {\n      this.objects[name] = obj;\n    }\n  }, {\n    key: \"sendEventMap\",\n    value: function sendEventMap() {\n      return this.eventsMap;\n    }\n  }]);\n\n  return Handler;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/game/functions/Handler.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Handler; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Handler =
+/*#__PURE__*/
+function () {
+  function Handler(canvas) {
+    _classCallCheck(this, Handler);
+
+    this.canvas = canvas;
+    this.eventsMap = {
+      // Нажатие клавиш
+      'up': false,
+      'left': false,
+      'down': false,
+      'right': false,
+      'interact': false,
+      // Нажатие мышки
+      'mouseClick': false,
+      // Координаты мышки
+      'mouseX': 0,
+      'mouseY': 0
+    };
+    this.bounds = this.canvas.getBoundingClientRect();
+
+    this._listenEvents();
+  }
+
+  _createClass(Handler, [{
+    key: "_listenEvents",
+    value: function _listenEvents() {
+      var that = this;
+      document.addEventListener('keydown', keyDownHandler, false);
+      document.addEventListener('keyup', keyUpHandler, false);
+      document.addEventListener('mousedown', mouseClickDown, false);
+      document.addEventListener('mouseup', mouseClickUp, false);
+      document.addEventListener('mousedown', keyDownHandler, false);
+
+      document.body.onmousemove = function (evt) {
+        that.eventsMap.mouseX = evt.pageX - that.bounds.left;
+        that.eventsMap.mouseY = evt.pageY - that.bounds.top;
+      };
+
+      function mouseClickDown() {
+        that.eventsMap.mouseClick = true;
+      }
+
+      function mouseClickUp() {
+        that.eventsMap.mouseClick = false;
+      }
+
+      function keyDownHandler(e) {
+        if (e.code == "KeyD" || e.code == "ArrowRight") {
+          that.eventsMap['right'] = true;
+        } else if (e.code == "KeyA" || e.code == "ArrowLeft") {
+          that.eventsMap['left'] = true;
+        } else if (e.code == "KeyW" || e.code == "ArrowUp") {
+          that.eventsMap['up'] = true;
+        } else if (e.code == "KeyS" || e.code == "ArrowDown") {
+          that.eventsMap['down'] = true;
+        }
+
+        if (e.code == 'KeyE') {
+          if (that.eventsMap['interact']) {
+            that.eventsMap['interact'] = false;
+          } else {
+            that.eventsMap['interact'] = true;
+          }
+        }
+      }
+
+      function keyUpHandler(e) {
+        if (e.code == "KeyD" || e.code == "ArrowRight") {
+          that.eventsMap['right'] = false;
+        } else if (e.code == "KeyA" || e.code == "ArrowLeft") {
+          that.eventsMap['left'] = false;
+        } else if (e.code == "KeyW" || e.code == "ArrowUp") {
+          that.eventsMap['up'] = false;
+        } else if (e.code == "KeyS" || e.code == "ArrowDown") {
+          that.eventsMap['down'] = false;
+        }
+      } // function keyClick(e) {
+      //     if(e.code == 'KeyE') {
+      //         if (this.eventsMap['interact']) {
+      //             this.eventsMap['interact'] = false ;
+      //         } else {   
+      //             this.eventsMap['interact'] = true;
+      //         }
+      //     }
+      // }
+
+    }
+  }, {
+    key: "addEventListener",
+    value: function addEventListener(eventType, callback) {
+      document.addEventListener(eventType, callback, false);
+    }
+  }, {
+    key: "addObject",
+    value: function addObject(name, obj) {
+      this.objects[name] = obj;
+    }
+  }, {
+    key: "sendEventMap",
+    value: function sendEventMap() {
+      return this.eventsMap;
+    }
+  }]);
+
+  return Handler;
+}();
+
+
 
 /***/ }),
 
@@ -250,7 +1813,41 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return KeyboardControl; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nvar KeyboardControl = function KeyboardControl() {\n  _classCallCheck(this, KeyboardControl);\n} //     this.keys = {\n//         'up': false,\n//         'left': false,\n//         'down': false,\n//         'right': false,\n//         'mouseClick' : false,\n//         'mouseX' : 0,\n//         'mouseY' : 0\n//     }\n//     const that = this;\n//     this.mouseX = 0;\n//     this.mouseY = 0;\n//     document.addEventListener('keydown', keyDownHandler, false);\n//     document.addEventListener('keyup', keyUpHandler, false);\n//     document.addEventListener('mousedown', mouseClick,false)\n//     document.body.onmousemove = function(evt) {\n//         that.keys.mouseX = evt.pageX;\n//         that.keys.mouseY = evt.pageY;\n//     }\n//     function mouseClick() {\n//         this.keys.mouseClick = true;\n//     } \n// }\n// handleKey() {\n//     return this.keys;\n// }\n;\n\n\n\n//# sourceURL=webpack:///./static/js/game/functions/KeyboardControl.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return KeyboardControl; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var KeyboardControl = function KeyboardControl() {
+  _classCallCheck(this, KeyboardControl);
+} //     this.keys = {
+//         'up': false,
+//         'left': false,
+//         'down': false,
+//         'right': false,
+//         'mouseClick' : false,
+//         'mouseX' : 0,
+//         'mouseY' : 0
+//     }
+//     const that = this;
+//     this.mouseX = 0;
+//     this.mouseY = 0;
+//     document.addEventListener('keydown', keyDownHandler, false);
+//     document.addEventListener('keyup', keyUpHandler, false);
+//     document.addEventListener('mousedown', mouseClick,false)
+//     document.body.onmousemove = function(evt) {
+//         that.keys.mouseX = evt.pageX;
+//         that.keys.mouseY = evt.pageY;
+//     }
+//     function mouseClick() {
+//         this.keys.mouseClick = true;
+//     } 
+// }
+// handleKey() {
+//     return this.keys;
+// }
+;
+
+
 
 /***/ }),
 
@@ -262,7 +1859,110 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Screen; });\n/* harmony import */ var _static_escape_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../static/escape.js */ \"./static/js/game/static/escape.js\");\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\n\n\nvar Screen =\n/*#__PURE__*/\nfunction () {\n  function Screen() {\n    var root = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document.body;\n\n    _classCallCheck(this, Screen);\n\n    this._root = root; // Параметры canvas\n\n    this._canvas = document.createElement('canvas');\n    this.ctx;\n    this._canvas.className = \"gameScreen\"; // Размеры карты (видимая область)\n\n    this.width = window.innerWidth;\n    this.height = window.innerHeight; // Параметры отображения текста\n\n    this.fontCfg = '25px Arial';\n    this.textPosY = 45;\n  }\n\n  _createClass(Screen, [{\n    key: \"_createMap\",\n    value: function _createMap() {}\n  }, {\n    key: \"createCanvas\",\n    value: function createCanvas() {\n      this._root.innerHTML = '';\n      this._canvas.width = this.width;\n      this._canvas.height = this.height;\n\n      this._root.appendChild(this._canvas);\n\n      this.ctx = this._canvas.getContext('2d');\n      return this._canvas;\n    }\n  }, {\n    key: \"render\",\n    value: function render() {\n      var objects = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];\n      this.ctx.clearRect(0, 0, this.width, this.height);\n      var that = this;\n      objects['players'].forEach(function (obj) {\n        obj.render(that.ctx); // that._renderEssence('players', obj);\n      });\n      objects['bullets'].forEach(function (obj) {\n        obj.render(that.ctx);\n      });\n      objects['barriers'].forEach(function (obj) {\n        obj.render(that.ctx);\n      });\n      objects['advs'].forEach(function (obj) {\n        obj.render(that.ctx);\n      });\n      objects['shops'].forEach(function (obj) {\n        obj.render(that.ctx);\n      });\n    }\n  }, {\n    key: \"showInfo\",\n    value: function showInfo(score, health) {\n      this.ctx.fillStyle = \"#000\";\n      this.ctx.font = this.fontCfg;\n      this.ctx.fillText('score: ' + score, this.width / 2 - 250, this.textPosY);\n      this.ctx.fillStyle = \"red\";\n      this.ctx.font = this.fontCfg;\n      this.ctx.fillText('hp: ' + health, this.width / 2, this.textPosY);\n    }\n  }, {\n    key: \"showPauseTime\",\n    value: function showPauseTime(time) {\n      this.ctx.fillStyle = \"#000\";\n      this.ctx.font = this.fontCfg;\n      this.ctx.fillText('pause: ' + time, this.width - 300, this.textPosY);\n    }\n  }, {\n    key: \"showWaveNumber\",\n    value: function showWaveNumber(number) {\n      this.ctx.fillStyle = \"#000\";\n      this.ctx.font = this.fontCfg;\n      this.ctx.fillText('Wave: ' + number, 100, this.textPosY);\n    }\n  }, {\n    key: \"canvas\",\n    set: function set(ctx) {\n      this.ctx = ctx;\n    }\n  }]);\n\n  return Screen;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/game/functions/Screen.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Screen; });
+/* harmony import */ var _static_escape_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../static/escape.js */ "./static/js/game/static/escape.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var Screen =
+/*#__PURE__*/
+function () {
+  function Screen() {
+    var root = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document.body;
+
+    _classCallCheck(this, Screen);
+
+    this._root = root; // Параметры canvas
+
+    this._canvas = document.createElement('canvas');
+    this.ctx;
+    this._canvas.className = "gameScreen"; // Размеры карты (видимая область)
+
+    this.width = window.innerWidth;
+    this.height = window.innerHeight; // Параметры отображения текста
+
+    this.fontCfg = '25px Arial';
+    this.textPosY = 45;
+  }
+
+  _createClass(Screen, [{
+    key: "_createMap",
+    value: function _createMap() {}
+  }, {
+    key: "createCanvas",
+    value: function createCanvas() {
+      this._root.innerHTML = '';
+      this._canvas.width = this.width;
+      this._canvas.height = this.height;
+
+      this._root.appendChild(this._canvas);
+
+      this.ctx = this._canvas.getContext('2d');
+      return this._canvas;
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var objects = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      this.ctx.clearRect(0, 0, this.width, this.height);
+      var that = this;
+      objects['players'].forEach(function (obj) {
+        obj.render(that.ctx); // that._renderEssence('players', obj);
+      });
+      objects['bullets'].forEach(function (obj) {
+        obj.render(that.ctx);
+      });
+      objects['barriers'].forEach(function (obj) {
+        obj.render(that.ctx);
+      });
+      objects['advs'].forEach(function (obj) {
+        obj.render(that.ctx);
+      });
+      objects['shops'].forEach(function (obj) {
+        obj.render(that.ctx);
+      });
+    }
+  }, {
+    key: "showInfo",
+    value: function showInfo(score, health) {
+      this.ctx.fillStyle = "#000";
+      this.ctx.font = this.fontCfg;
+      this.ctx.fillText('score: ' + score, this.width / 2 - 250, this.textPosY);
+      this.ctx.fillStyle = "red";
+      this.ctx.font = this.fontCfg;
+      this.ctx.fillText('hp: ' + health, this.width / 2, this.textPosY);
+    }
+  }, {
+    key: "showPauseTime",
+    value: function showPauseTime(time) {
+      this.ctx.fillStyle = "#000";
+      this.ctx.font = this.fontCfg;
+      this.ctx.fillText('pause: ' + time, this.width - 300, this.textPosY);
+    }
+  }, {
+    key: "showWaveNumber",
+    value: function showWaveNumber(number) {
+      this.ctx.fillStyle = "#000";
+      this.ctx.font = this.fontCfg;
+      this.ctx.fillText('Wave: ' + number, 100, this.textPosY);
+    }
+  }, {
+    key: "canvas",
+    set: function set(ctx) {
+      this.ctx = ctx;
+    }
+  }]);
+
+  return Screen;
+}();
+
+
 
 /***/ }),
 
@@ -274,7 +1974,198 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return CollisionHandler; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar CollisionHandler =\n/*#__PURE__*/\nfunction () {\n  function CollisionHandler() {\n    _classCallCheck(this, CollisionHandler);\n  }\n\n  _createClass(CollisionHandler, [{\n    key: \"_getPairCollisions\",\n\n    /**\n     * Функция возвращает массив пар {first: firstObj, second: secondObj}\n     * @param {Array of } firstArr \n     * @param {Array of } secondArr \n     */\n    value: function _getPairCollisions(firstArr, secondArr) {\n      var _this = this;\n\n      var pairs = [];\n      firstArr.forEach(function (firstObj, fidx) {\n        if (typeof firstObj !== 'undefined') {\n          secondArr.forEach(function (secondObj, sidx) {\n            if (typeof secondObj !== 'undefined') {\n              if (_this._checkCollision(firstObj, secondObj)) {\n                pairs = {\n                  first: {\n                    firstObj: firstObj,\n                    fidx: fidx\n                  },\n                  second: {\n                    secondObj: secondObj,\n                    sidx: sidx\n                  }\n                };\n              }\n            } else {}\n          });\n        }\n      });\n      return pairs;\n    }\n  }, {\n    key: \"handleCollisions\",\n    value: function handleCollisions(objects) {\n      var score = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};\n\n      var PlayerBarrierCollision = this._getPairCollisions(objects['players'], objects['barriers']);\n\n      var BulletBarrierCollision = this._getPairCollisions(objects['bullets'], objects['barriers']);\n\n      var BulletAdvsCollision = this._getPairCollisions(objects['bullets'], objects['advs']);\n\n      var PlayersAdvsCollision = this._getPairCollisions(objects['players'], objects['advs']);\n\n      var BarriersAdvsCollision = this._getPairCollisions(objects['barriers'], objects['advs']);\n\n      var PlayersShopsCollision = this._getPairCollisions(objects['players'], objects['shops']);\n\n      if (PlayerBarrierCollision.length != 0) {\n        PlayerBarrierCollision.first.firstObj.interact();\n        PlayerBarrierCollision.second.secondObj.interact();\n      }\n\n      if (BulletBarrierCollision.length != 0) {\n        BulletBarrierCollision.first.firstObj.interact();\n        objects['bullets'].splice(BulletBarrierCollision.first.fidx, 1);\n        BulletBarrierCollision.second.secondObj.interact();\n      }\n\n      if (BulletAdvsCollision.length != 0) {\n        BulletAdvsCollision.first.firstObj.interact();\n        objects['bullets'].splice(BulletAdvsCollision.first.fidx, 1);\n        var advHealth = BulletAdvsCollision.second.secondObj.interact(BulletAdvsCollision.first.firstObj);\n\n        if (advHealth <= 0) {\n          score.value += 100;\n          objects['advs'].splice(BulletAdvsCollision.second.sidx, 1);\n        }\n      }\n\n      if (PlayersAdvsCollision.length != 0) {\n        PlayersAdvsCollision.first.firstObj.interact('adv');\n\n        var _advHealth = PlayersAdvsCollision.second.secondObj.interact(PlayersAdvsCollision.first.firstObj);\n\n        if (_advHealth <= 0) {\n          score.value += 100;\n          objects['advs'].splice(PlayersAdvsCollision.second.sidx, 1);\n        }\n      }\n\n      if (BarriersAdvsCollision.length != 0) {\n        BarriersAdvsCollision.first.firstObj.interact();\n        BarriersAdvsCollision.second.secondObj.interact(BarriersAdvsCollision.first.firstObj);\n      }\n\n      if (PlayersShopsCollision.length != 0) {\n        PlayersShopsCollision.first.firstObj.interact('shop', PlayersShopsCollision.second.secondObj);\n        PlayersShopsCollision.second.secondObj.playerInShop = true;\n      } else {\n        if (objects['shops'].length != 0) {\n          objects['shops'][0].playerInShop = false;\n          objects['players'][0].inShop = false;\n        }\n      }\n    }\n    /**\n     * \n     * @param {Array of Array} map \n     * @param {Array} objArray \n     */\n\n  }, {\n    key: \"_setObjectsVisibilityArea\",\n    value: function _setObjectsVisibilityArea(map, objArray) {}\n  }, {\n    key: \"_checkCollision\",\n    value: function _checkCollision(obj1, obj2) {\n      return this._checkCollisionRectangles(obj1, obj2);\n    }\n  }, {\n    key: \"_checkCollisionRectangles\",\n    value: function _checkCollisionRectangles(obj1, obj2) {\n      var x1 = obj1.xPos;\n      var y1 = obj1.yPos;\n      var xd1 = obj1.xPos + obj1.xSize;\n      var yd1 = obj1.yPos + obj1.ySize;\n      var x2 = obj2.xPos;\n      var y2 = obj2.yPos;\n      var xd2 = obj2.xPos + obj2.xSize;\n      var yd2 = obj2.yPos + obj2.ySize;\n      var left = Math.min(x1, x2);\n      var right = Math.max(xd1, xd2);\n      var top = Math.min(y1, y2);\n      var bottom = Math.max(yd1, yd2);\n      var width = right - left;\n      var height = bottom - top;\n\n      if (width <= obj1.xSize + obj2.xSize && height <= obj1.ySize + obj2.ySize) {\n        return true;\n      }\n\n      return false;\n    }\n  }, {\n    key: \"_checkCollisionCirles\",\n    value: function _checkCollisionCirles(obj1, obj2) {}\n  }, {\n    key: \"_checkCollisionRectangleCirle\",\n    value: function _checkCollisionRectangleCirle(rect, cirle) {}\n  }]);\n\n  return CollisionHandler;\n}();\n\n\n\nvar increaseHpByTime =\n/*#__PURE__*/\nfunction () {\n  function increaseHpByTime() {\n    _classCallCheck(this, increaseHpByTime);\n\n    this.start = Date.now();\n  }\n\n  _createClass(increaseHpByTime, [{\n    key: \"start\",\n    value: function start() {\n      this.start = Date.now();\n    }\n  }, {\n    key: \"end\",\n    value: function end(person) {\n      person.hp = person.hp + Math.trunc((Date.now() - this.start) / 100);\n\n      if (person.hp > person.hpCapacity) {\n        person.hp = person.hpCapacity;\n      }\n    }\n  }]);\n\n  return increaseHpByTime;\n}();\n\n//# sourceURL=webpack:///./static/js/game/functions/collisionHandler.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CollisionHandler; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var CollisionHandler =
+/*#__PURE__*/
+function () {
+  function CollisionHandler() {
+    _classCallCheck(this, CollisionHandler);
+  }
+
+  _createClass(CollisionHandler, [{
+    key: "_getPairCollisions",
+
+    /**
+     * Функция возвращает массив пар {first: firstObj, second: secondObj}
+     * @param {Array of } firstArr 
+     * @param {Array of } secondArr 
+     */
+    value: function _getPairCollisions(firstArr, secondArr) {
+      var _this = this;
+
+      var pairs = [];
+      firstArr.forEach(function (firstObj, fidx) {
+        if (typeof firstObj !== 'undefined') {
+          secondArr.forEach(function (secondObj, sidx) {
+            if (typeof secondObj !== 'undefined') {
+              if (_this._checkCollision(firstObj, secondObj)) {
+                pairs = {
+                  first: {
+                    firstObj: firstObj,
+                    fidx: fidx
+                  },
+                  second: {
+                    secondObj: secondObj,
+                    sidx: sidx
+                  }
+                };
+              }
+            } else {}
+          });
+        }
+      });
+      return pairs;
+    }
+  }, {
+    key: "handleCollisions",
+    value: function handleCollisions(objects) {
+      var score = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      var PlayerBarrierCollision = this._getPairCollisions(objects['players'], objects['barriers']);
+
+      var BulletBarrierCollision = this._getPairCollisions(objects['bullets'], objects['barriers']);
+
+      var BulletAdvsCollision = this._getPairCollisions(objects['bullets'], objects['advs']);
+
+      var PlayersAdvsCollision = this._getPairCollisions(objects['players'], objects['advs']);
+
+      var BarriersAdvsCollision = this._getPairCollisions(objects['barriers'], objects['advs']);
+
+      var PlayersShopsCollision = this._getPairCollisions(objects['players'], objects['shops']);
+
+      if (PlayerBarrierCollision.length != 0) {
+        PlayerBarrierCollision.first.firstObj.interact();
+        PlayerBarrierCollision.second.secondObj.interact();
+      }
+
+      if (BulletBarrierCollision.length != 0) {
+        BulletBarrierCollision.first.firstObj.interact();
+        objects['bullets'].splice(BulletBarrierCollision.first.fidx, 1);
+        BulletBarrierCollision.second.secondObj.interact();
+      }
+
+      if (BulletAdvsCollision.length != 0) {
+        BulletAdvsCollision.first.firstObj.interact();
+        objects['bullets'].splice(BulletAdvsCollision.first.fidx, 1);
+        var advHealth = BulletAdvsCollision.second.secondObj.interact(BulletAdvsCollision.first.firstObj);
+
+        if (advHealth <= 0) {
+          score.value += 100;
+          objects['advs'].splice(BulletAdvsCollision.second.sidx, 1);
+        }
+      }
+
+      if (PlayersAdvsCollision.length != 0) {
+        PlayersAdvsCollision.first.firstObj.interact('adv');
+
+        var _advHealth = PlayersAdvsCollision.second.secondObj.interact(PlayersAdvsCollision.first.firstObj);
+
+        if (_advHealth <= 0) {
+          score.value += 100;
+          objects['advs'].splice(PlayersAdvsCollision.second.sidx, 1);
+        }
+      }
+
+      if (BarriersAdvsCollision.length != 0) {
+        BarriersAdvsCollision.first.firstObj.interact();
+        BarriersAdvsCollision.second.secondObj.interact(BarriersAdvsCollision.first.firstObj);
+      }
+
+      if (PlayersShopsCollision.length != 0) {
+        PlayersShopsCollision.first.firstObj.interact('shop', PlayersShopsCollision.second.secondObj);
+        PlayersShopsCollision.second.secondObj.playerInShop = true;
+      } else {
+        if (objects['shops'].length != 0) {
+          objects['shops'][0].playerInShop = false;
+          objects['players'][0].inShop = false;
+        }
+      }
+    }
+    /**
+     * 
+     * @param {Array of Array} map 
+     * @param {Array} objArray 
+     */
+
+  }, {
+    key: "_setObjectsVisibilityArea",
+    value: function _setObjectsVisibilityArea(map, objArray) {}
+  }, {
+    key: "_checkCollision",
+    value: function _checkCollision(obj1, obj2) {
+      return this._checkCollisionRectangles(obj1, obj2);
+    }
+  }, {
+    key: "_checkCollisionRectangles",
+    value: function _checkCollisionRectangles(obj1, obj2) {
+      var x1 = obj1.xPos;
+      var y1 = obj1.yPos;
+      var xd1 = obj1.xPos + obj1.xSize;
+      var yd1 = obj1.yPos + obj1.ySize;
+      var x2 = obj2.xPos;
+      var y2 = obj2.yPos;
+      var xd2 = obj2.xPos + obj2.xSize;
+      var yd2 = obj2.yPos + obj2.ySize;
+      var left = Math.min(x1, x2);
+      var right = Math.max(xd1, xd2);
+      var top = Math.min(y1, y2);
+      var bottom = Math.max(yd1, yd2);
+      var width = right - left;
+      var height = bottom - top;
+
+      if (width <= obj1.xSize + obj2.xSize && height <= obj1.ySize + obj2.ySize) {
+        return true;
+      }
+
+      return false;
+    }
+  }, {
+    key: "_checkCollisionCirles",
+    value: function _checkCollisionCirles(obj1, obj2) {}
+  }, {
+    key: "_checkCollisionRectangleCirle",
+    value: function _checkCollisionRectangleCirle(rect, cirle) {}
+  }]);
+
+  return CollisionHandler;
+}();
+
+
+
+var increaseHpByTime =
+/*#__PURE__*/
+function () {
+  function increaseHpByTime() {
+    _classCallCheck(this, increaseHpByTime);
+
+    this.start = Date.now();
+  }
+
+  _createClass(increaseHpByTime, [{
+    key: "start",
+    value: function start() {
+      this.start = Date.now();
+    }
+  }, {
+    key: "end",
+    value: function end(person) {
+      person.hp = person.hp + Math.trunc((Date.now() - this.start) / 100);
+
+      if (person.hp > person.hpCapacity) {
+        person.hp = person.hpCapacity;
+      }
+    }
+  }]);
+
+  return increaseHpByTime;
+}();
 
 /***/ }),
 
@@ -286,7 +2177,36 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return MyMath; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar MyMath =\n/*#__PURE__*/\nfunction () {\n  function MyMath() {\n    _classCallCheck(this, MyMath);\n  }\n\n  _createClass(MyMath, [{\n    key: \"getTeta\",\n    value: function getTeta(x, y, mouseX, mouseY) {\n      var a = mouseX - x;\n      var b = mouseY - y;\n      var teta = 90 / 57.3 - Math.atan(a / b); // console.log(a,b);\n\n      return teta;\n    }\n  }]);\n\n  return MyMath;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/game/functions/myMath.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MyMath; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var MyMath =
+/*#__PURE__*/
+function () {
+  function MyMath() {
+    _classCallCheck(this, MyMath);
+  }
+
+  _createClass(MyMath, [{
+    key: "getTeta",
+    value: function getTeta(x, y, mouseX, mouseY) {
+      var a = mouseX - x;
+      var b = mouseY - y;
+      var teta = 90 / 57.3 - Math.atan(a / b); // console.log(a,b);
+
+      return teta;
+    }
+  }]);
+
+  return MyMath;
+}();
+
+
 
 /***/ }),
 
@@ -298,7 +2218,374 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Game; });\n/* harmony import */ var _functions_Screen_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./functions/Screen.js */ \"./static/js/game/functions/Screen.js\");\n/* harmony import */ var _functions_collisionHandler_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./functions/collisionHandler.js */ \"./static/js/game/functions/collisionHandler.js\");\n/* harmony import */ var _dynamic_Player_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./dynamic/Player.js */ \"./static/js/game/dynamic/Player.js\");\n/* harmony import */ var _static_Buff_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./static/Buff.js */ \"./static/js/game/static/Buff.js\");\n/* harmony import */ var _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./static/Barrier.js */ \"./static/js/game/static/Barrier.js\");\n/* harmony import */ var _functions_Handler_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./functions/Handler.js */ \"./static/js/game/functions/Handler.js\");\n/* harmony import */ var _dynamic_bullet_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./dynamic/bullet.js */ \"./static/js/game/dynamic/bullet.js\");\n/* harmony import */ var _dynamic_Adv_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./dynamic/Adv.js */ \"./static/js/game/dynamic/Adv.js\");\n/* harmony import */ var _static_Shop_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./static/Shop.js */ \"./static/js/game/static/Shop.js\");\nfunction isNativeReflectConstruct() { if (typeof Reflect === \"undefined\" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === \"function\") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }\n\nfunction _construct(Parent, args, Class) { if (isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }\n\nfunction _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }\n\nfunction _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }\n\nfunction _nonIterableSpread() { throw new TypeError(\"Invalid attempt to spread non-iterable instance\"); }\n\nfunction _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === \"[object Arguments]\") return Array.from(iter); }\n\nfunction _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\n\n\n\n\n\n\n\n\n\n\nvar Game =\n/*#__PURE__*/\nfunction () {\n  function Game() {\n    var root = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document.body;\n    var router = arguments.length > 1 ? arguments[1] : undefined;\n\n    _classCallCheck(this, Game);\n\n    this.router = router; // Родительский узел DOM \n\n    this._root = root;\n    this._root.innerHTML = ''; // Игровой экран\n\n    this._screen = new _functions_Screen_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](this.root); // Вспомогательные функции\n\n    this.CollisionHandler = new _functions_collisionHandler_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"]();\n    this.handler = new _functions_Handler_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"](this._screen._canvas); // Массив объектов\n\n    this.eventsMap = {};\n    this.objects = {}; // Генерация карты\n\n    this.borderW = 20;\n    this.sectionsCount = 10;\n    this.prm;\n    this.advsPos = {\n      0: [this.borderW + 10, Math.floor(this._screen.height / 2), 25, 25],\n      1: [Math.floor(this._screen.width / 2), this.borderW + 10, 25, 25],\n      2: [Math.floor(this._screen.width / 2), this._screen.height - this.borderW - 35, 25, 25] // Выстрелы\n\n    };\n    this.lastFire = Date.now(); // Логика волн\n\n    this.waveTrigger = true;\n    this.wavePause = false;\n    this.waveCount = 0;\n    this.pauseTimer = 0;\n    this.totalAdvSpawn = 0;\n    this.currentAdvCount = 0; // Инициализация объектов\n\n    this.objects['players'] = [];\n    this.objects['buffers'] = [];\n    this.objects['bullets'] = [];\n    this.objects['barriers'] = [];\n    this.objects['advs'] = [];\n    this.objects['shops'] = [];\n    this._player = new _dynamic_Player_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"](Math.floor(this._screen.width / 2), Math.floor(this._screen.height / 2), 20, 20, \"none\", 5);\n    this._buff = new _static_Buff_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](100, 10, 20, 20, \"none\");\n    this.objects['players'].push(this._player);\n    this.objects['buffers'].push(this._buff); // Игровые параметры\n\n    this.score = 0;\n    this.currentTime = 0;\n  } // Спасвним соперников\n\n\n  _createClass(Game, [{\n    key: \"_spawnAdvs\",\n    value: function _spawnAdvs(count) {\n      for (var i = 0; i < count; i++) {\n        var vel = 3 * Math.random();\n        var pos = Math.floor(3 * Math.random());\n\n        var adv = _construct(_dynamic_Adv_js__WEBPACK_IMPORTED_MODULE_7__[\"default\"], _toConsumableArray(this.advsPos[pos]).concat(['none', vel]));\n\n        this.objects['advs'].push(adv);\n      }\n    } // Строим границы\n\n  }, {\n    key: \"_createBoards\",\n    value: function _createBoards() {\n      var barrierTop = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](0, 0, this._screen.width, this.borderW);\n      var barrierLeft = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](0, 0, this.borderW, this._screen.height);\n      var barrierRight = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](this._screen.width - this.borderW, this.borderW, this._screen.width, this._screen.height);\n      var barrierBottom = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](this.borderW, this._screen.height - this.borderW, this._screen.width - this.borderW, this._screen.height);\n      this.objects['barriers'].push(barrierTop, barrierLeft, barrierRight, barrierBottom);\n    } // Вычисляем параметры сетки\n\n  }, {\n    key: \"_calculateParams\",\n    value: function _calculateParams() {\n      // Ширина и высота каждой секции \n      var xStep = (this._screen.width - 2 * this.borderW) / this.sectionsCount;\n      var yStep = (this._screen.height - 2 * this.borderW) / this.sectionsCount; // Ширина и высота каждого блока секции\n\n      var xBlockSize = xStep / 2;\n      var yBlockSize = yStep / 2; // Количество блоков \n\n      var blocksCount = this.sectionsCount * 2;\n      var mapsParams = {\n        'xStep': xStep,\n        'yStep': yStep,\n        'xBlockSize': xBlockSize,\n        'yBlockSize': yBlockSize,\n        'blocksCount': blocksCount\n      };\n      return mapsParams;\n    } // Строим границы по сетке\n\n  }, {\n    key: \"_spawnBarriers\",\n    value: function _spawnBarriers() {\n      var that = this;\n\n      for (var i = 1; i < this.sectionsCount - 1; i++) {\n        for (var j = 1; j < this.sectionsCount - 1; j++) {\n          if (!(i == Math.floor(this.sectionsCount / 2) && j == Math.floor(this.sectionsCount / 2))) {\n            var xSection = this.borderW + j * that.prm['xStep'];\n            var ySection = this.borderW + i * that.prm['yStep'];\n            var barrierCout = Math.floor(Math.random() * 2);\n            var idxs = [];\n\n            for (var k = 0; k < barrierCout; k++) {\n              var idx = void 0;\n              var check = false;\n              idx = Math.floor(Math.random() * 4);\n\n              if (idxs.length != 0) {\n                while (!check) {\n                  idx = Math.floor(Math.random() * 4);\n                  console.log('idx', idx);\n\n                  for (var a = 0; a < idxs.length; a++) {\n                    if (idxs[a] == idx) {\n                      check = false;\n                      break;\n                    }\n\n                    check = true;\n                  }\n                }\n              }\n\n              idxs.push(idx);\n            }\n\n            for (var p = 0; p < idxs.length; p++) {\n              var barrier = void 0;\n\n              switch (idxs[p]) {\n                case 0:\n                  {\n                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](xSection, ySection, that.prm['xBlockSize'], that.prm['yBlockSize']);\n                    that.objects['barriers'].push(barrier);\n                    break;\n                  }\n\n                case 1:\n                  {\n                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](xSection + that.prm['xBlockSize'], ySection, that.prm['xBlockSize'], that.prm['yBlockSize']);\n                    that.objects['barriers'].push(barrier);\n                    break;\n                  }\n\n                case 2:\n                  {\n                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](xSection, ySection + that.prm['yBlockSize'], that.prm['xBlockSize'], that.prm['yBlockSize']);\n                    that.objects['barriers'].push(barrier);\n                    break;\n                  }\n\n                case 3:\n                  {\n                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](xSection + that.prm['xBlockSize'], ySection + that.prm['yBlockSize'], that.prm['xBlockSize'], that.prm['yBlockSize']);\n                    that.objects['barriers'].push(barrier);\n                    break;\n                  }\n              }\n            }\n          }\n        }\n      }\n\n      console.log(this.objects['barriers']);\n    } // Генерируем карту\n\n  }, {\n    key: \"_generateMap\",\n    value: function _generateMap() {\n      this._createBoards();\n\n      this.prm = this._calculateParams();\n\n      this._spawnBarriers();\n    } // Вспомогательная сетка\n    // _drawGrid() {\n    //     const that = this;\n    //     for (let i = 0; i < this.sectionsCount*4; i++) {\n    //         for (let j = 0; j < this.sectionsCount*4; j++) { \n    //             that._screen.ctx.strokeStyle = 'red'; \n    //             that._screen.ctx.moveTo(this.borderW + j*this.prm['xBlockSize'], this.borderW + i*this.prm['yBlockSize']);\n    //             that._screen.ctx.lineTo(this.borderW + j*this.prm['xBlockSize'], this._screen.height - this.borderW);\n    //             that._screen.ctx.stroke();\n    //         }\n    //         that._screen.ctx.moveTo(this.borderW,this.borderW + i*this.prm['yBlockSize']);\n    //         that._screen.ctx.lineTo(this._screen.width - this.borderW, this.borderW + i*this.prm['yBlockSize']);\n    //         that._screen.ctx.stroke();\n    //     }\n    // }\n\n  }, {\n    key: \"isEmpty\",\n    value: function isEmpty(obj) {\n      for (var key in obj) {\n        return false;\n      }\n\n      return true;\n    }\n  }, {\n    key: \"frame\",\n    value: function frame() {\n      var _this = this;\n\n      this.eventsMap = this.handler.sendEventMap();\n\n      if (this.waveTrigger) {\n        this.totalAdvSpawn += 5;\n        this.currentAdvCount = this.totalAdvSpawn;\n        this.waveCount++;\n        console.log(this.totalAdvSpawn);\n\n        this._spawnAdvs(this.totalAdvSpawn);\n      }\n\n      this.waveTrigger = false; // Стрельба\n\n      if (this.eventsMap['mouseClick']) {\n        if (Date.now() - this.lastFire > 100) {\n          var bullet = new _dynamic_bullet_js__WEBPACK_IMPORTED_MODULE_6__[\"default\"](this.objects['players'][0].centerX, this.objects['players'][0].centerY, 2, 2, '', 7, this.eventsMap['mouseX'], this.eventsMap['mouseY']);\n          this.objects['bullets'].push(bullet);\n          this.lastFire = Date.now();\n        }\n      }\n\n      this.objects['bullets'].forEach(function (element) {\n        element.go();\n      });\n      this.objects['players'][0].logic(this.eventsMap, this.width, this.height);\n      this.objects['advs'].forEach(function (adv) {\n        adv.logic(_this.objects['players'][0].xPos, _this.objects['players'][0].yPos);\n      });\n\n      this._screen.render(this.objects);\n\n      this.CollisionHandler.handleCollisions(this.objects, this.scoreObj);\n      this.currentTime++;\n\n      if (this.currentTime >= 60) {\n        this.currentTime = 0;\n        this.score++;\n        this.objects['players'][0].hp -= 0.5;\n      }\n\n      if (this.objects['advs'].length == 0 && !this.wavePause) {\n        this.objects['players'][0].hp = 100;\n        this.currentTime = 0;\n        this.pauseTimer = 30 * 60;\n        this.wavePause = true;\n        var shop = new _static_Shop_js__WEBPACK_IMPORTED_MODULE_8__[\"default\"](this._screen.width - 120 - this.borderW, this._screen.height / 2, 100, 100);\n        this.objects['shops'].push(shop);\n      }\n\n      if (this.wavePause) {\n        this.currentTime = 0;\n        this.pauseTimer -= 1;\n\n        this._screen.showPauseTime(Math.floor(this.pauseTimer / 60));\n\n        if (this.pauseTimer == 0) {\n          this.objects['shops'].splice(0, 1);\n          this.wavePause = false;\n          this.waveTrigger = true;\n        }\n      }\n\n      this._screen.showWaveNumber(this.waveCount);\n\n      this._screen.showInfo(this.score, this.objects['players'][0].hp);\n\n      this._checkDeath();\n\n      requestAnimationFrame(function (time) {\n        return _this.frame();\n      });\n    }\n  }, {\n    key: \"_checkDeath\",\n    value: function _checkDeath() {\n      if (this.objects.players[0].hp <= 0) {\n        this.defeat();\n      }\n    } // Поражение\n\n  }, {\n    key: \"defeat\",\n    value: function defeat() {\n      this.router.go('/');\n      throw new Error('Ok');\n    } // Победа \n\n  }, {\n    key: \"victory\",\n    value: function victory() {\n      this.router.go('/win');\n    } // Инит метод : цикл -> отрисовка \n\n  }, {\n    key: \"run\",\n    value: function run() {\n      var _this2 = this;\n\n      this.canvas = this._screen.createCanvas();\n\n      this._generateMap();\n\n      requestAnimationFrame(function (time) {\n        return _this2.frame();\n      });\n    }\n  }]);\n\n  return Game;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/game/game.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Game; });
+/* harmony import */ var _functions_Screen_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./functions/Screen.js */ "./static/js/game/functions/Screen.js");
+/* harmony import */ var _functions_collisionHandler_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./functions/collisionHandler.js */ "./static/js/game/functions/collisionHandler.js");
+/* harmony import */ var _dynamic_Player_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./dynamic/Player.js */ "./static/js/game/dynamic/Player.js");
+/* harmony import */ var _static_Buff_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./static/Buff.js */ "./static/js/game/static/Buff.js");
+/* harmony import */ var _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./static/Barrier.js */ "./static/js/game/static/Barrier.js");
+/* harmony import */ var _functions_Handler_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./functions/Handler.js */ "./static/js/game/functions/Handler.js");
+/* harmony import */ var _dynamic_bullet_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./dynamic/bullet.js */ "./static/js/game/dynamic/bullet.js");
+/* harmony import */ var _dynamic_Adv_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./dynamic/Adv.js */ "./static/js/game/dynamic/Adv.js");
+/* harmony import */ var _static_Shop_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./static/Shop.js */ "./static/js/game/static/Shop.js");
+function isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _construct(Parent, args, Class) { if (isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+
+
+
+
+
+
+
+var Game =
+/*#__PURE__*/
+function () {
+  function Game() {
+    var root = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document.body;
+    var router = arguments.length > 1 ? arguments[1] : undefined;
+
+    _classCallCheck(this, Game);
+
+    this.router = router; // Родительский узел DOM 
+
+    this._root = root;
+    this._root.innerHTML = ''; // Игровой экран
+
+    this._screen = new _functions_Screen_js__WEBPACK_IMPORTED_MODULE_0__["default"](this.root); // Вспомогательные функции
+
+    this.CollisionHandler = new _functions_collisionHandler_js__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    this.handler = new _functions_Handler_js__WEBPACK_IMPORTED_MODULE_5__["default"](this._screen._canvas); // Массив объектов
+
+    this.eventsMap = {};
+    this.objects = {}; // Генерация карты
+
+    this.borderW = 20;
+    this.sectionsCount = 10;
+    this.prm;
+    this.advsPos = {
+      0: [this.borderW + 10, Math.floor(this._screen.height / 2), 25, 25],
+      1: [Math.floor(this._screen.width / 2), this.borderW + 10, 25, 25],
+      2: [Math.floor(this._screen.width / 2), this._screen.height - this.borderW - 35, 25, 25] // Выстрелы
+
+    };
+    this.lastFire = Date.now(); // Логика волн
+
+    this.waveTrigger = true;
+    this.wavePause = false;
+    this.waveCount = 0;
+    this.pauseTimer = 0;
+    this.totalAdvSpawn = 0;
+    this.currentAdvCount = 0; // Инициализация объектов
+
+    this.objects['players'] = [];
+    this.objects['buffers'] = [];
+    this.objects['bullets'] = [];
+    this.objects['barriers'] = [];
+    this.objects['advs'] = [];
+    this.objects['shops'] = [];
+    this._player = new _dynamic_Player_js__WEBPACK_IMPORTED_MODULE_2__["default"](Math.floor(this._screen.width / 2), Math.floor(this._screen.height / 2), 20, 20, "none", 5);
+    this._buff = new _static_Buff_js__WEBPACK_IMPORTED_MODULE_3__["default"](100, 10, 20, 20, "none");
+    this.objects['players'].push(this._player);
+    this.objects['buffers'].push(this._buff); // Игровые параметры
+
+    this.score = 0;
+    this.currentTime = 0;
+  } // Спасвним соперников
+
+
+  _createClass(Game, [{
+    key: "_spawnAdvs",
+    value: function _spawnAdvs(count) {
+      for (var i = 0; i < count; i++) {
+        var vel = 3 * Math.random();
+        var pos = Math.floor(3 * Math.random());
+
+        var adv = _construct(_dynamic_Adv_js__WEBPACK_IMPORTED_MODULE_7__["default"], _toConsumableArray(this.advsPos[pos]).concat(['none', vel]));
+
+        this.objects['advs'].push(adv);
+      }
+    } // Строим границы
+
+  }, {
+    key: "_createBoards",
+    value: function _createBoards() {
+      var barrierTop = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](0, 0, this._screen.width, this.borderW);
+      var barrierLeft = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](0, 0, this.borderW, this._screen.height);
+      var barrierRight = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](this._screen.width - this.borderW, this.borderW, this._screen.width, this._screen.height);
+      var barrierBottom = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](this.borderW, this._screen.height - this.borderW, this._screen.width - this.borderW, this._screen.height);
+      this.objects['barriers'].push(barrierTop, barrierLeft, barrierRight, barrierBottom);
+    } // Вычисляем параметры сетки
+
+  }, {
+    key: "_calculateParams",
+    value: function _calculateParams() {
+      // Ширина и высота каждой секции 
+      var xStep = (this._screen.width - 2 * this.borderW) / this.sectionsCount;
+      var yStep = (this._screen.height - 2 * this.borderW) / this.sectionsCount; // Ширина и высота каждого блока секции
+
+      var xBlockSize = xStep / 2;
+      var yBlockSize = yStep / 2; // Количество блоков 
+
+      var blocksCount = this.sectionsCount * 2;
+      var mapsParams = {
+        'xStep': xStep,
+        'yStep': yStep,
+        'xBlockSize': xBlockSize,
+        'yBlockSize': yBlockSize,
+        'blocksCount': blocksCount
+      };
+      return mapsParams;
+    } // Строим границы по сетке
+
+  }, {
+    key: "_spawnBarriers",
+    value: function _spawnBarriers() {
+      var that = this;
+
+      for (var i = 1; i < this.sectionsCount - 1; i++) {
+        for (var j = 1; j < this.sectionsCount - 1; j++) {
+          if (!(i == Math.floor(this.sectionsCount / 2) && j == Math.floor(this.sectionsCount / 2))) {
+            var xSection = this.borderW + j * that.prm['xStep'];
+            var ySection = this.borderW + i * that.prm['yStep'];
+            var barrierCout = Math.floor(Math.random() * 2);
+            var idxs = [];
+
+            for (var k = 0; k < barrierCout; k++) {
+              var idx = void 0;
+              var check = false;
+              idx = Math.floor(Math.random() * 4);
+
+              if (idxs.length != 0) {
+                while (!check) {
+                  idx = Math.floor(Math.random() * 4);
+                  console.log('idx', idx);
+
+                  for (var a = 0; a < idxs.length; a++) {
+                    if (idxs[a] == idx) {
+                      check = false;
+                      break;
+                    }
+
+                    check = true;
+                  }
+                }
+              }
+
+              idxs.push(idx);
+            }
+
+            for (var p = 0; p < idxs.length; p++) {
+              var barrier = void 0;
+
+              switch (idxs[p]) {
+                case 0:
+                  {
+                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](xSection, ySection, that.prm['xBlockSize'], that.prm['yBlockSize']);
+                    that.objects['barriers'].push(barrier);
+                    break;
+                  }
+
+                case 1:
+                  {
+                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](xSection + that.prm['xBlockSize'], ySection, that.prm['xBlockSize'], that.prm['yBlockSize']);
+                    that.objects['barriers'].push(barrier);
+                    break;
+                  }
+
+                case 2:
+                  {
+                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](xSection, ySection + that.prm['yBlockSize'], that.prm['xBlockSize'], that.prm['yBlockSize']);
+                    that.objects['barriers'].push(barrier);
+                    break;
+                  }
+
+                case 3:
+                  {
+                    barrier = new _static_Barrier_js__WEBPACK_IMPORTED_MODULE_4__["default"](xSection + that.prm['xBlockSize'], ySection + that.prm['yBlockSize'], that.prm['xBlockSize'], that.prm['yBlockSize']);
+                    that.objects['barriers'].push(barrier);
+                    break;
+                  }
+              }
+            }
+          }
+        }
+      }
+
+      console.log(this.objects['barriers']);
+    } // Генерируем карту
+
+  }, {
+    key: "_generateMap",
+    value: function _generateMap() {
+      this._createBoards();
+
+      this.prm = this._calculateParams();
+
+      this._spawnBarriers();
+    } // Вспомогательная сетка
+    // _drawGrid() {
+    //     const that = this;
+    //     for (let i = 0; i < this.sectionsCount*4; i++) {
+    //         for (let j = 0; j < this.sectionsCount*4; j++) { 
+    //             that._screen.ctx.strokeStyle = 'red'; 
+    //             that._screen.ctx.moveTo(this.borderW + j*this.prm['xBlockSize'], this.borderW + i*this.prm['yBlockSize']);
+    //             that._screen.ctx.lineTo(this.borderW + j*this.prm['xBlockSize'], this._screen.height - this.borderW);
+    //             that._screen.ctx.stroke();
+    //         }
+    //         that._screen.ctx.moveTo(this.borderW,this.borderW + i*this.prm['yBlockSize']);
+    //         that._screen.ctx.lineTo(this._screen.width - this.borderW, this.borderW + i*this.prm['yBlockSize']);
+    //         that._screen.ctx.stroke();
+    //     }
+    // }
+
+  }, {
+    key: "isEmpty",
+    value: function isEmpty(obj) {
+      for (var key in obj) {
+        return false;
+      }
+
+      return true;
+    }
+  }, {
+    key: "frame",
+    value: function frame() {
+      var _this = this;
+
+      this.eventsMap = this.handler.sendEventMap();
+
+      if (this.waveTrigger) {
+        this.totalAdvSpawn += 5;
+        this.currentAdvCount = this.totalAdvSpawn;
+        this.waveCount++;
+        console.log(this.totalAdvSpawn);
+
+        this._spawnAdvs(this.totalAdvSpawn);
+      }
+
+      this.waveTrigger = false; // Стрельба
+
+      if (this.eventsMap['mouseClick']) {
+        if (Date.now() - this.lastFire > 100) {
+          var bullet = new _dynamic_bullet_js__WEBPACK_IMPORTED_MODULE_6__["default"](this.objects['players'][0].centerX, this.objects['players'][0].centerY, 2, 2, '', 7, this.eventsMap['mouseX'], this.eventsMap['mouseY']);
+          this.objects['bullets'].push(bullet);
+          this.lastFire = Date.now();
+        }
+      }
+
+      this.objects['bullets'].forEach(function (element) {
+        element.go();
+      });
+      this.objects['players'][0].logic(this.eventsMap, this.width, this.height);
+      this.objects['advs'].forEach(function (adv) {
+        adv.logic(_this.objects['players'][0].xPos, _this.objects['players'][0].yPos);
+      });
+
+      this._screen.render(this.objects);
+
+      this.CollisionHandler.handleCollisions(this.objects, this.scoreObj);
+      this.currentTime++;
+
+      if (this.currentTime >= 60) {
+        this.currentTime = 0;
+        this.score++;
+        this.objects['players'][0].hp -= 0.5;
+      }
+
+      if (this.objects['advs'].length == 0 && !this.wavePause) {
+        this.objects['players'][0].hp = 100;
+        this.currentTime = 0;
+        this.pauseTimer = 30 * 60;
+        this.wavePause = true;
+        var shop = new _static_Shop_js__WEBPACK_IMPORTED_MODULE_8__["default"](this._screen.width - 120 - this.borderW, this._screen.height / 2, 100, 100);
+        this.objects['shops'].push(shop);
+      }
+
+      if (this.wavePause) {
+        this.currentTime = 0;
+        this.pauseTimer -= 1;
+
+        this._screen.showPauseTime(Math.floor(this.pauseTimer / 60));
+
+        if (this.pauseTimer == 0) {
+          this.objects['shops'].splice(0, 1);
+          this.wavePause = false;
+          this.waveTrigger = true;
+        }
+      }
+
+      this._screen.showWaveNumber(this.waveCount);
+
+      this._screen.showInfo(this.score, this.objects['players'][0].hp);
+
+      this._checkDeath();
+
+      requestAnimationFrame(function (time) {
+        return _this.frame();
+      });
+    }
+  }, {
+    key: "_checkDeath",
+    value: function _checkDeath() {
+      if (this.objects.players[0].hp <= 0) {
+        this.defeat();
+      }
+    } // Поражение
+
+  }, {
+    key: "defeat",
+    value: function defeat() {
+      this.router.go('/');
+      throw new Error('Ok');
+    } // Победа 
+
+  }, {
+    key: "victory",
+    value: function victory() {
+      this.router.go('/win');
+    } // Инит метод : цикл -> отрисовка 
+
+  }, {
+    key: "run",
+    value: function run() {
+      var _this2 = this;
+
+      this.canvas = this._screen.createCanvas();
+
+      this._generateMap();
+
+      requestAnimationFrame(function (time) {
+        return _this2.frame();
+      });
+    }
+  }]);
+
+  return Game;
+}();
+
+
 
 /***/ }),
 
@@ -310,7 +2597,57 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Barrier; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\n// import StaticEssence from './StaticEssence.js'\nvar Barrier =\n/*#__PURE__*/\nfunction () {\n  function Barrier(xPos, yPos) {\n    var xSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 250;\n    var ySize = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 250;\n    var URL = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : \"/default_texture\";\n\n    _classCallCheck(this, Barrier);\n\n    // Координаты\n    this.xPos = xPos;\n    this.yPos = yPos;\n    this.name = 'barrier'; // Позиция прицела - только у плеера\n    // Его размеры \n\n    this.xSize = xSize; // vh\n\n    this.ySize = ySize; // vh\n  }\n\n  _createClass(Barrier, [{\n    key: \"render\",\n    value: function render(ctx) {\n      ctx.beginPath();\n      ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);\n      ctx.fillStyle = \"gray\";\n      ctx.fill();\n      ctx.closePath();\n    }\n  }, {\n    key: \"logic\",\n    value: function logic() {}\n  }, {\n    key: \"interact\",\n    value: function interact() {}\n  }]);\n\n  return Barrier;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/game/static/Barrier.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Barrier; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+// import StaticEssence from './StaticEssence.js'
+var Barrier =
+/*#__PURE__*/
+function () {
+  function Barrier(xPos, yPos) {
+    var xSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 250;
+    var ySize = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 250;
+    var URL = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "/default_texture";
+
+    _classCallCheck(this, Barrier);
+
+    // Координаты
+    this.xPos = xPos;
+    this.yPos = yPos;
+    this.name = 'barrier'; // Позиция прицела - только у плеера
+    // Его размеры 
+
+    this.xSize = xSize; // vh
+
+    this.ySize = ySize; // vh
+  }
+
+  _createClass(Barrier, [{
+    key: "render",
+    value: function render(ctx) {
+      ctx.beginPath();
+      ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);
+      ctx.fillStyle = "gray";
+      ctx.fill();
+      ctx.closePath();
+    }
+  }, {
+    key: "logic",
+    value: function logic() {}
+  }, {
+    key: "interact",
+    value: function interact() {}
+  }]);
+
+  return Barrier;
+}();
+
+
 
 /***/ }),
 
@@ -322,7 +2659,67 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Buff; });\n/* harmony import */ var _StaticEssence_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./StaticEssence.js */ \"./static/js/game/static/StaticEssence.js\");\n/* harmony import */ var _configs_buffConfigs_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../configs/buffConfigs.js */ \"./static/js/game/configs/buffConfigs.js\");\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nfunction _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \"object\" || typeof call === \"function\")) { return call; } return _assertThisInitialized(self); }\n\nfunction _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return self; }\n\nfunction _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }\n\nfunction _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }\n\n\n\n\nvar Buff =\n/*#__PURE__*/\nfunction (_StaticEssence) {\n  _inherits(Buff, _StaticEssence);\n\n  function Buff(buff) {\n    var _this;\n\n    _classCallCheck(this, Buff);\n\n    _this = _possibleConstructorReturn(this, _getPrototypeOf(Buff).apply(this, arguments));\n    _this.buff = _configs_buffConfigs_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"].increaseVelocity;\n    _this.visited = false;\n    return _this;\n  }\n\n  _createClass(Buff, [{\n    key: \"_render\",\n    value: function _render(canvasContext) {\n      canvasContext.fillRect(this.xPos, this.yPos, this.xSize, this.ySize);\n    }\n  }, {\n    key: \"interact\",\n    value: function interact(person, buffObj) {\n      if (!buffObj.visited) {\n        console.log(buffObj.visited);\n        person.addBuff(person, buffObj.buff);\n        buffObj.visited = true;\n      }\n    }\n  }]);\n\n  return Buff;\n}(_StaticEssence_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n\n\n\n//# sourceURL=webpack:///./static/js/game/static/Buff.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Buff; });
+/* harmony import */ var _StaticEssence_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./StaticEssence.js */ "./static/js/game/static/StaticEssence.js");
+/* harmony import */ var _configs_buffConfigs_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../configs/buffConfigs.js */ "./static/js/game/configs/buffConfigs.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+
+var Buff =
+/*#__PURE__*/
+function (_StaticEssence) {
+  _inherits(Buff, _StaticEssence);
+
+  function Buff(buff) {
+    var _this;
+
+    _classCallCheck(this, Buff);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Buff).apply(this, arguments));
+    _this.buff = _configs_buffConfigs_js__WEBPACK_IMPORTED_MODULE_1__["default"].increaseVelocity;
+    _this.visited = false;
+    return _this;
+  }
+
+  _createClass(Buff, [{
+    key: "_render",
+    value: function _render(canvasContext) {
+      canvasContext.fillRect(this.xPos, this.yPos, this.xSize, this.ySize);
+    }
+  }, {
+    key: "interact",
+    value: function interact(person, buffObj) {
+      if (!buffObj.visited) {
+        console.log(buffObj.visited);
+        person.addBuff(person, buffObj.buff);
+        buffObj.visited = true;
+      }
+    }
+  }]);
+
+  return Buff;
+}(_StaticEssence_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ }),
 
@@ -334,7 +2731,92 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Shop; });\n/* harmony import */ var _StaticEssence_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./StaticEssence.js */ \"./static/js/game/static/StaticEssence.js\");\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nfunction _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \"object\" || typeof call === \"function\")) { return call; } return _assertThisInitialized(self); }\n\nfunction _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return self; }\n\nfunction _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }\n\nfunction _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }\n\n\n\nvar Shop =\n/*#__PURE__*/\nfunction (_StaticEssence) {\n  _inherits(Shop, _StaticEssence);\n\n  function Shop() {\n    var _this;\n\n    _classCallCheck(this, Shop);\n\n    _this = _possibleConstructorReturn(this, _getPrototypeOf(Shop).apply(this, arguments));\n    _this.playerInShop = false;\n    _this.shopOpenStatus = false;\n    _this.ctx;\n    _this.root = document.body;\n    return _this;\n  }\n\n  _createClass(Shop, [{\n    key: \"render\",\n    value: function render(ctx) {\n      this.ctx = ctx;\n      ctx.beginPath();\n      ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);\n      ctx.fillStyle = \"#C733FF\";\n      ctx.fill();\n      ctx.closePath();\n\n      if (this.playerInShop && !this.shopOpenStatus) {\n        ctx.fillStyle = \"#000\";\n        ctx.font = \"italic 20pt Arial\";\n        ctx.fillText('Press E to Shop', 600, 300);\n      }\n    }\n  }, {\n    key: \"logic\",\n    value: function logic() {}\n  }, {\n    key: \"interact\",\n    value: function interact() {\n      this.playerInShop = true;\n    }\n  }, {\n    key: \"open\",\n    value: function open() {\n      if (this.playerInShop) {\n        this.shopOpenStatus = true;\n        this.ctx.fillStyle = 'E3E3E3';\n        this.ctx.fillRect(250, 300, 650, 600);\n      }\n    }\n  }, {\n    key: \"close\",\n    value: function close() {\n      this.shopOpenStatus = false;\n      console.log('Shop closed');\n    }\n  }]);\n\n  return Shop;\n}(_StaticEssence_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n\n\n\n//# sourceURL=webpack:///./static/js/game/static/Shop.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Shop; });
+/* harmony import */ var _StaticEssence_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./StaticEssence.js */ "./static/js/game/static/StaticEssence.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var Shop =
+/*#__PURE__*/
+function (_StaticEssence) {
+  _inherits(Shop, _StaticEssence);
+
+  function Shop() {
+    var _this;
+
+    _classCallCheck(this, Shop);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Shop).apply(this, arguments));
+    _this.playerInShop = false;
+    _this.shopOpenStatus = false;
+    _this.ctx;
+    _this.root = document.body;
+    return _this;
+  }
+
+  _createClass(Shop, [{
+    key: "render",
+    value: function render(ctx) {
+      this.ctx = ctx;
+      ctx.beginPath();
+      ctx.rect(this.xPos, this.yPos, this.xSize, this.ySize);
+      ctx.fillStyle = "#C733FF";
+      ctx.fill();
+      ctx.closePath();
+
+      if (this.playerInShop && !this.shopOpenStatus) {
+        ctx.fillStyle = "#000";
+        ctx.font = "italic 20pt Arial";
+        ctx.fillText('Press E to Shop', 600, 300);
+      }
+    }
+  }, {
+    key: "logic",
+    value: function logic() {}
+  }, {
+    key: "interact",
+    value: function interact() {
+      this.playerInShop = true;
+    }
+  }, {
+    key: "open",
+    value: function open() {
+      if (this.playerInShop) {
+        this.shopOpenStatus = true;
+        this.ctx.fillStyle = 'E3E3E3';
+        this.ctx.fillRect(250, 300, 650, 600);
+      }
+    }
+  }, {
+    key: "close",
+    value: function close() {
+      this.shopOpenStatus = false;
+      console.log('Shop closed');
+    }
+  }]);
+
+  return Shop;
+}(_StaticEssence_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ }),
 
@@ -346,7 +2828,53 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return StaticEssence; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar StaticEssence =\n/*#__PURE__*/\nfunction () {\n  function StaticEssence(xPos, yPos) {\n    var xSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 50;\n    var ySize = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 50;\n    var URL = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : \"/default_texture\";\n\n    _classCallCheck(this, StaticEssence);\n\n    // Основные параметры\n    this.hpCapacity = 100; // у.е\n    // this.velocity = velocity; // у.е\n    // Координаты\n\n    this.xPos = xPos;\n    this.yPos = yPos; // Его размеры \n\n    this.xSize = xSize; // vh\n\n    this.ySize = ySize; // vh\n\n    this.texture = URL; // URL \n\n    this.immortal = true; // для рекламы\n  }\n\n  _createClass(StaticEssence, [{\n    key: \"_render\",\n    value: function _render() {}\n  }, {\n    key: \"interact\",\n    value: function interact() {}\n  }]);\n\n  return StaticEssence;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/game/static/StaticEssence.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return StaticEssence; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var StaticEssence =
+/*#__PURE__*/
+function () {
+  function StaticEssence(xPos, yPos) {
+    var xSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 50;
+    var ySize = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 50;
+    var URL = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "/default_texture";
+
+    _classCallCheck(this, StaticEssence);
+
+    // Основные параметры
+    this.hpCapacity = 100; // у.е
+    // this.velocity = velocity; // у.е
+    // Координаты
+
+    this.xPos = xPos;
+    this.yPos = yPos; // Его размеры 
+
+    this.xSize = xSize; // vh
+
+    this.ySize = ySize; // vh
+
+    this.texture = URL; // URL 
+
+    this.immortal = true; // для рекламы
+  }
+
+  _createClass(StaticEssence, [{
+    key: "_render",
+    value: function _render() {}
+  }, {
+    key: "interact",
+    value: function interact() {}
+  }]);
+
+  return StaticEssence;
+}();
+
+
 
 /***/ }),
 
@@ -358,7 +2886,25 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Escape; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nvar Escape = function Escape() {\n  var xPos = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 700;\n  var yPos = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;\n  var xSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 200;\n  var ySize = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 50;\n\n  _classCallCheck(this, Escape);\n\n  this.xPos = xPos;\n  this.yPos = yPos;\n  this.xSize = xSize;\n  this.ySize = ySize;\n};\n\n\n\n//# sourceURL=webpack:///./static/js/game/static/escape.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Escape; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Escape = function Escape() {
+  var xPos = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 700;
+  var yPos = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;
+  var xSize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 200;
+  var ySize = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 50;
+
+  _classCallCheck(this, Escape);
+
+  this.xPos = xPos;
+  this.yPos = yPos;
+  this.xSize = xSize;
+  this.ySize = ySize;
+};
+
+
 
 /***/ }),
 
@@ -370,7 +2916,183 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return NetworkHandler; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\n/* eslint-disable import/prefer-default-export */\n\n/**\n * Прототип класса с модулем проверки авторизации пользователя.\n */\nvar noop = function noop() {\n  return null;\n};\n/**\n * Класс с методами отправки AJAX-запросов на сервер\n */\n\n\nvar NetworkHandler =\n/*#__PURE__*/\nfunction () {\n  function NetworkHandler() {\n    _classCallCheck(this, NetworkHandler);\n  }\n\n  _createClass(NetworkHandler, [{\n    key: \"_send\",\n    value: function _send() {\n      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},\n          _ref$callback = _ref.callback,\n          callback = _ref$callback === void 0 ? noop : _ref$callback,\n          _ref$path = _ref.path,\n          path = _ref$path === void 0 ? '/' : _ref$path,\n          _ref$method = _ref.method,\n          method = _ref$method === void 0 ? 'GET' : _ref$method,\n          body = _ref.body;\n\n      var options = {\n        method: method,\n        // Настройка CORS\n        headers: {\n          // Запрещаем открытие iframe на сайте\n          'X-Frame-Options': 'DENY',\n          'Content-Type': 'application/json',\n          'Accept': 'application/json',\n          // // Мы разворачиваемся на этом домене\n          // 'Access-Control-Allow-Origin' : 'http://advhater.ru/',\n          'Access-Control-Allow-Credentials': true,\n          // Допускаем только GET, POST, DELETE, HEAD запросы\n          'Access-Control-Request-Method': 'POST, GET, PUT, DELETE, HEAD,' // Для \"непростых запросов\"\n          // 'Origin' : '',\n\n        },\n        // credentials: \"same-origin\",\n        credentials: \"include\",\n        // mode : 'cors',\n        cache: 'default',\n        body: body\n      };\n      fetch(path, options).then(function (response) {\n        console.log(path, response);\n        console.log('headers', response.headers);\n\n        if (response.status === 200) {\n          console.log('network 200 success', response);\n          return response.json();\n        } else if (response.status === 201) {\n          console.log('network 201 success', response);\n          console.log(response.headers.get('Set-Cookie'));\n          console.log(JSON.stringify(response.headers)); // document.cookie = response.headers['Set-Cookie'];\n\n          return 201;\n        } else if (response === undefined) {\n          return 404; // throw new Error('Wrong network response');\n        }\n\n        return response.status;\n      }).then(function (data) {\n        callback(data);\n      })[\"catch\"](function (error) {\n        callback();\n      });\n    }\n  }, {\n    key: \"doGet\",\n    value: function doGet() {\n      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},\n          _ref2$callback = _ref2.callback,\n          callback = _ref2$callback === void 0 ? noop : _ref2$callback,\n          _ref2$path = _ref2.path,\n          path = _ref2$path === void 0 ? '/' : _ref2$path;\n\n      this._send({\n        callback: callback,\n        path: path,\n        method: 'GET'\n      });\n    }\n  }, {\n    key: \"doHead\",\n    value: function doHead() {\n      var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},\n          _ref3$callback = _ref3.callback,\n          callback = _ref3$callback === void 0 ? noop : _ref3$callback,\n          _ref3$path = _ref3.path,\n          path = _ref3$path === void 0 ? '/' : _ref3$path;\n\n      this._send({\n        callback: callback,\n        path: path,\n        method: 'HEAD'\n      });\n    }\n  }, {\n    key: \"doPost\",\n    value: function doPost() {\n      var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},\n          _ref4$callback = _ref4.callback,\n          callback = _ref4$callback === void 0 ? noop : _ref4$callback,\n          _ref4$path = _ref4.path,\n          path = _ref4$path === void 0 ? '/' : _ref4$path,\n          _ref4$body = _ref4.body,\n          body = _ref4$body === void 0 ? {} : _ref4$body;\n\n      this._send({\n        callback: callback,\n        path: path,\n        method: 'POST',\n        body: body\n      });\n    }\n  }, {\n    key: \"doPut\",\n    value: function doPut() {\n      var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},\n          _ref5$callback = _ref5.callback,\n          callback = _ref5$callback === void 0 ? noop : _ref5$callback,\n          _ref5$path = _ref5.path,\n          path = _ref5$path === void 0 ? '/' : _ref5$path,\n          _ref5$body = _ref5.body,\n          body = _ref5$body === void 0 ? {} : _ref5$body;\n\n      this._send({\n        callback: callback,\n        path: path,\n        method: 'PUT',\n        body: body\n      });\n    }\n  }, {\n    key: \"doDelete\",\n    value: function doDelete() {\n      var _ref6 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},\n          _ref6$callback = _ref6.callback,\n          callback = _ref6$callback === void 0 ? noop : _ref6$callback,\n          _ref6$path = _ref6.path,\n          path = _ref6$path === void 0 ? '/' : _ref6$path,\n          _ref6$body = _ref6.body,\n          body = _ref6$body === void 0 ? {} : _ref6$body;\n\n      this._send({\n        callback: callback,\n        path: path,\n        method: 'DELETE',\n        body: body\n      });\n    }\n  }]);\n\n  return NetworkHandler;\n}();\n\n\nwindow.NetworkHandler = new NetworkHandler();\n\n//# sourceURL=webpack:///./static/js/modules/NetworkHandler.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return NetworkHandler; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+/* eslint-disable import/prefer-default-export */
+
+/**
+ * Прототип класса с модулем проверки авторизации пользователя.
+ */
+var noop = function noop() {
+  return null;
+};
+/**
+ * Класс с методами отправки AJAX-запросов на сервер
+ */
+
+
+var NetworkHandler =
+/*#__PURE__*/
+function () {
+  function NetworkHandler() {
+    _classCallCheck(this, NetworkHandler);
+  }
+
+  _createClass(NetworkHandler, [{
+    key: "_send",
+    value: function _send() {
+      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref$callback = _ref.callback,
+          callback = _ref$callback === void 0 ? noop : _ref$callback,
+          _ref$path = _ref.path,
+          path = _ref$path === void 0 ? '/' : _ref$path,
+          _ref$method = _ref.method,
+          method = _ref$method === void 0 ? 'GET' : _ref$method,
+          body = _ref.body;
+
+      var options = {
+        method: method,
+        // Настройка CORS
+        headers: {
+          // Запрещаем открытие iframe на сайте
+          'X-Frame-Options': 'DENY',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // // Мы разворачиваемся на этом домене
+          // 'Access-Control-Allow-Origin' : 'http://advhater.ru/',
+          'Access-Control-Allow-Credentials': true,
+          // Допускаем только GET, POST, DELETE, HEAD запросы
+          'Access-Control-Request-Method': 'POST, GET, PUT, DELETE, HEAD,' // Для "непростых запросов"
+          // 'Origin' : '',
+
+        },
+        // credentials: "same-origin",
+        credentials: "include",
+        // mode : 'cors',
+        cache: 'default',
+        body: body
+      };
+      fetch(path, options).then(function (response) {
+        console.log(path, response);
+        console.log('headers', response.headers);
+
+        if (response.status === 200) {
+          console.log('network 200 success', response);
+          return response.json();
+        } else if (response.status === 201) {
+          console.log('network 201 success', response);
+          console.log(response.headers.get('Set-Cookie'));
+          console.log(JSON.stringify(response.headers)); // document.cookie = response.headers['Set-Cookie'];
+
+          return 201;
+        } else if (response === undefined) {
+          return 404; // throw new Error('Wrong network response');
+        }
+
+        return response.status;
+      }).then(function (data) {
+        callback(data);
+      })["catch"](function (error) {
+        callback();
+      });
+    }
+  }, {
+    key: "doGet",
+    value: function doGet() {
+      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref2$callback = _ref2.callback,
+          callback = _ref2$callback === void 0 ? noop : _ref2$callback,
+          _ref2$path = _ref2.path,
+          path = _ref2$path === void 0 ? '/' : _ref2$path;
+
+      this._send({
+        callback: callback,
+        path: path,
+        method: 'GET'
+      });
+    }
+  }, {
+    key: "doHead",
+    value: function doHead() {
+      var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref3$callback = _ref3.callback,
+          callback = _ref3$callback === void 0 ? noop : _ref3$callback,
+          _ref3$path = _ref3.path,
+          path = _ref3$path === void 0 ? '/' : _ref3$path;
+
+      this._send({
+        callback: callback,
+        path: path,
+        method: 'HEAD'
+      });
+    }
+  }, {
+    key: "doPost",
+    value: function doPost() {
+      var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref4$callback = _ref4.callback,
+          callback = _ref4$callback === void 0 ? noop : _ref4$callback,
+          _ref4$path = _ref4.path,
+          path = _ref4$path === void 0 ? '/' : _ref4$path,
+          _ref4$body = _ref4.body,
+          body = _ref4$body === void 0 ? {} : _ref4$body;
+
+      this._send({
+        callback: callback,
+        path: path,
+        method: 'POST',
+        body: body
+      });
+    }
+  }, {
+    key: "doPut",
+    value: function doPut() {
+      var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref5$callback = _ref5.callback,
+          callback = _ref5$callback === void 0 ? noop : _ref5$callback,
+          _ref5$path = _ref5.path,
+          path = _ref5$path === void 0 ? '/' : _ref5$path,
+          _ref5$body = _ref5.body,
+          body = _ref5$body === void 0 ? {} : _ref5$body;
+
+      this._send({
+        callback: callback,
+        path: path,
+        method: 'PUT',
+        body: body
+      });
+    }
+  }, {
+    key: "doDelete",
+    value: function doDelete() {
+      var _ref6 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref6$callback = _ref6.callback,
+          callback = _ref6$callback === void 0 ? noop : _ref6$callback,
+          _ref6$path = _ref6.path,
+          path = _ref6$path === void 0 ? '/' : _ref6$path,
+          _ref6$body = _ref6.body,
+          body = _ref6$body === void 0 ? {} : _ref6$body;
+
+      this._send({
+        callback: callback,
+        path: path,
+        method: 'DELETE',
+        body: body
+      });
+    }
+  }]);
+
+  return NetworkHandler;
+}();
+
+
+window.NetworkHandler = new NetworkHandler();
 
 /***/ }),
 
@@ -382,7 +3104,134 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Router; });\n/* harmony import */ var _ws_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ws.js */ \"./static/js/modules/ws.js\");\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\n\n\nvar Router =\n/*#__PURE__*/\nfunction () {\n  /**\n   * Конструктор роутера.\n   * @param {HTMLelement} app \n   * @param {Map} routes - мапа {'string': Object}, Object - вьюха\n   */\n  function Router() {\n    var app = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document.body;\n\n    _classCallCheck(this, Router);\n\n    this.app = app;\n    this.routes = {};\n    this.ws = new _ws_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](document.body);\n  }\n\n  _createClass(Router, [{\n    key: \"run\",\n    value: function run() {\n      var _this = this;\n\n      this.go(window.location.pathname); // this.go('/leaderboard?offset=3');\n\n      this.app.addEventListener('click', function (event) {\n        event.preventDefault();\n\n        _this.go(event.target.getAttribute('href'));\n      }); // Обрабатывает события при клике назад/вперед\n\n      window.addEventListener('popstate', function () {\n        _this.go(window.location.pathname);\n      });\n    }\n    /**\n     * Функция добавления нового маршрута.\n     * @param {string} path \n     * @param {Object} _renderObject - Вьюшка\n     */\n\n  }, {\n    key: \"add\",\n    value: function add(path, _renderObject) {\n      var renderObject = new _renderObject(this.app, this);\n      this.routes[path] = renderObject;\n    }\n    /**\n     * Функция перехода по пути path\n     * @param {string} path \n     */\n\n  }, {\n    key: \"go\",\n    value: function go(path) {\n      var urlData = this._parseUrl(path);\n\n      console.log(urlData);\n      path = urlData.pathname;\n      /*\n          Если тебе нужны собвственные addEventListener-ы,\n          то вместо того, чтобы создавать новые, ты можешь\n          добававить маршрут во вьюхе в this.specialRoutes={}.\n          Здесь (ниже) будет вызываться функция, соответсвующая этому маршруту.\n          Идея заключалась в том, чтобы не создавать лишних eventListener-ов.\n          А можешь забить и создать собвственный eventListener во вьюхе))\n      */\n\n      if (typeof this.currentRoute !== 'undefined') {\n        if (typeof this.currentRoute.specialRoutes[path] !== 'undefined') {\n          this.currentRoute.specialRoutes[path](this.currentRoute);\n          return;\n        }\n      }\n\n      var route = this.routes[path];\n\n      if (!route) {\n        return;\n      }\n\n      if (window.location.pathname !== urlData.href) {\n        window.history.pushState(null, '', urlData.href);\n      }\n      /**\n       * Сохраняю маршрут, который должен будет показаться на экран.\n       * Используется пока только в функции go(path);\n       */\n\n\n      this.currentRoute = route;\n      route.show(urlData);\n    }\n  }, {\n    key: \"_parseUrl\",\n    value: function _parseUrl(url) {\n      url = url || this.href;\n      var pattern = \"^(([^:/\\\\?#]+):)?(//(([^:/\\\\?#]*)(?::([^/\\\\?#]*))?))?([^\\\\?#]*)(\\\\?([^#]*))?(#(.*))?$\";\n      var rx = new RegExp(pattern);\n      var parts = rx.exec(url);\n      return {\n        href: parts[0] || \"\",\n        protocol: parts[1] || \"\",\n        host: parts[4] || \"\",\n        hostname: parts[5] || \"\",\n        port: parts[6] || \"\",\n        pathname: parts[7] || \"/\",\n        search: parts[8] || \"\",\n        hash: parts[10] || \"\"\n      };\n    }\n  }]);\n\n  return Router;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/modules/Router.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Router; });
+/* harmony import */ var _ws_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ws.js */ "./static/js/modules/ws.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var Router =
+/*#__PURE__*/
+function () {
+  /**
+   * Конструктор роутера.
+   * @param {HTMLelement} app 
+   * @param {Map} routes - мапа {'string': Object}, Object - вьюха
+   */
+  function Router() {
+    var app = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document.body;
+
+    _classCallCheck(this, Router);
+
+    this.app = app;
+    this.routes = {};
+    this.ws = new _ws_js__WEBPACK_IMPORTED_MODULE_0__["default"](document.body);
+  }
+
+  _createClass(Router, [{
+    key: "run",
+    value: function run() {
+      var _this = this;
+
+      this.go(window.location.pathname); // this.go('/leaderboard?offset=3');
+
+      this.app.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        _this.go(event.target.getAttribute('href'));
+      }); // Обрабатывает события при клике назад/вперед
+
+      window.addEventListener('popstate', function () {
+        _this.go(window.location.pathname);
+      });
+    }
+    /**
+     * Функция добавления нового маршрута.
+     * @param {string} path 
+     * @param {Object} _renderObject - Вьюшка
+     */
+
+  }, {
+    key: "add",
+    value: function add(path, _renderObject) {
+      var renderObject = new _renderObject(this.app, this);
+      this.routes[path] = renderObject;
+    }
+    /**
+     * Функция перехода по пути path
+     * @param {string} path 
+     */
+
+  }, {
+    key: "go",
+    value: function go(path) {
+      var urlData = this._parseUrl(path);
+
+      console.log(urlData);
+      path = urlData.pathname;
+      /*
+          Если тебе нужны собвственные addEventListener-ы,
+          то вместо того, чтобы создавать новые, ты можешь
+          добававить маршрут во вьюхе в this.specialRoutes={}.
+          Здесь (ниже) будет вызываться функция, соответсвующая этому маршруту.
+          Идея заключалась в том, чтобы не создавать лишних eventListener-ов.
+          А можешь забить и создать собвственный eventListener во вьюхе))
+      */
+
+      if (typeof this.currentRoute !== 'undefined') {
+        if (typeof this.currentRoute.specialRoutes[path] !== 'undefined') {
+          this.currentRoute.specialRoutes[path](this.currentRoute);
+          return;
+        }
+      }
+
+      var route = this.routes[path];
+
+      if (!route) {
+        return;
+      }
+
+      if (window.location.pathname !== urlData.href) {
+        window.history.pushState(null, '', urlData.href);
+      }
+      /**
+       * Сохраняю маршрут, который должен будет показаться на экран.
+       * Используется пока только в функции go(path);
+       */
+
+
+      this.currentRoute = route;
+      route.show(urlData);
+    }
+  }, {
+    key: "_parseUrl",
+    value: function _parseUrl(url) {
+      url = url || this.href;
+      var pattern = "^(([^:/\\?#]+):)?(//(([^:/\\?#]*)(?::([^/\\?#]*))?))?([^\\?#]*)(\\?([^#]*))?(#(.*))?$";
+      var rx = new RegExp(pattern);
+      var parts = rx.exec(url);
+      return {
+        href: parts[0] || "",
+        protocol: parts[1] || "",
+        host: parts[4] || "",
+        hostname: parts[5] || "",
+        port: parts[6] || "",
+        pathname: parts[7] || "/",
+        search: parts[8] || "",
+        hash: parts[10] || ""
+      };
+    }
+  }]);
+
+  return Router;
+}();
+
+
 
 /***/ }),
 
@@ -394,7 +3243,95 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Validation; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\n/* eslint-disable no-param-reassign */\n\n/* eslint-disable no-mixed-spaces-and-tabs */\n\n/* eslint-disable no-useless-constructor */\n\n/* eslint-disable class-methods-use-this */\nvar Validation =\n/*#__PURE__*/\nfunction () {\n  function Validation() {\n    _classCallCheck(this, Validation);\n  }\n\n  _createClass(Validation, [{\n    key: \"checkPassword\",\n    value: function checkPassword() {\n      var password = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';\n\n      // const error = document.getElementById('password-validation-error');\n      // input.className = 'login_input login_input_error';\n      if (typeof password !== 'string') {\n        return 'Wrong password type';\n      }\n\n      if (password.length < 3 || password.length > 30) {\n        return 'Use 3-30 characters for your password.';\n      }\n\n      if (!/^[a-zA-Z0-9!?.,_-]+$/.test(password)) {\n        return 'Use only letters, numbers and punctuation characters.';\n      } // error.textContent = '';\n      // input.className = 'login_input';\n\n\n      return 'OK';\n    }\n  }, {\n    key: \"checkNickname\",\n    value: function checkNickname() {\n      var nickname = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';\n\n      if (typeof nickname !== 'string') {\n        return 'Wrong password type';\n      }\n\n      if (nickname.length < 1) {\n        return 'Nickname is too short';\n      }\n\n      if (nickname.length > 30) {\n        return 'Nickname is too big';\n      }\n\n      if (!/^[a-zA-Z0-9!?.,_-]+$/.test(nickname)) {\n        return 'Use only letters, numbers and punctuation characters.';\n      }\n\n      if (!/^[a-zA-Z]+$/.test(nickname[0])) {\n        return 'Nickname shoud start from letter';\n      }\n\n      return 'OK';\n    }\n  }, {\n    key: \"checkEmail\",\n    value: function checkEmail() {\n      var email = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';\n\n      if (!/^[0-9a-zA-Z-.]+@[0-9a-zA-Z-]{1,}\\.[a-zA-Z]{1,}$/.test(email)) {\n        return 'Invalid email';\n      }\n\n      return 'OK';\n    }\n  }]);\n\n  return Validation;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/modules/Validation.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Validation; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+/* eslint-disable no-param-reassign */
+
+/* eslint-disable no-mixed-spaces-and-tabs */
+
+/* eslint-disable no-useless-constructor */
+
+/* eslint-disable class-methods-use-this */
+var Validation =
+/*#__PURE__*/
+function () {
+  function Validation() {
+    _classCallCheck(this, Validation);
+  }
+
+  _createClass(Validation, [{
+    key: "checkPassword",
+    value: function checkPassword() {
+      var password = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+      // const error = document.getElementById('password-validation-error');
+      // input.className = 'login_input login_input_error';
+      if (typeof password !== 'string') {
+        return 'Wrong password type';
+      }
+
+      if (password.length < 3 || password.length > 30) {
+        return 'Use 3-30 characters for your password.';
+      }
+
+      if (!/^[a-zA-Z0-9!?.,_-]+$/.test(password)) {
+        return 'Use only letters, numbers and punctuation characters.';
+      } // error.textContent = '';
+      // input.className = 'login_input';
+
+
+      return 'OK';
+    }
+  }, {
+    key: "checkNickname",
+    value: function checkNickname() {
+      var nickname = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+      if (typeof nickname !== 'string') {
+        return 'Wrong password type';
+      }
+
+      if (nickname.length < 1) {
+        return 'Nickname is too short';
+      }
+
+      if (nickname.length > 30) {
+        return 'Nickname is too big';
+      }
+
+      if (!/^[a-zA-Z0-9!?.,_-]+$/.test(nickname)) {
+        return 'Use only letters, numbers and punctuation characters.';
+      }
+
+      if (!/^[a-zA-Z]+$/.test(nickname[0])) {
+        return 'Nickname shoud start from letter';
+      }
+
+      return 'OK';
+    }
+  }, {
+    key: "checkEmail",
+    value: function checkEmail() {
+      var email = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+      if (!/^[0-9a-zA-Z-.]+@[0-9a-zA-Z-]{1,}\.[a-zA-Z]{1,}$/.test(email)) {
+        return 'Invalid email';
+      }
+
+      return 'OK';
+    }
+  }]);
+
+  return Validation;
+}();
+
+
 
 /***/ }),
 
@@ -406,7 +3343,82 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Ws; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\n// // const ws = new WebSocket('https://advhater.ru/ws');\n// ws.onopen = () => {\n//     console.log('ws success connect');\n//     const chatbox = document.querySelector('.chat__chatbox');\n//     ws.onmessage = (evt) => {\n//         // console.log('ws message:', message);\n//         const messageBox = document.createElement(\"div\");\n//         messageBox.className = 'chat__chatbox-message'\n//         messageBox.innerText = evt.data + '\\n';\n//         console.log(evt, evt.data);\n//         chatbox.appendChild(messageBox);   \n//     }\n// }\nvar Ws =\n/*#__PURE__*/\nfunction () {\n  function Ws(chatbox) {\n    var _this = this;\n\n    var wsUrl = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'advhater.ru';\n\n    _classCallCheck(this, Ws);\n\n    this.chatbox = chatbox;\n    this.ws = new WebSocket('wss://' + wsUrl + '/ws');\n\n    this.ws.onmessage = function (evt) {\n      var messageBox = document.createElement(\"div\");\n      messageBox.className = 'chat__chatbox-message';\n      var message = JSON.parse(evt.data);\n      var messageAvatar = document.createElement('img');\n      messageAvatar.className = 'chat__chatbox-message-avatar';\n      messageAvatar.src = message.Url;\n      var messageNickname = document.createElement('div');\n      messageNickname.className = 'chat__chatbox-message-nickname';\n      messageNickname.innerText = message.Nickname;\n      var messageText = document.createElement('div');\n      messageText.className = 'chat__chatbox-message-text';\n      messageText.innerText = message.Body;\n      var messageTimestamp = document.createElement('div');\n      messageTimestamp.className = 'chat__chatbox-message-timestamp';\n      messageTimestamp.innerText = message.Timestamp;\n      messageBox.appendChild(messageAvatar);\n      messageBox.appendChild(messageNickname);\n      messageBox.appendChild(messageText);\n      messageBox.appendChild(messageTimestamp);\n\n      _this.chatbox.appendChild(messageBox);\n    };\n  }\n\n  _createClass(Ws, [{\n    key: \"setChatbox\",\n    value: function setChatbox(cb) {\n      this.chatbox = cb;\n    }\n  }, {\n    key: \"send\",\n    value: function send(data) {\n      this.ws.send(data);\n    }\n  }]);\n\n  return Ws;\n}(); // export default ws;\n\n\n\n\n//# sourceURL=webpack:///./static/js/modules/ws.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Ws; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+// // const ws = new WebSocket('https://advhater.ru/ws');
+// ws.onopen = () => {
+//     console.log('ws success connect');
+//     const chatbox = document.querySelector('.chat__chatbox');
+//     ws.onmessage = (evt) => {
+//         // console.log('ws message:', message);
+//         const messageBox = document.createElement("div");
+//         messageBox.className = 'chat__chatbox-message'
+//         messageBox.innerText = evt.data + '\n';
+//         console.log(evt, evt.data);
+//         chatbox.appendChild(messageBox);   
+//     }
+// }
+var Ws =
+/*#__PURE__*/
+function () {
+  function Ws(chatbox) {
+    var _this = this;
+
+    var wsUrl = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'advhater.ru';
+
+    _classCallCheck(this, Ws);
+
+    this.chatbox = chatbox;
+    this.ws = new WebSocket('wss://' + wsUrl + '/ws');
+
+    this.ws.onmessage = function (evt) {
+      var messageBox = document.createElement("div");
+      messageBox.className = 'chat__chatbox-message';
+      var message = JSON.parse(evt.data);
+      var messageAvatar = document.createElement('img');
+      messageAvatar.className = 'chat__chatbox-message-avatar';
+      messageAvatar.src = message.Url;
+      var messageNickname = document.createElement('div');
+      messageNickname.className = 'chat__chatbox-message-nickname';
+      messageNickname.innerText = message.Nickname;
+      var messageText = document.createElement('div');
+      messageText.className = 'chat__chatbox-message-text';
+      messageText.innerText = message.Body;
+      var messageTimestamp = document.createElement('div');
+      messageTimestamp.className = 'chat__chatbox-message-timestamp';
+      messageTimestamp.innerText = message.Timestamp;
+      messageBox.appendChild(messageAvatar);
+      messageBox.appendChild(messageNickname);
+      messageBox.appendChild(messageText);
+      messageBox.appendChild(messageTimestamp);
+
+      _this.chatbox.appendChild(messageBox);
+    };
+  }
+
+  _createClass(Ws, [{
+    key: "setChatbox",
+    value: function setChatbox(cb) {
+      this.chatbox = cb;
+    }
+  }, {
+    key: "send",
+    value: function send(data) {
+      this.ws.send(data);
+    }
+  }]);
+
+  return Ws;
+}(); // export default ws;
+
+
+
 
 /***/ }),
 
@@ -418,7 +3430,58 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return GameView; });\n/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ \"./static/js/views/View.js\");\n/* harmony import */ var _game_game_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../game/game.js */ \"./static/js/game/game.js\");\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nfunction _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \"object\" || typeof call === \"function\")) { return call; } return _assertThisInitialized(self); }\n\nfunction _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return self; }\n\nfunction _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }\n\nfunction _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }\n\n\n\n\nvar GameView =\n/*#__PURE__*/\nfunction (_BaseView) {\n  _inherits(GameView, _BaseView);\n\n  function GameView() {\n    var _this;\n\n    _classCallCheck(this, GameView);\n\n    _this = _possibleConstructorReturn(this, _getPrototypeOf(GameView).apply(this, arguments));\n    _this.Game = new _game_game_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"](document.body, _this.router); // this.initSpecialRoutes();\n\n    return _this;\n  }\n\n  _createClass(GameView, [{\n    key: \"show\",\n    value: function show() {\n      this.Game.run();\n    }\n  }]);\n\n  return GameView;\n}(_View_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n\n\n\n//# sourceURL=webpack:///./static/js/views/GameView.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return GameView; });
+/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ "./static/js/views/View.js");
+/* harmony import */ var _game_game_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../game/game.js */ "./static/js/game/game.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+
+var GameView =
+/*#__PURE__*/
+function (_BaseView) {
+  _inherits(GameView, _BaseView);
+
+  function GameView() {
+    var _this;
+
+    _classCallCheck(this, GameView);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(GameView).apply(this, arguments));
+    _this.Game = new _game_game_js__WEBPACK_IMPORTED_MODULE_1__["default"](document.body, _this.router); // this.initSpecialRoutes();
+
+    return _this;
+  }
+
+  _createClass(GameView, [{
+    key: "show",
+    value: function show() {
+      this.Game.run();
+    }
+  }]);
+
+  return GameView;
+}(_View_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ }),
 
@@ -430,7 +3493,92 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return LeaderboardView; });\n/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ \"./static/js/views/View.js\");\n/* harmony import */ var _components_LeaderboardComponent_LeaderboardComponent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/LeaderboardComponent/LeaderboardComponent.js */ \"./static/js/components/LeaderboardComponent/LeaderboardComponent.js\");\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nfunction _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \"object\" || typeof call === \"function\")) { return call; } return _assertThisInitialized(self); }\n\nfunction _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return self; }\n\nfunction _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }\n\nfunction _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }\n\n\n\nvar _window = window,\n    NetworkHandler = _window.NetworkHandler;\n/**\n * Класс с отрисовкой формы логина.\n */\n\nvar LeaderboardView =\n/*#__PURE__*/\nfunction (_BaseView) {\n  _inherits(LeaderboardView, _BaseView);\n\n  function LeaderboardView() {\n    var _this;\n\n    _classCallCheck(this, LeaderboardView);\n\n    _this = _possibleConstructorReturn(this, _getPrototypeOf(LeaderboardView).apply(this, arguments));\n    _this.LeaderboardComponent = new _components_LeaderboardComponent_LeaderboardComponent_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"]();\n\n    _this.initSpecialRoutes();\n\n    return _this;\n  }\n\n  _createClass(LeaderboardView, [{\n    key: \"show\",\n    value: function show(urlData) {\n      var that = this;\n      var offset = 1;\n\n      if (urlData.search !== '') {\n        offset = this._getURLParams(urlData.search)['offset'];\n      }\n\n      offset = parseInt(offset);\n      console.log(\"OFFFFFSET: \", offset);\n      NetworkHandler.doGet({\n        callback: function callback(data) {\n          that.LeaderboardComponent._usersArr = data;\n          that.LeaderboardComponent.render(offset);\n        },\n        path: '/api/leaderboard?offset=' + offset\n      });\n    }\n  }, {\n    key: \"_getURLParams\",\n    value: function _getURLParams(url) {\n      var urlParams = {};\n      url.replace(new RegExp(\"([^?=&]+)(=([^&]*))?\", \"g\"), function ($0, $1, $2, $3) {\n        urlParams[$1] = $3;\n      });\n      return urlParams;\n    }\n  }, {\n    key: \"initSpecialRoutes\",\n    value: function initSpecialRoutes() {}\n  }]);\n\n  return LeaderboardView;\n}(_View_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n\n\n\n//# sourceURL=webpack:///./static/js/views/LeaderboardView.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LeaderboardView; });
+/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ "./static/js/views/View.js");
+/* harmony import */ var _components_LeaderboardComponent_LeaderboardComponent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/LeaderboardComponent/LeaderboardComponent.js */ "./static/js/components/LeaderboardComponent/LeaderboardComponent.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var _window = window,
+    NetworkHandler = _window.NetworkHandler;
+/**
+ * Класс с отрисовкой формы логина.
+ */
+
+var LeaderboardView =
+/*#__PURE__*/
+function (_BaseView) {
+  _inherits(LeaderboardView, _BaseView);
+
+  function LeaderboardView() {
+    var _this;
+
+    _classCallCheck(this, LeaderboardView);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(LeaderboardView).apply(this, arguments));
+    _this.LeaderboardComponent = new _components_LeaderboardComponent_LeaderboardComponent_js__WEBPACK_IMPORTED_MODULE_1__["default"]();
+
+    _this.initSpecialRoutes();
+
+    return _this;
+  }
+
+  _createClass(LeaderboardView, [{
+    key: "show",
+    value: function show(urlData) {
+      var that = this;
+      var offset = 1;
+
+      if (urlData.search !== '') {
+        offset = this._getURLParams(urlData.search)['offset'];
+      }
+
+      offset = parseInt(offset);
+      console.log("OFFFFFSET: ", offset);
+      NetworkHandler.doGet({
+        callback: function callback(data) {
+          that.LeaderboardComponent._usersArr = data;
+          that.LeaderboardComponent.render(offset);
+        },
+        path: '/api/leaderboard?offset=' + offset
+      });
+    }
+  }, {
+    key: "_getURLParams",
+    value: function _getURLParams(url) {
+      var urlParams = {};
+      url.replace(new RegExp("([^?=&]+)(=([^&]*))?", "g"), function ($0, $1, $2, $3) {
+        urlParams[$1] = $3;
+      });
+      return urlParams;
+    }
+  }, {
+    key: "initSpecialRoutes",
+    value: function initSpecialRoutes() {}
+  }]);
+
+  return LeaderboardView;
+}(_View_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ }),
 
@@ -442,7 +3590,154 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return LoginView; });\n/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ \"./static/js/views/View.js\");\n/* harmony import */ var _components_LoginComponent_LoginComponent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/LoginComponent/LoginComponent.js */ \"./static/js/components/LoginComponent/LoginComponent.js\");\n/* harmony import */ var _modules_Validation_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/Validation.js */ \"./static/js/modules/Validation.js\");\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nfunction _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \"object\" || typeof call === \"function\")) { return call; } return _assertThisInitialized(self); }\n\nfunction _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return self; }\n\nfunction _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }\n\nfunction _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }\n\n\n\n\nvar _window = window,\n    NetworkHandler = _window.NetworkHandler;\n/**\n * Класс с отрисовкой формы логина.\n */\n\nvar LoginView =\n/*#__PURE__*/\nfunction (_BaseView) {\n  _inherits(LoginView, _BaseView);\n\n  function LoginView() {\n    var _this;\n\n    _classCallCheck(this, LoginView);\n\n    _this = _possibleConstructorReturn(this, _getPrototypeOf(LoginView).apply(this, arguments));\n    _this.Validation = new _modules_Validation_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"]();\n    _this.LoginComponent = new _components_LoginComponent_LoginComponent_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"]();\n\n    _this.initSpecialRoutes();\n\n    return _this;\n  }\n\n  _createClass(LoginView, [{\n    key: \"show\",\n    value: function show() {\n      var that = this;\n      NetworkHandler.doGet({\n        // eslint-disable-next-line no-unused-vars\n        callback: function callback(data) {\n          var isAuth = data['is_auth'];\n          that.root.innerHTML = that.LoginComponent.render(isAuth);\n          that.LoginComponent.setOnChangeListener(that.LoginComponent.login);\n          that.LoginComponent.setOnChangeListener(that.LoginComponent.password);\n        },\n        path: '/api/isauth'\n      });\n    }\n    /**\n     * Функция инициализирует \"специальные\" роутеры. Подробнее в файле View.js\n     * или Router.js : go(path)\n     */\n\n  }, {\n    key: \"initSpecialRoutes\",\n    value: function initSpecialRoutes() {\n      this.specialRoutes['/authorizeuser'] = this.authorizeUser;\n    }\n    /**\n     * Функция вызывается Роутером при нажатии на <a href=/authori...></a>\n     * @param {Object} that - ссылка на инстанс LoginView\n     */\n\n  }, {\n    key: \"authorizeUser\",\n    value: function authorizeUser(that) {\n      var login = that.LoginComponent.login;\n      var password = that.LoginComponent.password;\n      var isValid = that.validateValue(login, that.Validation.checkNickname, that.LoginComponent);\n\n      if (!isValid) {\n        return;\n      }\n\n      isValid = that.validateValue(password, that.Validation.checkPassword, that.LoginComponent);\n\n      if (!isValid) {\n        return;\n      }\n\n      var payload = {\n        nickname: login.value,\n        password: password.value\n      };\n      NetworkHandler.doPost({\n        callback: function callback(data) {\n          console.log('data in login', data);\n\n          if (data === 201) {\n            console.log('doc cookie: ', document.cookie); // console.log('data in login:', data);\n            // that.router.handle('profile', data);\n\n            that.router.go('/');\n          } else if (data === 404) {\n            that.LoginComponent.setErrorText(\"Wrong login or password\");\n          }\n        },\n        path: '/api/login',\n        body: JSON.stringify(payload)\n      });\n    }\n    /**\n     * Функциия, проверяющая на валидность поле input.\n     * Если поле не валидное, то вызывает метод errorField, которое подсвечивает поле.\n     * Если все ок - убирает подсветку.\n     * @param {HTMLelement} input\n     * @param {function} validationFunc \n     * @param {Object} LoginComponent \n     */\n\n  }, {\n    key: \"validateValue\",\n    value: function validateValue(input, validationFunc, LoginComponent) {\n      var validationMessage = validationFunc(input.value);\n\n      if (validationMessage.localeCompare('OK') !== 0) {\n        LoginComponent.setErrorText(validationMessage);\n        LoginComponent.errorField(input);\n        return false;\n      }\n\n      LoginComponent.goodField(input);\n      return true;\n    }\n  }]);\n\n  return LoginView;\n}(_View_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n\n\n\n//# sourceURL=webpack:///./static/js/views/LoginView.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LoginView; });
+/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ "./static/js/views/View.js");
+/* harmony import */ var _components_LoginComponent_LoginComponent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/LoginComponent/LoginComponent.js */ "./static/js/components/LoginComponent/LoginComponent.js");
+/* harmony import */ var _modules_Validation_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/Validation.js */ "./static/js/modules/Validation.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+
+var _window = window,
+    NetworkHandler = _window.NetworkHandler;
+/**
+ * Класс с отрисовкой формы логина.
+ */
+
+var LoginView =
+/*#__PURE__*/
+function (_BaseView) {
+  _inherits(LoginView, _BaseView);
+
+  function LoginView() {
+    var _this;
+
+    _classCallCheck(this, LoginView);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(LoginView).apply(this, arguments));
+    _this.Validation = new _modules_Validation_js__WEBPACK_IMPORTED_MODULE_2__["default"]();
+    _this.LoginComponent = new _components_LoginComponent_LoginComponent_js__WEBPACK_IMPORTED_MODULE_1__["default"]();
+
+    _this.initSpecialRoutes();
+
+    return _this;
+  }
+
+  _createClass(LoginView, [{
+    key: "show",
+    value: function show() {
+      var that = this;
+      NetworkHandler.doGet({
+        // eslint-disable-next-line no-unused-vars
+        callback: function callback(data) {
+          var isAuth = data['is_auth'];
+          that.root.innerHTML = that.LoginComponent.render(isAuth);
+          that.LoginComponent.setOnChangeListener(that.LoginComponent.login);
+          that.LoginComponent.setOnChangeListener(that.LoginComponent.password);
+        },
+        path: '/api/isauth'
+      });
+    }
+    /**
+     * Функция инициализирует "специальные" роутеры. Подробнее в файле View.js
+     * или Router.js : go(path)
+     */
+
+  }, {
+    key: "initSpecialRoutes",
+    value: function initSpecialRoutes() {
+      this.specialRoutes['/authorizeuser'] = this.authorizeUser;
+    }
+    /**
+     * Функция вызывается Роутером при нажатии на <a href=/authori...></a>
+     * @param {Object} that - ссылка на инстанс LoginView
+     */
+
+  }, {
+    key: "authorizeUser",
+    value: function authorizeUser(that) {
+      var login = that.LoginComponent.login;
+      var password = that.LoginComponent.password;
+      var isValid = that.validateValue(login, that.Validation.checkNickname, that.LoginComponent);
+
+      if (!isValid) {
+        return;
+      }
+
+      isValid = that.validateValue(password, that.Validation.checkPassword, that.LoginComponent);
+
+      if (!isValid) {
+        return;
+      }
+
+      var payload = {
+        nickname: login.value,
+        password: password.value
+      };
+      NetworkHandler.doPost({
+        callback: function callback(data) {
+          console.log('data in login', data);
+
+          if (data === 201) {
+            console.log('doc cookie: ', document.cookie); // console.log('data in login:', data);
+            // that.router.handle('profile', data);
+
+            that.router.go('/');
+          } else if (data === 404) {
+            that.LoginComponent.setErrorText("Wrong login or password");
+          }
+        },
+        path: '/api/login',
+        body: JSON.stringify(payload)
+      });
+    }
+    /**
+     * Функциия, проверяющая на валидность поле input.
+     * Если поле не валидное, то вызывает метод errorField, которое подсвечивает поле.
+     * Если все ок - убирает подсветку.
+     * @param {HTMLelement} input
+     * @param {function} validationFunc 
+     * @param {Object} LoginComponent 
+     */
+
+  }, {
+    key: "validateValue",
+    value: function validateValue(input, validationFunc, LoginComponent) {
+      var validationMessage = validationFunc(input.value);
+
+      if (validationMessage.localeCompare('OK') !== 0) {
+        LoginComponent.setErrorText(validationMessage);
+        LoginComponent.errorField(input);
+        return false;
+      }
+
+      LoginComponent.goodField(input);
+      return true;
+    }
+  }]);
+
+  return LoginView;
+}(_View_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ }),
 
@@ -454,7 +3749,63 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return LogoutView; });\n/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ \"./static/js/views/View.js\");\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nfunction _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \"object\" || typeof call === \"function\")) { return call; } return _assertThisInitialized(self); }\n\nfunction _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return self; }\n\nfunction _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }\n\nfunction _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }\n\n\nvar _window = window,\n    NetworkHandler = _window.NetworkHandler;\n/**\n * Класс с отрисовкой формы логина.\n */\n\nvar LogoutView =\n/*#__PURE__*/\nfunction (_BaseView) {\n  _inherits(LogoutView, _BaseView);\n\n  function LogoutView() {\n    _classCallCheck(this, LogoutView);\n\n    return _possibleConstructorReturn(this, _getPrototypeOf(LogoutView).apply(this, arguments));\n  }\n\n  _createClass(LogoutView, [{\n    key: \"show\",\n    value: function show() {\n      var that = this;\n      NetworkHandler.doDelete({\n        // eslint-disable-next-line no-unused-vars\n        callback: function callback() {\n          that.router.go('/');\n        },\n        path: '/api/logout'\n      });\n    }\n  }]);\n\n  return LogoutView;\n}(_View_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n\n\n\n//# sourceURL=webpack:///./static/js/views/LogoutView.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LogoutView; });
+/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ "./static/js/views/View.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+var _window = window,
+    NetworkHandler = _window.NetworkHandler;
+/**
+ * Класс с отрисовкой формы логина.
+ */
+
+var LogoutView =
+/*#__PURE__*/
+function (_BaseView) {
+  _inherits(LogoutView, _BaseView);
+
+  function LogoutView() {
+    _classCallCheck(this, LogoutView);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(LogoutView).apply(this, arguments));
+  }
+
+  _createClass(LogoutView, [{
+    key: "show",
+    value: function show() {
+      var that = this;
+      NetworkHandler.doDelete({
+        // eslint-disable-next-line no-unused-vars
+        callback: function callback() {
+          that.router.go('/');
+        },
+        path: '/api/logout'
+      });
+    }
+  }]);
+
+  return LogoutView;
+}(_View_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ }),
 
@@ -466,7 +3817,86 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return MenuView; });\n/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ \"./static/js/views/View.js\");\n/* harmony import */ var _components_MenuComponent_MenuComponent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/MenuComponent/MenuComponent.js */ \"./static/js/components/MenuComponent/MenuComponent.js\");\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nfunction _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \"object\" || typeof call === \"function\")) { return call; } return _assertThisInitialized(self); }\n\nfunction _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return self; }\n\nfunction _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }\n\nfunction _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }\n\n\n\nvar _window = window,\n    NetworkHandler = _window.NetworkHandler;\n\nvar MenuView =\n/*#__PURE__*/\nfunction (_BaseView) {\n  _inherits(MenuView, _BaseView);\n\n  function MenuView() {\n    var _this;\n\n    _classCallCheck(this, MenuView);\n\n    _this = _possibleConstructorReturn(this, _getPrototypeOf(MenuView).apply(this, arguments));\n    _this.MenuComponent = new _components_MenuComponent_MenuComponent_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"]();\n    return _this;\n  }\n\n  _createClass(MenuView, [{\n    key: \"show\",\n    value: function show() {\n      var that = this;\n      NetworkHandler.doGet({\n        // eslint-disable-next-line no-unused-vars\n        callback: function callback(data) {\n          console.log('menu view', data);\n\n          if (_typeof(data) == 'object') {\n            var showButtons = function showButtons(e) {\n              // console.log('on');\n              console.log();\n              buttonsSection.style.display = 'flex';\n            };\n\n            var hideButtons = function hideButtons(e) {\n              buttonsSection.style.display = 'none';\n            };\n\n            that.root.innerHTML = that.MenuComponent.render(data);\n            var profileSection = document.querySelector('.menu__profile');\n            var buttonsSection = document.getElementById('menu__profile-buttons-section');\n            profileSection.addEventListener('mouseover', showButtons, false);\n            profileSection.addEventListener('mouseout', hideButtons, false);\n          } else {\n            that.root.innerHTML = that.MenuComponent.render(false);\n          }\n        },\n        path: '/api/isauth'\n      });\n    }\n  }]);\n\n  return MenuView;\n}(_View_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n\n\n\n//# sourceURL=webpack:///./static/js/views/MenuView.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MenuView; });
+/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ "./static/js/views/View.js");
+/* harmony import */ var _components_MenuComponent_MenuComponent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/MenuComponent/MenuComponent.js */ "./static/js/components/MenuComponent/MenuComponent.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var _window = window,
+    NetworkHandler = _window.NetworkHandler;
+
+var MenuView =
+/*#__PURE__*/
+function (_BaseView) {
+  _inherits(MenuView, _BaseView);
+
+  function MenuView() {
+    var _this;
+
+    _classCallCheck(this, MenuView);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(MenuView).apply(this, arguments));
+    _this.MenuComponent = new _components_MenuComponent_MenuComponent_js__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    return _this;
+  }
+
+  _createClass(MenuView, [{
+    key: "show",
+    value: function show() {
+      var that = this;
+      NetworkHandler.doGet({
+        // eslint-disable-next-line no-unused-vars
+        callback: function callback(data) {
+          console.log('menu view', data);
+
+          if (_typeof(data) == 'object') {
+            var showButtons = function showButtons(e) {
+              // console.log('on');
+              console.log();
+              buttonsSection.style.display = 'flex';
+            };
+
+            var hideButtons = function hideButtons(e) {
+              buttonsSection.style.display = 'none';
+            };
+
+            that.root.innerHTML = that.MenuComponent.render(data);
+            var profileSection = document.querySelector('.menu__profile');
+            var buttonsSection = document.getElementById('menu__profile-buttons-section');
+            profileSection.addEventListener('mouseover', showButtons, false);
+            profileSection.addEventListener('mouseout', hideButtons, false);
+          } else {
+            that.root.innerHTML = that.MenuComponent.render(false);
+          }
+        },
+        path: '/api/isauth'
+      });
+    }
+  }]);
+
+  return MenuView;
+}(_View_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ }),
 
@@ -478,7 +3908,99 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return PaymentsView; });\n/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ \"./static/js/views/View.js\");\n/* harmony import */ var _components_PaymentsComponent_PaymentsComponents_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/PaymentsComponent/PaymentsComponents.js */ \"./static/js/components/PaymentsComponent/PaymentsComponents.js\");\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nfunction _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \"object\" || typeof call === \"function\")) { return call; } return _assertThisInitialized(self); }\n\nfunction _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return self; }\n\nfunction _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }\n\nfunction _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }\n\n\n\nvar _window = window,\n    NetworkHandler = _window.NetworkHandler;\n\nvar PaymentsView =\n/*#__PURE__*/\nfunction (_BaseView) {\n  _inherits(PaymentsView, _BaseView);\n\n  function PaymentsView() {\n    var _this;\n\n    _classCallCheck(this, PaymentsView);\n\n    _this = _possibleConstructorReturn(this, _getPrototypeOf(PaymentsView).apply(this, arguments));\n    _this.PaymentsComponent = new _components_PaymentsComponent_PaymentsComponents_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"]();\n    return _this;\n  }\n\n  _createClass(PaymentsView, [{\n    key: \"show\",\n    value: function show() {\n      var that = this;\n      NetworkHandler.doGet({\n        callback: function callback(data) {\n          console.log('data', data);\n\n          if (_typeof(data) === 'object') {\n            console.log(\"IM IN\", data.status);\n            that.root.innerHTML = that.PaymentsComponent.render(true);\n          } else {\n            that.root.innerHTML = that.PaymentsComponent.render(true);\n          }\n\n          that.initSpecialRoutes();\n        },\n        path: '/api/isauth'\n      });\n    }\n  }, {\n    key: \"initSpecialRoutes\",\n    value: function initSpecialRoutes() {\n      this.specialRoutes['/payout'] = this.send;\n    }\n  }, {\n    key: \"send\",\n    value: function send() {\n      var form = document.querySelector('.payments__input-section');\n      var payload = {\n        phone: form.phone.value,\n        amount: form.amount.value\n      };\n      NetworkHandler.doPost({\n        callback: function callback(data) {\n          console.log('Success:', data);\n\n          if (data === 201) {\n            that.router.go('/');\n          }\n        },\n        path: '/api/payments',\n        body: JSON.stringify(payload)\n      });\n    }\n  }]);\n\n  return PaymentsView;\n}(_View_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n\n\n\n//# sourceURL=webpack:///./static/js/views/PaymentsView.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return PaymentsView; });
+/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ "./static/js/views/View.js");
+/* harmony import */ var _components_PaymentsComponent_PaymentsComponents_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/PaymentsComponent/PaymentsComponents.js */ "./static/js/components/PaymentsComponent/PaymentsComponents.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+var _window = window,
+    NetworkHandler = _window.NetworkHandler;
+
+var PaymentsView =
+/*#__PURE__*/
+function (_BaseView) {
+  _inherits(PaymentsView, _BaseView);
+
+  function PaymentsView() {
+    var _this;
+
+    _classCallCheck(this, PaymentsView);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(PaymentsView).apply(this, arguments));
+    _this.PaymentsComponent = new _components_PaymentsComponent_PaymentsComponents_js__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    return _this;
+  }
+
+  _createClass(PaymentsView, [{
+    key: "show",
+    value: function show() {
+      var that = this;
+      NetworkHandler.doGet({
+        callback: function callback(data) {
+          console.log('data', data);
+
+          if (_typeof(data) === 'object') {
+            console.log("IM IN", data.status);
+            that.root.innerHTML = that.PaymentsComponent.render(true);
+          } else {
+            that.root.innerHTML = that.PaymentsComponent.render(true);
+          }
+
+          that.initSpecialRoutes();
+        },
+        path: '/api/isauth'
+      });
+    }
+  }, {
+    key: "initSpecialRoutes",
+    value: function initSpecialRoutes() {
+      this.specialRoutes['/payout'] = this.send;
+    }
+  }, {
+    key: "send",
+    value: function send() {
+      var form = document.querySelector('.payments__input-section');
+      var payload = {
+        phone: form.phone.value,
+        amount: form.amount.value
+      };
+      NetworkHandler.doPost({
+        callback: function callback(data) {
+          console.log('Success:', data);
+
+          if (data === 201) {
+            that.router.go('/');
+          }
+        },
+        path: '/api/payments',
+        body: JSON.stringify(payload)
+      });
+    }
+  }]);
+
+  return PaymentsView;
+}(_View_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ }),
 
@@ -490,7 +4012,67 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return ShopView; });\n/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ \"./static/js/views/View.js\");\n/* harmony import */ var _components_ShopComponent_ShopComponent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/ShopComponent/ShopComponent.js */ \"./static/js/components/ShopComponent/ShopComponent.js\");\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\n\n // const { NetworkHandler } = window;\n\nvar ShopView =\n/*#__PURE__*/\nfunction () {\n  function ShopView(root, weapons) {\n    var _this = this;\n\n    _classCallCheck(this, ShopView);\n\n    this.root = root;\n    this.weapons = weapons;\n    this.ShopComponent = new _components_ShopComponent_ShopComponent_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"](this.root, this.weapons);\n    document.addEventListener('click', function (event) {\n      if (event.target.className === 'shop__menu-item' || event.target.parentElement.className === 'shop__menu-item') {\n        if (event.target.dataset.section === undefined) {\n          _this.weapon(event.target.parentElement.dataset.section);\n        } else {\n          _this.weapon(event.target.dataset.section);\n        }\n      }\n    });\n  }\n\n  _createClass(ShopView, [{\n    key: \"show\",\n    value: function show() {\n      this.ShopComponent.render();\n    }\n  }, {\n    key: \"weapon\",\n    value: function weapon(_weapon) {\n      this.ShopComponent.renderWeaponInfo(_weapon);\n    }\n  }, {\n    key: \"setWeapon\",\n    value: function setWeapon(weaponId) {\n      return weaponId;\n    }\n  }, {\n    key: \"hide\",\n    value: function hide() {\n      this.root.innerHTML = '';\n    }\n  }]);\n\n  return ShopView;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/views/ShopView.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ShopView; });
+/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ "./static/js/views/View.js");
+/* harmony import */ var _components_ShopComponent_ShopComponent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/ShopComponent/ShopComponent.js */ "./static/js/components/ShopComponent/ShopComponent.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+ // const { NetworkHandler } = window;
+
+var ShopView =
+/*#__PURE__*/
+function () {
+  function ShopView(root, weapons) {
+    var _this = this;
+
+    _classCallCheck(this, ShopView);
+
+    this.root = root;
+    this.weapons = weapons;
+    this.ShopComponent = new _components_ShopComponent_ShopComponent_js__WEBPACK_IMPORTED_MODULE_1__["default"](this.root, this.weapons);
+    document.addEventListener('click', function (event) {
+      if (event.target.className === 'shop__menu-item' || event.target.parentElement.className === 'shop__menu-item') {
+        if (event.target.dataset.section === undefined) {
+          _this.weapon(event.target.parentElement.dataset.section);
+        } else {
+          _this.weapon(event.target.dataset.section);
+        }
+      }
+    });
+  }
+
+  _createClass(ShopView, [{
+    key: "show",
+    value: function show() {
+      this.ShopComponent.render();
+    }
+  }, {
+    key: "weapon",
+    value: function weapon(_weapon) {
+      this.ShopComponent.renderWeaponInfo(_weapon);
+    }
+  }, {
+    key: "setWeapon",
+    value: function setWeapon(weaponId) {
+      return weaponId;
+    }
+  }, {
+    key: "hide",
+    value: function hide() {
+      this.root.innerHTML = '';
+    }
+  }]);
+
+  return ShopView;
+}();
+
+
 
 /***/ }),
 
@@ -502,7 +4084,161 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return SignupView; });\n/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ \"./static/js/views/View.js\");\n/* harmony import */ var _components_SignupComponent_SignupComponent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/SignupComponent/SignupComponent.js */ \"./static/js/components/SignupComponent/SignupComponent.js\");\n/* harmony import */ var _modules_Validation_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/Validation.js */ \"./static/js/modules/Validation.js\");\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nfunction _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \"object\" || typeof call === \"function\")) { return call; } return _assertThisInitialized(self); }\n\nfunction _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\"this hasn't been initialised - super() hasn't been called\"); } return self; }\n\nfunction _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }\n\nfunction _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }\n\n\n\n\nvar _window = window,\n    NetworkHandler = _window.NetworkHandler;\n\nvar SignupView =\n/*#__PURE__*/\nfunction (_BaseView) {\n  _inherits(SignupView, _BaseView);\n\n  function SignupView() {\n    var _this;\n\n    _classCallCheck(this, SignupView);\n\n    _this = _possibleConstructorReturn(this, _getPrototypeOf(SignupView).apply(this, arguments));\n    _this.Validation = new _modules_Validation_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"]();\n    _this.SignupComponent = new _components_SignupComponent_SignupComponent_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"]();\n    return _this;\n  }\n\n  _createClass(SignupView, [{\n    key: \"show\",\n    value: function show() {\n      var that = this;\n      NetworkHandler.doGet({\n        // eslint-disable-next-line no-unused-vars\n        callback: function callback(data) {\n          console.log('data on show signup', data);\n          var isAuth;\n\n          if (data.status === 200) {\n            isAuth = true;\n          } else {\n            isAuth = false;\n          } // let isAuth = data['is_auth'];\n\n\n          that.root.innerHTML = that.SignupComponent.render(isAuth);\n          that.initSpecialRoutes();\n          var form = document.querySelector('#signup-form');\n          that.SignupComponent.setOnChangeListener(form.nickname);\n          that.SignupComponent.setOnChangeListener(form.email);\n          that.SignupComponent.setOnChangeListener(form.password);\n          that.SignupComponent.setOnChangeListener(form.password_repeat);\n        },\n        path: '/api/isauth'\n      });\n    }\n  }, {\n    key: \"initSpecialRoutes\",\n    value: function initSpecialRoutes() {\n      this.specialRoutes['/signupuser'] = this.signupUser;\n    }\n  }, {\n    key: \"signupUser\",\n    value: function signupUser(that) {\n      console.log('in SpecialRoute');\n      var form = document.querySelector('#signup-form');\n      var isValid = that.validateValue(form.nickname, that.Validation.checkNickname, that.SignupComponent);\n\n      if (!isValid) {\n        return;\n      }\n\n      isValid = that.validateValue(form.email, that.Validation.checkEmail, that.SignupComponent);\n\n      if (!isValid) {\n        return;\n      }\n\n      isValid = that.validateValue(form.password, that.Validation.checkPassword, that.SignupComponent);\n\n      if (!isValid) {\n        return;\n      }\n\n      if (form.password.value !== form.password_repeat.value) {\n        that.SignupComponent.setErrorText('Passwords do not match');\n        return;\n      }\n\n      var payload = {\n        nickname: form.nickname.value,\n        email: form.email.value,\n        password: form.password.value\n      };\n      console.log(payload);\n      NetworkHandler.doPost({\n        callback: function callback(data) {\n          console.log('Success:', data);\n\n          if (data === 201) {\n            that.router.go('/');\n          } else if (data === 409) {\n            that.SignupComponent.setErrorText(\"This email/nickname is already registered\");\n          }\n        },\n        path: '/api/signup',\n        body: JSON.stringify(payload)\n      });\n    }\n    /**\n     * Функциия, проверяющая на валидность поле input.\n     * Если поле не валидное, то вызывает метод errorField, которое подсвечивает поле.\n     * Если все ок - убирает подсветку.\n     * @param {HTMLelement} input\n     * @param {function} validationFunc \n     * @param {Object} SignupComponent \n     */\n\n  }, {\n    key: \"validateValue\",\n    value: function validateValue(input, validationFunc, SignupComponent) {\n      var validationMessage = validationFunc(input.value);\n\n      if (validationMessage.localeCompare('OK') !== 0) {\n        SignupComponent.setErrorText(validationMessage);\n        SignupComponent.errorField(input);\n        return false;\n      }\n\n      SignupComponent.goodField(input);\n      return true;\n    }\n  }]);\n\n  return SignupView;\n}(_View_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n\n\n\n//# sourceURL=webpack:///./static/js/views/SignupView.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SignupView; });
+/* harmony import */ var _View_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./View.js */ "./static/js/views/View.js");
+/* harmony import */ var _components_SignupComponent_SignupComponent_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/SignupComponent/SignupComponent.js */ "./static/js/components/SignupComponent/SignupComponent.js");
+/* harmony import */ var _modules_Validation_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/Validation.js */ "./static/js/modules/Validation.js");
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+
+
+var _window = window,
+    NetworkHandler = _window.NetworkHandler;
+
+var SignupView =
+/*#__PURE__*/
+function (_BaseView) {
+  _inherits(SignupView, _BaseView);
+
+  function SignupView() {
+    var _this;
+
+    _classCallCheck(this, SignupView);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(SignupView).apply(this, arguments));
+    _this.Validation = new _modules_Validation_js__WEBPACK_IMPORTED_MODULE_2__["default"]();
+    _this.SignupComponent = new _components_SignupComponent_SignupComponent_js__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    return _this;
+  }
+
+  _createClass(SignupView, [{
+    key: "show",
+    value: function show() {
+      var that = this;
+      NetworkHandler.doGet({
+        // eslint-disable-next-line no-unused-vars
+        callback: function callback(data) {
+          console.log('data on show signup', data);
+          var isAuth;
+
+          if (data.status === 200) {
+            isAuth = true;
+          } else {
+            isAuth = false;
+          } // let isAuth = data['is_auth'];
+
+
+          that.root.innerHTML = that.SignupComponent.render(isAuth);
+          that.initSpecialRoutes();
+          var form = document.querySelector('#signup-form');
+          that.SignupComponent.setOnChangeListener(form.nickname);
+          that.SignupComponent.setOnChangeListener(form.email);
+          that.SignupComponent.setOnChangeListener(form.password);
+          that.SignupComponent.setOnChangeListener(form.password_repeat);
+        },
+        path: '/api/isauth'
+      });
+    }
+  }, {
+    key: "initSpecialRoutes",
+    value: function initSpecialRoutes() {
+      this.specialRoutes['/signupuser'] = this.signupUser;
+    }
+  }, {
+    key: "signupUser",
+    value: function signupUser(that) {
+      console.log('in SpecialRoute');
+      var form = document.querySelector('#signup-form');
+      var isValid = that.validateValue(form.nickname, that.Validation.checkNickname, that.SignupComponent);
+
+      if (!isValid) {
+        return;
+      }
+
+      isValid = that.validateValue(form.email, that.Validation.checkEmail, that.SignupComponent);
+
+      if (!isValid) {
+        return;
+      }
+
+      isValid = that.validateValue(form.password, that.Validation.checkPassword, that.SignupComponent);
+
+      if (!isValid) {
+        return;
+      }
+
+      if (form.password.value !== form.password_repeat.value) {
+        that.SignupComponent.setErrorText('Passwords do not match');
+        return;
+      }
+
+      var payload = {
+        nickname: form.nickname.value,
+        email: form.email.value,
+        password: form.password.value
+      };
+      console.log(payload);
+      NetworkHandler.doPost({
+        callback: function callback(data) {
+          console.log('Success:', data);
+
+          if (data === 201) {
+            that.router.go('/');
+          } else if (data === 409) {
+            that.SignupComponent.setErrorText("This email/nickname is already registered");
+          }
+        },
+        path: '/api/signup',
+        body: JSON.stringify(payload)
+      });
+    }
+    /**
+     * Функциия, проверяющая на валидность поле input.
+     * Если поле не валидное, то вызывает метод errorField, которое подсвечивает поле.
+     * Если все ок - убирает подсветку.
+     * @param {HTMLelement} input
+     * @param {function} validationFunc 
+     * @param {Object} SignupComponent 
+     */
+
+  }, {
+    key: "validateValue",
+    value: function validateValue(input, validationFunc, SignupComponent) {
+      var validationMessage = validationFunc(input.value);
+
+      if (validationMessage.localeCompare('OK') !== 0) {
+        SignupComponent.setErrorText(validationMessage);
+        SignupComponent.errorField(input);
+        return false;
+      }
+
+      SignupComponent.goodField(input);
+      return true;
+    }
+  }]);
+
+  return SignupView;
+}(_View_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 
 /***/ }),
 
@@ -514,8 +4250,70 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return BaseView; });\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }\n\nfunction _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }\n\nvar BaseView =\n/*#__PURE__*/\nfunction () {\n  /**\n   * Конструктор\n   * @param {HTMLelement} root - экран, где будет весь экш.\n   * @param {Object} router - ссылка на инстанс роутера.\n   */\n  function BaseView() {\n    var root = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document.body;\n    var router = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Object;\n\n    _classCallCheck(this, BaseView);\n\n    this.root = root;\n    this.router = router;\n    /**\n     * Мапа специальных роутеров: Map {'string': 'function'}\n     * Используется, например, в LoginView для маршрута /authorizeuser,\n     * При нашатии на <a href=\"/autho...></a> роутер не переходит по ссылке,\n     * а вызывает метод из Map {'string': 'function'}.\n     */\n\n    this.specialRoutes = {};\n  }\n  /**\n   * метод, который будет печатать что-нибудь экран.\n   */\n\n\n  _createClass(BaseView, [{\n    key: \"show\",\n    value: function show() {\n      this.root.innerHTML = '';\n    }\n  }]);\n\n  return BaseView;\n}();\n\n\n\n//# sourceURL=webpack:///./static/js/views/View.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return BaseView; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var BaseView =
+/*#__PURE__*/
+function () {
+  /**
+   * Конструктор
+   * @param {HTMLelement} root - экран, где будет весь экш.
+   * @param {Object} router - ссылка на инстанс роутера.
+   */
+  function BaseView() {
+    var root = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document.body;
+    var router = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Object;
+
+    _classCallCheck(this, BaseView);
+
+    this.root = root;
+    this.router = router;
+    /**
+     * Мапа специальных роутеров: Map {'string': 'function'}
+     * Используется, например, в LoginView для маршрута /authorizeuser,
+     * При нашатии на <a href="/autho...></a> роутер не переходит по ссылке,
+     * а вызывает метод из Map {'string': 'function'}.
+     */
+
+    this.specialRoutes = {};
+  }
+  /**
+   * метод, который будет печатать что-нибудь экран.
+   */
+
+
+  _createClass(BaseView, [{
+    key: "show",
+    value: function show() {
+      this.root.innerHTML = '';
+    }
+  }]);
+
+  return BaseView;
+}();
+
+
+
+/***/ }),
+
+/***/ 0:
+/*!***************************************************!*\
+  !*** multi ./static/index.js ./static/index.scss ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(/*! ./static/index.js */"./static/index.js");
+module.exports = __webpack_require__(/*! ./static/index.scss */"./static/index.scss");
+
 
 /***/ })
 
 /******/ });
+//# sourceMappingURL=bundle.js.map
