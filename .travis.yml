@@ -1,1 +1,5 @@
 language:node_js
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: scp -r $TRAVIS_BUILD_DIR/static evv@advhater.ru:/home/evv/test
