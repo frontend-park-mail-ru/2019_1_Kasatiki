@@ -21,7 +21,7 @@
 export default class Ws {
     constructor(
         chatbox,
-        wsUrl = '172.20.10.10:8080',
+        wsUrl = 'advhater.ru',
     ) {
         this.chatbox = chatbox;
         this.ws = new WebSocket('wss://' + wsUrl + '/ws');
