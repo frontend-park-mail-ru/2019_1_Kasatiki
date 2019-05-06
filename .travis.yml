@@ -1,7 +1,5 @@
 addons:
   ssh_known_hosts: advhater.ru
-deploy:
-  provider: script
 install: true
 language: node_js
 script: scp -r $TRAVIS_BUILD_DIR/static  evv@advhater.ru:/home/evv_bmstu/projects/advhater/2019_1_Kasatiki
