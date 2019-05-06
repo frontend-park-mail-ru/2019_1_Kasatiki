@@ -1,0 +1,59 @@
+@import '../../../styles/form';
+
+.login {
+    @include main-form-section;
+}
+
+@media screen and (max-width: 600px) {
+    .login {
+        width: 90vw;
+    }
+}
+
+.login-form {
+    @include main-form;
+}
+
+.login-btn {
+    @include main-form-btn;
+}
+
+.login_error_text {
+    @include main-form_error_text;
+}
+
+.login__btn-section {
+    @include main-form__btn-section;
+}
+
+.login-btn:hover {
+    @include main-form-btn_hover;
+}
+
+.login__input-border {
+    @include main-form__input-border;
+}
+
+.login__input {
+    @include main-form__input;
+}
+
+.login__input:valid {
+    @include main-form__input_valid;
+}
+
+.login__input:invalid {
+    @include main-form__input_invalid;
+}
+
+.login__input:hover {
+    @include main-form__input_hover;
+}
+
+::placeholder {
+    @include main-form__placeholder;
+}
+
+.login__title {
+    @include main-form__title;
+}
