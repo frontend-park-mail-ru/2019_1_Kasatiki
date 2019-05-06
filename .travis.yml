@@ -4,8 +4,9 @@ addons:
 before_deploy:
 - openssl aes-256-cbc ...
  - eval "$(ssh-agent -s)"
- - chmod 600 .deploy_rsa.enc
- - ssh-add .deploy_rsa.enc
+ - chmod 600 .deploy_rsa
+ - ssh-add .deploy_rsa
+ - cat .deploy_rsa
 deploy: 
   provider: script
   skip_cleanup: true
