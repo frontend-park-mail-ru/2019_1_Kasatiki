@@ -17,10 +17,12 @@ export default class MenuComponent {
                         <h4 class="profile-nickname">{{nickname}}</h4>
                         <h4 class="profile-score">{{points}} $</h4>
                     </div>
-                    <div class="menu__profile-buttons-section">
+                    <div class="menu__profile-buttons-section" id="menu__profile-buttons-section">
+                        <button class="profile-button">Edit</button>
+                        <button href="/logout" class="profile-button">Logout</button>
                     </div>
                 </div>
-                <button href="/play" class="menu__play-btn data-section="play"><i class="fas fa-play"></i></button>
+                <button href="/play" class="menu__play-btn" data-section="play"><i href="/play" class="fas fa-play"></i></button>
                 <div class="options">
                     <a href="#" class="options__link">Report bug</a>
                     <a href="#" class="options__link">Help</a>
@@ -34,7 +36,7 @@ export default class MenuComponent {
                     <h1 class="chose__title">ADVHATER</h1>
                     <div class="main-bar">
                         <button href="/signup" class="main-bar__item chose_btn" data-title="SIGNUP" data-section="signup"><i href="/signup" class="fas fa-user-plus"></i></button>
-                        <button href="#" class="main-bar__item chose_btn" data-title="QUICK PO" data-section="chose"><i href="#" class="fas fa-wallet"></i></button>
+                        <button href="/payout" class="main-bar__item chose_btn" data-title="QUICK PO" data-section="chose"><i href="/payout" class="fas fa-wallet"></i></button>
                         <button href="/login" class="main-bar__item chose_btn" data-title="LOGIN" data-section="login"><i href="/login" class="fas fa-sign-in-alt"></i></button>
                     </div> 
                 </div>

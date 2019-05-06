@@ -48,6 +48,8 @@ _testmain.go
 /test/run.out
 /test/times.out
 
-/node_modules
+/node_modules/
+package-lock.json
 2019_1_Kasatiki
+develop
 # /static/bundle.js

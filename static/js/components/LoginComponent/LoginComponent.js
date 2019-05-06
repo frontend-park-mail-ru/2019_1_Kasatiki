@@ -15,27 +15,31 @@ export default class LoginComponent {
 				<div class="login">
 					<h1 class="login__title">Login</h1>	
 					<form id="login-form" class="login-form">
-						<input
-							name="login"
-							type="text"
-							placeholder="Nickname"
-							class="login__input"
-							id="login__input-login"
-							autocomplete="on"
+						<div class = "login__input-border">
+							<input
+								name="login"
+								type="text"
+								placeholder="Nickname"
+								class="login__input"
+								id="login__input-login"
+								autocomplete="on"
 							>
-						<input
-							name="password"
-							type="password"
-							placeholder="Password"
-							class="login__input"
-							id="login__input-password"
-							autocomplete="on"
+						</div>
+						<div class = "login__input-border">
+							<input
+								name="password"
+								type="password"
+								placeholder="Password"
+								class="login__input"
+								id="login__input-password"
+								autocomplete="on"
 							>
+						</div>
                         <div id="login__authorization-error-field" class="login_error_text"></div>
                         <div class="login__btn">
                         </div>
 						<div class="login__btn-section">
-							<button href="/" class="login-btn"><i href="/" class="fas fa-undo-alt"></i></button>
+							<button href="/" class="login-btn"><i href="/" class="fas fa-chevron-left"></i></button>
 							<button href="/authorizeuser" class="login-btn"><i href="/authorizeuser" class="fas fa-angle-double-right"></i></button>
 						</div>
 					</form>

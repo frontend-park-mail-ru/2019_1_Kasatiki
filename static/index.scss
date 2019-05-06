@@ -1,0 +1,22 @@
+@import 'styles/const';
+@import 'styles/form';
+
+@import 'js/components/LoginComponent/LoginComponent';
+@import 'js/components/SignupComponent/SignupComponent';
+@import 'js/components/LeaderboardComponent/LeaderboardComponent';
+@import 'js/components/MenuComponent/MenuComponent';
+@import 'js/components/PaymentsComponent/PaymentsComponent';
+
+html, body {
+    display: flex;
+
+    justify-content: space-around;
+
+    width: 100vw;
+    height: 100vh;
+
+    margin: 0px;
+
+    color: $main-color;
+    font-family: $main-font-family;
+}

@@ -12,7 +12,7 @@ export default class LogoutView extends BaseView {
 
     show() {
         let that = this;
-        NetworkHandler.doGet({
+        NetworkHandler.doDelete({
             // eslint-disable-next-line no-unused-vars
             callback() {
                 that.router.go('/');

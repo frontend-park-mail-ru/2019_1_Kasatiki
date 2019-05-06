@@ -1,3 +1,5 @@
+import Ws from './ws.js'
+
 export default class Router {
     /**
      * Конструктор роутера.
@@ -9,14 +11,16 @@ export default class Router {
     ) {
         this.app = app;
         this.routes = {};
+        this.ws = new Ws(
+            document.body,
+        );
     }
 
     run() {
         this.go(window.location.pathname);
-        // this.go('/');
+        // this.go('/leaderboard?offset=3');
 
         this.app.addEventListener('click', (event) => {
-            console.log("CLICK");
             event.preventDefault();
             this.go(event.target.getAttribute('href'));
         })
@@ -42,6 +46,9 @@ export default class Router {
      * @param {string} path 
      */
     go(path) {
+        let urlData = this._parseUrl(path);
+        console.log(urlData);
+        path = urlData.pathname;
         /*
             Если тебе нужны собвственные addEventListener-ы,
             то вместо того, чтобы создавать новые, ты можешь
@@ -62,8 +69,8 @@ export default class Router {
         if (!route) {
             return;
         }
-        if (window.location.pathname !== path) {
-            window.history.pushState(null, '', path);
+        if (window.location.pathname !==  urlData.href) {
+            window.history.pushState(null, '', urlData.href);
         }
 
         /**
@@ -72,6 +79,24 @@ export default class Router {
          */
 
         this.currentRoute = route;
-        route.show();
+        route.show(urlData);
+    }
+
+    _parseUrl(url) {
+        url = url || this.href;
+        let pattern = "^(([^:/\\?#]+):)?(//(([^:/\\?#]*)(?::([^/\\?#]*))?))?([^\\?#]*)(\\?([^#]*))?(#(.*))?$";
+        let rx = new RegExp(pattern); 
+        let parts = rx.exec(url);
+
+        return {
+            href: parts[0] || "",
+            protocol: parts[1] || "",
+            host: parts[4] || "",
+            hostname: parts[5] || "",
+            port: parts[6] || "",
+            pathname: parts[7] || "/",
+            search: parts[8] || "",
+            hash: parts[10] || "",
+        }
     }
 }

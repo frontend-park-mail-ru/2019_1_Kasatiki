@@ -1,0 +1,65 @@
+@import '../../../styles/form';
+@import '../../../styles/const';
+
+@media (min-width: 415px) {
+    .payments {
+       @include main-form-section;
+    }
+}
+
+@media (max-width: 415px) {
+    .payments {
+        margin: 25vh 0 0 0;
+        width: 95%;
+    }
+}
+
+.payments__input-section {
+    @include main-form;
+}
+
+.payments__input-section-submit {
+    @include main-form-btn;
+    width: 49%;
+}
+
+// .signup_error_text {
+//     @include main-form_error_text;
+// }
+
+// .signup__btn-section {
+//     @include main-form__btn-section;
+// }
+
+.payments__input-section-submit:hover {
+    @include main-form-btn_hover;
+}
+
+.payments__input-border {
+    @include main-form__input-border;
+    margin: 0 0 5px 0;
+}
+
+.payments__input-section-input {
+    @include main-form__input;
+}
+
+.payments__input-section-input:valid {
+    @include main-form__input_valid;
+}
+
+.payments__input-section-input:invalid {
+    @include main-form__input_invalid;
+}
+
+.payments__input-section-input:hover {
+    @include main-form__input_hover;
+}
+
+::placeholder {
+    @include main-form__placeholder;
+}
+
+.payments__title { 
+    @include main-form__title;
+}
