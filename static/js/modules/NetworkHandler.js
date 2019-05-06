@@ -1,3 +1,4 @@
+
 /* eslint-disable import/prefer-default-export */
 
 /**
@@ -20,21 +21,21 @@ export default class NetworkHandler {
 			// Настройка CORS
 			headers : {
 				// Запрещаем открытие iframe на сайте
-				'X-Frame-Options' : 'DENY',
-				'Content-Type' : 'application/json',
-				'Accept':  'application/json',
+				// 'X-Frame-Options' : 'DENY',
+				// 'Content-Type' : 'application/json',
+				// 'Accept':  'application/json',
 				// // Мы разворачиваемся на этом домене
-				// 'Access-Control-Allow-Origin' : 'http://advhater.ru/',
-				'Access-Control-Allow-Credentials' : true,
+				'Access-Control-Allow-Origin' : '*',
+				// 'Access-Control-Allow-Credentials' : true,
 				// Допускаем только GET, POST, DELETE, HEAD запросы
-				'Access-Control-Request-Method' : 'POST, GET, PUT, DELETE, HEAD,',
+				// 'Access-Control-Request-Method' : 'POST, GET, PUT, DELETE, HEAD,',
 				// Для "непростых запросов"
 				// 'Origin' : '',
 			},
-			// credentials: "same-origin",
-			credentials : "include",
+			credentials: "same-origin",
+			// credentials : "include",
 			// mode : 'cors',
-			cache : 'default',
+			// cache : 'default',
 			body,
 		}
 		
