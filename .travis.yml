@@ -4,8 +4,8 @@ addons:
 before_deploy:
 - openssl aes-256-cbc ...
  - eval "$(ssh-agent -s)"
- - chmod 600 .travis_deploy_key
- - ssh-add .travis_deploy_key
+ - chmod 600 .deploy_rsa.enc
+ - ssh-add .deploy_rsa.enc
 deploy: 
   provider: script
   skip_cleanup: true
