@@ -1,15 +1,17 @@
 @import '../../../styles/form';
 
-.login {
-    @include main-form-section;
-}
-
-@media screen and (max-width: 600px) {
+@media (min-width: 450px) {
     .login {
-        width: 90vw;
+       @include main-form-section;
     }
 }
 
+@media (max-width: 450px) {
+    .login {
+        margin: 15vh 0 0 0;
+        width: 95%;
+    }
+}
 .login-form {
     @include main-form;
 }

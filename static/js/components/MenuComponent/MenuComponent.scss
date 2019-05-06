@@ -16,7 +16,7 @@
 @import '../../../styles/form';
 @import '../../../styles/const';
 
-@media (max-width: 414px) {
+@media (max-width: 415px) {
     body { 
         display: flex;
         justify-content: space-around;
@@ -324,7 +324,7 @@
         justify-content: space-around;
     
         margin: 20vh auto auto auto;
-        width: 650px;
+        width: 95%;
         height: 154px;
     }
     
@@ -609,7 +609,7 @@
         justify-content: space-around;
     
         margin: 30vh auto auto auto;
-        width: 95%;
+        width: 650px;
         height: 154px;
     }
     

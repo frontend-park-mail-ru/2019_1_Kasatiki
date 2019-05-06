@@ -30,11 +30,15 @@ export default class LeaderboardComponent {
 		let templateScript = '';
 		if (this._pagesDict._currentPage > 1) {
 			templateScript += '<button href="/leaderboard?offset={{prev}}" class="prev leaderboard_page-button"><i class="fas fa-arrow-left"></i></button>';
+		} else {
+			templateScript += '<button class="leaderboard_page-button-inactive"><i class="fas fa-arrow-left"></i></button>';
 		}
 		templateScript += '<h1 class="leaderboard_page-pageNumber">{{curr}}</h1>';
 		console.log(this._pagesDict._totalPages, this._pagesDict._currentPage);
 		if (this._pagesDict._currentPage < this._pagesDict._totalPages) {
 			templateScript += '<button href="/leaderboard?offset={{next}}" class="next leaderboard_page-button"><i class="fas fa-arrow-right"></i></button>';
+		} else {
+			templateScript += '<button class="leaderboard_page-button-inactive"><i class="fas fa-arrow-right"></i></button>';
 		}
 		
 		console.log(templateScript);
@@ -85,7 +89,7 @@ export default class LeaderboardComponent {
 				{{/each}} 
 			</div>
 			<div class="paginator-section"></div>
-			<button class="leaderboard_back-button" href="/" data-section="menu"><i href="/" class="fas fa-undo-alt"></i>
+			<button class="leaderboard_back-button" href="/" data-section="menu"><i href="/" class="fas fa-chevron-left"></i>
 			</button>
 		</div>
 		`;

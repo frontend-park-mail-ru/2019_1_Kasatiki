@@ -1,12 +1,15 @@
 @import '../../../styles/form';
 
-.signup {
-    @include main-form-section;
+@media (min-width: 450px) {
+    .signup {
+       @include main-form-section;
+    }
 }
 
-@media screen and (max-width: 600px) {
+@media (max-width: 450px) {
     .signup {
-        width: 90vw;
+        margin: 15vh 0 0 0;
+        width: 95%;
     }
 }
 
