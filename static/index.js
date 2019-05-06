@@ -12,15 +12,15 @@ import GameView from './js/views/GameView.js';
 import PaymentsComponent from './js/views/PaymentsView.js'
 import ShopView from './js/views/ShopView.js'
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-    .then((reg) => {
-        console.log('sw reg success:', reg);
-    })
-    .catch((err) => {
-        console.error('sw reg err:', err);
-    });
-}
+// if ('serviceWorker' in navigator) {
+//     navigator.serviceWorker.register('sw.js')
+//     .then((reg) => {
+//         console.log('sw reg success:', reg);
+//     })
+//     .catch((err) => {
+//         console.error('sw reg err:', err);
+//     });
+// }
 
 const router = new Router(document.body);
 router.add('/', MenuView);
