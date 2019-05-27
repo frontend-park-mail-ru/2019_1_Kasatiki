@@ -23,6 +23,9 @@ _testmain.go
 *.iml
 .vsconf
 
+/static/bundle.js.map
+/static/index.css.map
+
 /VERSION.cache
 /bin/
 /build.out
