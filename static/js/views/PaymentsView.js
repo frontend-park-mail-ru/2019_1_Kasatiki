@@ -59,7 +59,7 @@ export default class PaymentsView extends BaseView {
 
         NetworkHandler.doPost({
             callback(data) {
-                if (data.status === 201) {
+                if (data.status == 201) {
                     let status = document.createElement('div');
                     status.className = 'payments__status-section-element-ok';
                     status.innerText = 'Success payment';
