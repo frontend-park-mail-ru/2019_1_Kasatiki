@@ -112,3 +112,66 @@
 
     transition: 0.2s linear;
 }
+
+@mixin main-status-section {
+    display: flex;
+    flex-wrap: wrap;
+
+    width: 100%;
+    height: 20vh;
+
+    justify-content: flex-end;
+
+}
+
+@mixin main-status-animation {
+    animation: slide-right $main-animation-duration ease;
+}
+
+@keyframes slide-right {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+@mixin main-status-fail {
+    @include main-status-animation;
+
+    width: 100%;
+    height: 100px;
+
+    margin: 5px 0 0 0;
+
+    background-color: $main-color;
+    color: $main-alternative-color;
+
+    font-size: 25px;
+    text-align: center;
+
+    border-radius: 10px;
+    border: $main-border;
+}
+
+@mixin main-status-ok {
+    @include main-status-animation;
+
+    width: 100%;
+    height: 100px;
+
+    margin: 5px 0 0 0;
+
+    background-color: $main-alternative-color;
+    color: $main-color;
+
+    font-size: 25px;
+    text-align: center;
+
+    border-radius: 10px;
+    border: $main-border;
+}
