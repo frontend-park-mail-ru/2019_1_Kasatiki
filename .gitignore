@@ -26,7 +26,16 @@ _testmain.go
 .vscode
 .jpeg
 
+.sass-cache
 *.map
+
+*.mod
+*.sum
+
+/conf/
+/cmd/
+/pkg/
+/AdvsImgs/
 
 /VERSION.cache
 /bin/
@@ -37,7 +46,6 @@ _testmain.go
 /misc/cgo/life/run.out
 /misc/cgo/stdio/run.out
 /misc/cgo/testso/main
-/pkg/
 /src/*.*/
 /src/cmd/cgo/zdefaultcc.go
 /src/cmd/dist/dist
