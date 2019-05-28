@@ -1,0 +1,89 @@
+.MpSpChose {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    margin: 30vh auto auto auto;
+    width: 650px;
+    height: 154px;
+}
+
+.MpSpChose__title {
+    text-align: center;
+
+    margin: 0px 0px 5px 0px;
+    width: 100%;
+
+    color: red;
+    /* font: driving-around; */
+}
+
+.mp_btn_active {
+
+}
+
+.mp_btn_passive {
+    width: 49.5%;
+    height: 200px;
+
+    font-size: 25px;
+
+    border-radius: 5px;
+    border: solid rgba(255, 0, 0, 0.5) 1px;
+
+    color: rgba(255, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.mp_btn_passive i {
+    /* color: rgba(255, 255, 255, 0.5); */
+}
+
+.btn {
+    width: 49.5%;
+    height: 200px;
+
+    font-size: 25px;
+
+    border-radius: 5px;
+    border: solid red 1px;
+
+    color: red;
+    background: rgba(255, 255, 255, 0.5);
+
+    transition: 0.2s linear;
+
+    outline: none;
+}
+
+.back_btn {
+    width: 100%;
+    height: 50px;
+
+    margin: 5px 0 0 0;
+}
+
+.btn:hover {
+    font-size: 30px;
+
+    border: solid white 1px;
+
+    background-color: red;
+    color: white;
+
+    transition: 0.2s linear;
+}
+
+.MpSpChose__main-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    float: left;
+
+    order: 2;
+
+    margin: none;
+    width: 100%;
+    height: 70%;
+}

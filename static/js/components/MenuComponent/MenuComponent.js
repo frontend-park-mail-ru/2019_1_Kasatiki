@@ -22,7 +22,7 @@ export default class MenuComponent {
                         <button href="/logout" class="profile-button">Logout</button>
                     </div>
                 </div>
-                <button href="/play" class="menu__play-btn" data-section="play"><i href="/play" class="fas fa-play"></i></button>
+                <button href="/chosemode" class="menu__play-btn" data-section="play"><i href="/play" class="fas fa-play"></i></button>
                 <div class="options">
                     <a href="#" class="options__link">Report bug</a>
                     <a href="#" class="options__link">Help</a>

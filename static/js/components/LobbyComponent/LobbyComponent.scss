@@ -1,0 +1,257 @@
+@import '../../../styles/form';
+
+.lobby {
+    @include main-form;
+
+    height: 700px;
+    width: 900px;
+
+    margin:  10vh auto auto auto;
+}
+
+.lobby-title{
+    @include main-form__title;
+
+    padding: 0;
+
+    color: $main-color;
+
+    justify-content: center;
+
+    height: 10%;
+}
+
+.lobby-main-section{
+    border: solid $main-color 1px;
+    border-radius: 20px;
+
+    width: 100%;
+    height: 90%;
+}
+
+.lobby_communication-section {
+    display: flex;
+    flex-wrap: wrap;
+
+    justify-content: space-between;
+
+    border-bottom: solid $main-color 1px;
+
+    width: 100%;
+    height: 500px;
+}
+
+// Player sections
+
+.lobby_communication-section_player {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    width: 268px;
+    height: 100%;
+}
+
+/* Avatar */
+
+.lobby_communication-section_player-avatar {
+    width: 100%;
+    height: 150px;
+
+    margin-top: 5px;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.lobby_communication-section_player-avatar-img {
+    width: 150px;
+    height: 150px;
+}
+
+/* Nickname */
+
+.lobby_communication-section_player-nickname {
+    display: flex;
+    justify-content: space-around;
+
+    color: $main-color;
+
+    width: 100%;
+    height: 50px;
+}
+
+.lobby_communication-section_player-nickname h2 {
+    margin: 0;
+}
+
+/* Stats */
+
+.lobby_communication-section_player-statistic {
+    display: flex;
+    justify-content: wrap;
+
+    width: 100%;
+    height: 200px;
+}
+
+/* Bet */
+
+.lobby_communication-section_player-bet {
+    display: flex;
+    justify-content: center;
+
+    color: $main-color;
+
+    width: 100%;
+    border-top: solid 1px $main-color;
+}
+
+.lobby_communication-section_chat {
+    width: 360px;
+    height: 100%;
+
+    border-left: solid $main-color 1px;
+    border-right: solid $main-color 1px;
+}
+
+/* Controll */
+
+.lobby_controll-section {
+    display: flex;
+    flex-wrap: wrap;
+
+    width: 100%;
+    height: 130px;
+}
+
+/* Inputs */
+
+.lobby_controll-section-inputs {
+    display: flex;
+    flex-wrap: wrap;
+
+    justify-content: space-around;
+
+    width: 268px;
+    height: 100%;
+}
+
+.lobby_controll-section-inputs-value {
+    width: 85%;
+    height: 48%;
+
+    border: none;
+    border-bottom: solid 1px $main-color;
+
+    outline: none;
+
+    font-size: 30px;
+
+    padding-left: 50px;
+}
+
+.lobby_controll-section-inputs-placeBtn {
+    @include main-form-btn;
+    
+    width: 100%;
+    height: 50%;
+}
+
+.lobby_controll-section-inputs-placeBtn:hover {
+    @include main-form-btn_hover;
+}
+
+.lobby_controll-section-ready-section {
+    display: flex;
+    flex-wrap: wrap;
+
+    justify-content: space-around;
+
+    outline: none;
+
+    width: 268px;
+    height: 100%;
+}
+
+/* Total bet */
+
+.lobby_controll-section-bet {
+    display: flex;
+    flex-wrap: wrap;
+
+    justify-content: space-around;
+
+    outline: none;
+
+    text-align: center;
+
+    width: 360px;
+    height: 100%;
+
+    color: $main-color;
+
+    border-left: solid $main-color 1px;
+    border-right: solid $main-color 1px;
+}
+
+.lobby_controll-section-bet-value {
+    margin: 0 0 0 0;
+
+    padding: 35px 0 0 0;
+
+    align-self: baseline;
+
+    width: 100%;
+    height: 30%;
+}
+
+.lobby_controll-section-bet-tag {
+    width: 30%;
+    margin: 0 0 0 0;
+    
+    border-top: solid $main-color 1px; 
+    height: 70%;
+
+
+}
+
+/* Ready button */
+
+.lobby_controll-section-ready-section-btn {
+    width: 100%;
+    height: 100%;
+
+    border: none;
+    background-color: $main-color;
+
+    color: $main-alternative-color;
+
+    outline: none;
+
+    border-bottom-right-radius: 20px;
+}
+
+.lobby-back {
+    display: flex;
+    width: 100%;
+    height: 60px;
+
+    margin: 5px 0 0 0 ;
+}
+
+/* Back button */
+
+.lobby-back-btn {
+    @include main-form-btn;
+
+    width: 100%;
+    height: 100%;
+
+    border-radius: 10px;
+}
+
+.lobby-back-btn:hover {
+    @include main-form-btn_hover;
+}

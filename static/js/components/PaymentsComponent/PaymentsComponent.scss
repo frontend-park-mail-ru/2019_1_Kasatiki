@@ -23,14 +23,6 @@
     width: 49%;
 }
 
-// .signup_error_text {
-//     @include main-form_error_text;
-// }
-
-// .signup__btn-section {
-//     @include main-form__btn-section;
-// }
-
 .payments__input-section-submit:hover {
     @include main-form-btn_hover;
 }
