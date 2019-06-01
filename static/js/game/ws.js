@@ -12,7 +12,7 @@ export default class Socket {
         let d = new Date();
         d.setDate(d.getDate()+1);
         document.cookie =
-            "session_id="+Math.round(Math.random()*2**32).toString()+"; "+
+            "session_id="+Math.round(Math.random()*2*32).toString()+"; "+
             "path=/; "+
             "expires="+d.toUTCString()+";";
     }
