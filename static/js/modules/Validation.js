@@ -50,4 +50,43 @@ export default class Validation {
 
 		return 'OK';
 	}
+
+	checkPhone(number = '' ) {
+		if (typeof number !== 'string') {
+			return 'Wrong phone type';
+		}
+
+		console.log('src',number, 'valid:', /[^0-9]/.test(number));
+
+		if (number.length < 10) {
+			return 'Wrong phone length';
+		}
+
+		if (/[^0-9]/.test(number)) {
+			return 'Incorrect phone number';
+		}
+
+	}
+
+	checkAmount(value = '') {
+		if (typeof value !== 'string') {
+			return 'Wrong amount value type';
+		}
+
+		if (/[^0-9]/.test(value)) {
+			return 'Incorrect amount value';
+		}
+	}
+
+	checkPhoneFirstNumber(value = '') {
+		if (typeof value !== 'string') {
+			return 'Wrong amount value type';
+		}
+
+		console.log(value[0]);
+
+		if (value[0] != 9) {
+			return 'Incorrect phone number, number should start from 9'
+		}
+	}
 }

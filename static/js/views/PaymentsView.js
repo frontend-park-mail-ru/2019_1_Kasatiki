@@ -1,12 +1,14 @@
 import BaseView from './View.js';
 
 import PaymentsComponent from '../components/PaymentsComponent/PaymentsComponents.js'
+import Validation from '../modules/Validation.js';
 
 const { NetworkHandler } = window;
 
 export default class PaymentsView extends BaseView {
     constructor() {
         super(...arguments);
+        this.validation = new Validation();
         this.PaymentsComponent = new PaymentsComponent();
     }
 
@@ -16,7 +18,6 @@ export default class PaymentsView extends BaseView {
             callback(data) {
                 console.log('data',data);
                 if (typeof(data) === 'object') {
-                    console.log("IM IN",data.status);
                     that.root.innerHTML = that.PaymentsComponent.render(true);
                 } else {
                     that.root.innerHTML = that.PaymentsComponent.render(true);
@@ -28,11 +29,36 @@ export default class PaymentsView extends BaseView {
     }
 
     initSpecialRoutes() {
-        this.specialRoutes['/payout'] = this.send;
+        this.specialRoutes['/payout'] = this._send;
     }
 
-    send() {
+    _send(that) {
         const form = document.querySelector('.payments__input-section');
+        const errSection = document.querySelector('.payments__input-section-error-section'); 
+        const statusSection = document.querySelector('.payments__status-section-container');
+
+        errSection.innerText = '';
+
+        let err = that.validation.checkPhone(form.phone.value);
+
+        if (err != undefined) {
+            that._panicError(errSection, err)
+            return
+        }
+
+        err = that.validation.checkPhoneFirstNumber(form.phone.value);
+
+        if (err != undefined) {
+            that._panicError(errSection, err)
+            return
+        }
+
+        err = that.validation.checkAmount(form.amount.value);
+
+        if (err != undefined) {
+            that._panicError(errSection, err)
+            return
+        }
 
         let payload = {
             phone : form.phone.value,
@@ -41,13 +67,30 @@ export default class PaymentsView extends BaseView {
 
         NetworkHandler.doPost({
             callback(data) {
-                console.log('Success:',data);
-                if (data === 201) {
-                    that.router.go('/');
+                if (data == 201) {
+                    let status = document.createElement('div');
+                    status.className = 'payments__status-section-element-ok';
+                    status.innerText = 'Success payment';
+                    statusSection.appendChild(status);
+                    // setTimeout(() => {
+                    //     statusSection.children[0].remove();
+                    // }, 3000);
+                } else {
+                    let status = document.createElement('div');
+                    status.className = 'payments__status-section-element-fail';
+                    status.innerText = 'Failed payment';
+                    statusSection.appendChild(status);
+                    // setTimeout(() => {
+                    //     statusSection.children[0].remove();
+                    // }, 3000);
                 }
             },
             path: '/api/payments',
             body: JSON.stringify( payload ),
         });
+    }
+
+    _panicError(errSection, errMes) {
+        errSection.innerText = errMes;
     }
 }

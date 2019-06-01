@@ -39,8 +39,8 @@ export default class LoginComponent {
                         <div class="login__btn">
                         </div>
 						<div class="login__btn-section">
-							<button href="/" class="login-btn"><i href="/" class="fas fa-chevron-left"></i></button>
 							<button href="/authorizeuser" class="login-btn"><i href="/authorizeuser" class="fas fa-angle-double-right"></i></button>
+							<button href="/" class="login-btn"><i href="/" class="fas fa-chevron-left"></i></button>
 						</div>
 					</form>
 				</div>

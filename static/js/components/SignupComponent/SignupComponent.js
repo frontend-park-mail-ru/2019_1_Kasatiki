@@ -52,8 +52,8 @@ export default class SignupComponent {
                         </div>
                         <div id="signup-form__error-text-field" class="signup_error_text"></div>  
                         <div class="signup__btn-section">
-                            <button href="/" class="signup-btn"><i href="/" class="fas fa-chevron-left"></i></button>
                             <button href="/signupuser" class="signup-btn"><i href="/signupuser" class="fas fa-angle-double-right"></i></button>
+                            <button href="/" class="signup-btn"><i href="/" class="fas fa-chevron-left"></i></button>
                         </div>
                     </form>
                 </div>

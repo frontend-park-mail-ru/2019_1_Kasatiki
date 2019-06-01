@@ -9,8 +9,12 @@ import SignupView from './js/views/SignupView.js';
 // import CountdownView from './js/views/CountdownView.js';
 import LeaderboardView from './js/views/LeaderboardView.js';
 import GameView from './js/views/GameView.js';
-import PaymentsComponent from './js/views/PaymentsView.js'
+import PaymentsView from './js/views/PaymentsView.js'
 import ShopView from './js/views/ShopView.js'
+import LobbyView from './js/views/ShopView.js'
+import ChoseView from './js/views/MpSpChose.js'
+
+
 
 // if ('serviceWorker' in navigator) {
 //     navigator.serviceWorker.register('sw.js')
@@ -30,6 +34,8 @@ router.add('/logout', LogoutView);
 router.add('/signup', SignupView);
 router.add('/leaderboard', LeaderboardView);
 router.add('/play', GameView);
-router.add('/payout', PaymentsComponent);
+router.add('/payout', PaymentsView);
 router.add('/shop', ShopView);
+router.add('/lobby', LobbyView);
+router.add('/chosemode', ChoseView);
 router.run();

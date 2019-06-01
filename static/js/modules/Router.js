@@ -11,9 +11,9 @@ export default class Router {
     ) {
         this.app = app;
         this.routes = {};
-        this.ws = new Ws(
-            document.body,
-        );
+        // this.ws = new Ws(
+        //     document.body,
+        // );
     }
 
     run() {

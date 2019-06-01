@@ -4,14 +4,28 @@
 @media (min-width: 415px) {
     .payments {
        @include main-form-section;
+       margin: 0 auto 40% auto;      
     }
 }
 
 @media (max-width: 415px) {
     .payments {
-        margin: 25vh 0 0 0;
-        width: 95%;
+        @include main-form-section;
+        width: 98vh;
+        margin: 5vh 0 40% 0;
     }
+}
+
+.payments__status-section {
+    @include main-status-section;
+}
+
+.payments__status-section-element-ok {
+    @include main-status-ok;
+}
+
+.payments__status-section-element-fail {
+    @include main-status-fail;
 }
 
 .payments__input-section {
@@ -22,14 +36,6 @@
     @include main-form-btn;
     width: 49%;
 }
-
-// .signup_error_text {
-//     @include main-form_error_text;
-// }
-
-// .signup__btn-section {
-//     @include main-form__btn-section;
-// }
 
 .payments__input-section-submit:hover {
     @include main-form-btn_hover;
@@ -62,4 +68,14 @@
 
 .payments__title { 
     @include main-form__title;
+}
+
+.payments__input-section-error-section {
+    width: 100%;
+    text-align: center;
+}
+
+.payments__status-section-container {
+    width: 500px;
+    height: 100%;
 }

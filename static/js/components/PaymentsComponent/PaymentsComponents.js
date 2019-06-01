@@ -7,6 +7,9 @@ export default class PaymentsComponent {
         let templateScript = ``;
 		if (isAuth) {
 			templateScript = `
+                <div class="payments__status-section">
+                    <div class="payments__status-section-container"></div>
+                </div>
                 <div class="payments">
                     <h1 class="payments__title">Payments</h1>
                     <form class="payments__input-section" onsubmit="this.send()" method="post" id="contact_form" required="">
@@ -16,8 +19,9 @@ export default class PaymentsComponent {
                         <div class="payments__input-border">
                             <input class="payments__input-section-input" type="text" name="amount" placeholder="100 $">
                         </div>
-                        <button href="/" class="payments__input-section-submit" ><i class="fas fa-angle-left"></i></button>
+                        <div class="payments__input-section-error-section"></div>
                         <button href="/payout" class="payments__input-section-submit" type="submit" id="form_button">Submit</button>
+                        <button href="/" class="payments__input-section-submit" ><i class="fas fa-angle-left"></i></button>
                     </form>
                 </div>
             `;
