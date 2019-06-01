@@ -1013,6 +1013,41 @@
   width: 500px;
   height: 100%; }
 
+.payments_unreg {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 20vh auto auto auto;
+  width: 450px;
+  height: 150px; }
+
+.payments__btns-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 500px;
+  height: 150px; }
+
+.payments__input-btn {
+  font-size: 25px;
+  width: 49.5%;
+  height: 50px;
+  border-radius: 5px;
+  border: solid red 1px;
+  color: red;
+  background: rgba(255, 255, 255, 0.5);
+  transition: 0.2s linear;
+  outline: none;
+  width: 49%;
+  height: 100%; }
+
+.payments__input-btn:hover {
+  font-size: 30px;
+  border: solid white 1px;
+  background-color: red;
+  color: white;
+  transition: 0.2s linear; }
+
 @keyframes slide-right {
   0% {
     opacity: 0;

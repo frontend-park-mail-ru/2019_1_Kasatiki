@@ -79,3 +79,25 @@
     width: 500px;
     height: 100%;
 }
+
+.payments_unreg {
+    @include main-form-section;
+}
+
+.payments__btns-section {
+    @include main-form;
+    width: 500px;
+    height: 150px;
+}
+
+.payments__input-btn {
+    @include main-form-btn;
+    width: 49%;
+    height: 100%;
+
+    // margin-top: 5px;
+}
+
+.payments__input-btn:hover {
+    @include main-form-btn_hover
+}
