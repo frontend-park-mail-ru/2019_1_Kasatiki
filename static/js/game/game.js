@@ -1,6 +1,6 @@
 import Viewport from './viewport.js';
 import startListen from './eventListeners.js';
-import Socket from '../game/game.js';
+import Socket from '../game/ws.js';
 import Config from './config.js';
 import Objects from './objects.js';
 
