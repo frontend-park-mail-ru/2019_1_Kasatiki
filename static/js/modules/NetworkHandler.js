@@ -52,6 +52,8 @@ export default class NetworkHandler {
 					console.log(JSON.stringify(response.headers));
 					// document.cookie = response.headers['Set-Cookie'];
 					return 201;
+				} else if (response.status == 400) {
+					return response.JSON
 				} else if (response === undefined) {
 					return 404;
 					// throw new Error('Wrong network response');
