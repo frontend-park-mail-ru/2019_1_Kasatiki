@@ -4,15 +4,15 @@
 @media (min-width: 415px) {
     .payments {
        @include main-form-section;
-       margin: 0 auto 40% auto;
-       width: 98vw;       
+       margin: 0 auto 40% auto;      
     }
 }
 
 @media (max-width: 415px) {
     .payments {
+        @include main-form-section;
+        width: 98vh;
         margin: 5vh 0 40% 0;
-        width: 98vw;
     }
 }
 

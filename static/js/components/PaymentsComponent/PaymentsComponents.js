@@ -20,8 +20,8 @@ export default class PaymentsComponent {
                             <input class="payments__input-section-input" type="text" name="amount" placeholder="100 $">
                         </div>
                         <div class="payments__input-section-error-section"></div>
-                        <button href="/" class="payments__input-section-submit" ><i class="fas fa-angle-left"></i></button>
                         <button href="/payout" class="payments__input-section-submit" type="submit" id="form_button">Submit</button>
+                        <button href="/" class="payments__input-section-submit" ><i class="fas fa-angle-left"></i></button>
                     </form>
                 </div>
             `;

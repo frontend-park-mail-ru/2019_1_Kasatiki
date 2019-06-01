@@ -5,12 +5,12 @@ import Game from '../game/game.js';
 export default class GameView extends BaseView {
     constructor() {
         super(...arguments);
-        this.Game = new Game(document.body, this.router);
-        // this.initSpecialRoutes();
+        this.game = new Game;
     }
 
     show() {
-        this.Game.run();
+        this.root.innerHTML = '<canvas class="game"></canvas>';
+        this.game.gameStart();
     }
 
 }

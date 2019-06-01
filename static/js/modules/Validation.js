@@ -77,4 +77,16 @@ export default class Validation {
 			return 'Incorrect amount value';
 		}
 	}
+
+	checkPhoneFirstNumber(value = '') {
+		if (typeof value !== 'string') {
+			return 'Wrong amount value type';
+		}
+
+		console.log(value[0]);
+
+		if (value[0] != 9) {
+			return 'Incorrect phone number, number should start from 9'
+		}
+	}
 }

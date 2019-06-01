@@ -8,6 +8,7 @@
 @import 'js/components/PaymentsComponent/PaymentsComponent';
 @import 'js/components/LobbyComponent/LobbyComponent';
 @import 'js/components/MpSpChose/MpSpChose';
+@import 'js/game/game';
 
 
 
@@ -21,6 +22,8 @@ html, body {
     height: 100vh;
 
     margin: 0px;
+
+    overflow: hidden;
 
     color: $main-color;
     font-family: $main-font-family;

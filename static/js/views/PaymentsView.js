@@ -37,8 +37,16 @@ export default class PaymentsView extends BaseView {
         const errSection = document.querySelector('.payments__input-section-error-section'); 
         const statusSection = document.querySelector('.payments__status-section-container');
 
-        console.log('NUMBER:', form.phone.value);
+        errSection.innerText = '';
+
         let err = that.validation.checkPhone(form.phone.value);
+
+        if (err != undefined) {
+            that._panicError(errSection, err)
+            return
+        }
+
+        err = that.validation.checkPhoneFirstNumber(form.phone.value);
 
         if (err != undefined) {
             that._panicError(errSection, err)
@@ -64,17 +72,17 @@ export default class PaymentsView extends BaseView {
                     status.className = 'payments__status-section-element-ok';
                     status.innerText = 'Success payment';
                     statusSection.appendChild(status);
-                    setTimeout(() => {
-                        statusSection.children[0].remove();
-                    }, 3000);
+                    // setTimeout(() => {
+                    //     statusSection.children[0].remove();
+                    // }, 3000);
                 } else {
                     let status = document.createElement('div');
                     status.className = 'payments__status-section-element-fail';
                     status.innerText = 'Failed payment';
                     statusSection.appendChild(status);
-                    setTimeout(() => {
-                        statusSection.children[0].remove();
-                    }, 3000);
+                    // setTimeout(() => {
+                    //     statusSection.children[0].remove();
+                    // }, 3000);
                 }
             },
             path: '/api/payments',

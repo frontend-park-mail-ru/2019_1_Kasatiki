@@ -24,7 +24,7 @@ export default class Ws {
         wsUrl = 'advhater.ru',
     ) {
         this.chatbox = chatbox;
-        this.ws = new WebSocket('wss://' + wsUrl + '/ws');
+        this.ws = new WebSocket('ws://' + wsUrl + '/ws');
 
         this.ws.onmessage = (evt) => {
             const messageBox = document.createElement("div");
