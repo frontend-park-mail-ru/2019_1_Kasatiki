@@ -56,4 +56,5 @@ _testmain.go
 package-lock.json
 2019_1_Kasatiki
 develop
+/.sass-cache
 # /static/bundle.js
