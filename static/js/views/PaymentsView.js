@@ -18,13 +18,13 @@ export default class PaymentsView extends BaseView {
             callback(data) {
                 console.log('data',data);
                 if (typeof(data) === 'object') {
-                    that.root.innerHTML = that.PaymentsComponent.render(true);
+                    that.root.innerHTML = that.PaymentsComponent.render(data);
                 } else {
-                    that.root.innerHTML = that.PaymentsComponent.render(true);
+                    that.root.innerHTML = that.PaymentsComponent.render(false);
                 }
                 that.initSpecialRoutes();
             },
-            path: '/api/isauth',
+            path: '/api/balance',
         });
     }
 

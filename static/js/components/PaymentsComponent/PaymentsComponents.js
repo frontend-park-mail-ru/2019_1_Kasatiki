@@ -3,15 +3,17 @@ export default class PaymentsComponent {
      * Функция, возвращающая строку в формате html с формой выплаты.
      * @param {boolean} isAuth - Статус авторизации пользователя.
      */
-    render(isAuth) {
+    render(data) {
         let templateScript = ``;
-		if (isAuth) {
+		if (typeof(data) == 'object') {
+        // if (true) {
 			templateScript = `
                 <div class="payments__status-section">
                     <div class="payments__status-section-container"></div>
                 </div>
                 <div class="payments">
                     <h1 class="payments__title">Payments</h1>
+                    <h2 class="">Balance {{points}}$</h2>
                     <form class="payments__input-section" onsubmit="this.send()" method="post" id="contact_form" required="">
                         <div class="payments__input-border">
                             <input class="payments__input-section-input" type="text" name="phone" class="payments__phonenumber" placeholder="9xxxxxxxxx" required="">
@@ -38,6 +40,6 @@ export default class PaymentsComponent {
 			`;
 		}
 		const template = Handlebars.compile(templateScript);		
-        return template();
+        return template(data);
     }
 }
