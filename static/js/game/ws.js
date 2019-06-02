@@ -41,12 +41,15 @@ export default class Socket {
         
                 this.mapChange = false;     
 
-                console.log(data)            
-                console.log(objs.map.map);
+                // console.log(objs.map.map);
             }
             
             if (data["pause"] != null) {
                 objs.advUrl = data["url"];
+            }
+
+            if (data["cash"] != null) {
+                objs.score = data["cash"];
             }
     
             if (data["bullets"] != null) {
@@ -57,10 +60,10 @@ export default class Socket {
                 objs.advs = data["advs"];
                 // console.log(objs.advs);
             }
+            console.log(data)            
 
 
             if (data["players"] != null) {
-            console.log(data["players"][0])
 
                 if (data["players"][0].id == objs.player.id) {
                     objs.player.x += data["players"][0].object.x - objs.player.x;

@@ -58,6 +58,10 @@ export default class Game {
         this.objs.drawBullets(this.viewport);
         this.objs.drawInterface(this.viewport, this.keyMap.zoom);
     
+        if (this.objs.advUrl) {
+            this._showAdv();
+        }
+
         let json = JSON.stringify(this.keyMap);
     
         if (this.ws.socketOpen) {
@@ -83,9 +87,5 @@ export default class Game {
             advFrame.remove();
             this.objs.pause = false;
         }, 5000);
-    }
-
-    _drawInterface() {
-        
     }
 }
