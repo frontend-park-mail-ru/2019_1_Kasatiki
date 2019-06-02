@@ -60,10 +60,14 @@ export default class Socket {
                 // console.log(objs.advs);
             }
 
+
             if (data["players"] != null) {
+            console.log(data["players"][0])
+
                 if (data["players"][0].id == objs.player.id) {
                     objs.player.x += data["players"][0].object.x - objs.player.x;
                     objs.player.y += data["players"][0].object.y - objs.player.y;
+                    objs.player.hp = data["players"][0].object.hp;
             
                     // objs.enemy.x += (data["players"][1].object.x - objs.enemy.x) * objs.player.c;
                     // objs.enemy.y += (data["players"][1].object.y - objs.enemy.y) * objs.player.c;
