@@ -31,7 +31,7 @@ export default class Objects {
             deltay : 0,
         }
 
-        this.advUrl = 'https://vk.com/feed';
+        this.advUrl = '';
     }
 
     drawObjs(viewport) {
