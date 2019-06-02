@@ -50,11 +50,6 @@ export default class Socket {
                 objs.advUrl = data["url"];
                 // console.log(data["url"], objs.advUrl)
             }
-
-            if (data["cash"] != null) {
-                console.log(data["cash"])
-                objs.score = data["cash"];
-            }
     
             if (data["bullets"] != null) {
                 objs.bullets = data["bullets"]
@@ -72,6 +67,11 @@ export default class Socket {
                     objs.player.x += data["players"][0].object.x - objs.player.x;
                     objs.player.y += data["players"][0].object.y - objs.player.y;
                     objs.player.hp = data["players"][0].object.hp;
+
+                    if (data["players"][0]["cash"] != null) {
+                        console.log(data["players"][0]["cash"])
+                        objs.score = data["players"][0]["cash"];
+                    }
             
                     // objs.enemy.x += (data["players"][1].object.x - objs.enemy.x) * objs.player.c;
                     // objs.enemy.y += (data["players"][1].object.y - objs.enemy.y) * objs.player.c;
