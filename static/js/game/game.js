@@ -85,7 +85,7 @@ export default class Game {
 
         setTimeout(() => {
             advFrame.remove();
-            objs.advUrl = '';
+            this.objs.advUrl = '';
             this.objs.pause = false;
         }, 5000);
     }
