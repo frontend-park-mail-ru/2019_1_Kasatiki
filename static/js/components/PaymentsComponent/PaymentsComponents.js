@@ -12,7 +12,8 @@ export default class PaymentsComponent {
                 </div>
                 <div class="payments">
                     <h1 class="payments__title">Payments</h1>
-                    <h2 class="">Balance {{points}}$</h2>
+                    <h2 id=payments__points>Balance {{points}}$</h2>
+                    <h2 id="">Balance {{points}}$</h2>
                     <form class="payments__input-section" onsubmit="this.send()" method="post" id="contact_form" required="">
                         <div class="payments__input-border">
                             <input class="payments__input-section-input" type="text" name="phone" class="payments__phonenumber" placeholder="9xxxxxxxxx" required="">
