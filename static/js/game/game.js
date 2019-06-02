@@ -53,7 +53,7 @@ export default class Game {
         this.objs.drawObjs(this.viewport);    
         this.viewport.update(this.objs.player.x, this.objs.player.y, this.keyMap.zoom, {val : this.objs.map.tileSize});
     
-        this.objs.drawPlayers(this.viewport);
+        this.objs.drawPlayers(this.viewport, this.keyMap.zoom);
         this.objs.drawAdvs(this.viewport);
         this.objs.drawBullets(this.viewport);
         this.objs.drawInterface(this.viewport, this.keyMap.zoom);

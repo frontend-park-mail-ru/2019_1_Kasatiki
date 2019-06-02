@@ -74,9 +74,9 @@ export default class Map {
             y_max = this.mapSize;
         }
     
-        console.log(x_min, y_min, x_max, y_max,
-            'vp:', viewport.x, viewport.y, viewport.w, viewport.h,
-            'ts', viewport.tileSize);
+        // console.log(x_min, y_min, x_max, y_max,
+        //     'vp:', viewport.x, viewport.y, viewport.w, viewport.h,
+        //     'ts', viewport.tileSize);
     
         for (let i = x_min; i < x_max; i++) {
             for (let j = y_min; j < y_max; j++) {

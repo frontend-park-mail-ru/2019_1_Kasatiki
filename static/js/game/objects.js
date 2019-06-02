@@ -13,6 +13,9 @@ export default class Objects {
 
         this.opacity = 1;
 
+        this.deltax = 0;
+        this.deltay = 0;
+
         this.score = 50;
         this.backImg = new Image(30, 30);
         this.backImg.src = '../../icons/cross.png';
@@ -24,6 +27,8 @@ export default class Objects {
         this.enemy = {
             x : 2700,
             y : 2500,
+            deltax : 0,
+            deltay : 0,
         }
 
         this.advUrl = 'https://vk.com/feed';
@@ -37,21 +42,29 @@ export default class Objects {
         this.map.drawMap(viewport);
     }
 
-    drawPlayers(viewport) {
+    drawPlayers(viewport, zoom) {
         this.player.draw(viewport, {val : this.map.tileSize});
-        this.drawEnemy(viewport);
+        this.drawEnemy(viewport, zoom);
     }
 
-    drawEnemy(viewport) {
+    drawEnemy(viewport, zoom) {
         this.map.ctx.fillStyle = '#F52B00';
-        this.map.ctx.fillRect(Math.round(this.enemy.x - viewport.x - viewport.zoom), Math.round(this.enemy.y - viewport.y - viewport.zoom), viewport.tileSize, viewport.tileSize);
+        // console.log('delta',zoom, this.enemy.deltax, this.enemy.deltay)
+        this.enemy.deltax = this.enemy.x - viewport.x - viewport.zoom - 400;
+        this.enemy.deltay = this.enemy.y - viewport.y - viewport.zoom - 400;
+        this.map.ctx.fillRect(Math.round(this.enemy.x - viewport.x - viewport.zoom - this.enemy.deltax * (1 - viewport.tileSize / viewport.baseTileSize)), Math.round(this.enemy.y - viewport.y - viewport.zoom - this.enemy.deltay * (1 - viewport.tileSize / viewport.baseTileSize)), viewport.tileSize, viewport.tileSize);
     }
 
     drawAdvs(viewport) {
-        if (this.advs.length > 1) {
-            for (let i = 0; i < this.advs.length; i++) {
-                this.map.ctx.fillStyle = '#ffffff';
-                this.map.ctx.fillRect(Math.round(this.advs[i].object.x - viewport.x - viewport.zoom), Math.round(this.advs[i].object.y - viewport.y - viewport.zoom), viewport.tileSize, viewport.tileSize);
+        let that = this;
+        if (that.advs.length > 0) {
+            console.log(that.advs.length)
+            for (let i = 0; i < that.advs.length; i++) {
+                that.map.ctx.fillStyle = '#ffffff';
+                that.deltax = that.advs[i].object.x - viewport.x - viewport.zoom - 400;
+                that.deltay = that.advs[i].object.y - viewport.y - viewport.zoom - 400;
+                that.map.ctx.fillRect(Math.round(that.advs[i].object.x - viewport.x - viewport.zoom - that.deltax * (1 - viewport.tileSize / viewport.baseTileSize)), Math.round(that.advs[i].object.y - viewport.y - viewport.zoom - that.deltay * (1 - viewport.tileSize / viewport.baseTileSize)), viewport.tileSize, viewport.tileSize);
+                // console.log(that.advs[i].object.x, that.deltay, Math.round(that.advs[i].x - viewport.x - viewport.zoom - that.deltax * (1 - viewport.tileSize / viewport.baseTileSize)), Math.round(that.advs[i].y - viewport.y - viewport.zoom - that.deltay * (1 - viewport.tileSize / viewport.baseTileSize)))
             }
         }
     }
@@ -92,6 +105,6 @@ export default class Objects {
         this.map.ctx.fillText(this.score.toString(), viewport.baseTileSize * 8,viewport.baseTileSize);
 
         // Render back button
-        this.map.ctx.drawImage(this.backImg, viewport.baseTileSize * 15, viewport.baseTileSize / 2); 
+        // this.map.ctx.drawImage(this.backImg, viewport.baseTileSize * 15, viewport.baseTileSize / 2); 
     }
 }
