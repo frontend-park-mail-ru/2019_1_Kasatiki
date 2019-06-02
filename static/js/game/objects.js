@@ -49,19 +49,19 @@ export default class Objects {
     }
 
     drawAdvs(viewport) {
-        if (this.objs.advs.length > 1) {
-            for (let i = 0; i < this.objs.advs.length; i++) {
+        if (this.advs.length > 1) {
+            for (let i = 0; i < this.advs.length; i++) {
                 this.map.ctx.fillStyle = '#ffffff';
-                this.map.ctx.fillRect(Math.round(this.objs.advs[i].object.x - viewport.x), Math.round(this.objs.advs[i].object.y - viewport.y), viewport.tileSize, viewport.tileSize);
+                this.map.ctx.fillRect(Math.round(this.advs[i].object.x - viewport.x), Math.round(this.advs[i].object.y - viewport.y), viewport.tileSize, viewport.tileSize);
             }
         }
     }
 
     drawBullets(viewport) {
-        if (this.objs.bullets.length != 0) {
-            for (let i = 0; i < this.objs.bullets.length; i++) {
+        if (this.bullets.length != 0) {
+            for (let i = 0; i < this.bullets.length; i++) {
                 this.map.ctx.fillStyle = '#ffff00';
-                this.map.ctx.fillRect(this.objs.bullets[i].object.x - viewport.x, this.objs.bullets[i].object.y - viewport.y, 5, 5);
+                this.map.ctx.fillRect(this.bullets[i].object.x - viewport.x, this.bullets[i].object.y - viewport.y, 5, 5);
             }
         }
     }
