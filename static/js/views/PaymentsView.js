@@ -76,9 +76,9 @@ export default class PaymentsView extends BaseView {
                     let points = document.getElementById('payments__points');
                     NetworkHandler.doGet({
                         callback(data) {
-                            console.log('data',data);
+                            console.log('data',data, points);
                             if (typeof(data) === 'object') {
-                                points.innerHTML = 'Balance' + data['points'] + '$';
+                                points.innerText = 'Balance' + data['points'] + '$';
                             }
                         },
                         path: '/api/balance',
