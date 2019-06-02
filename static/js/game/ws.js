@@ -46,6 +46,7 @@ export default class Socket {
             
             if (data["url"] != '') {
                 objs.advUrl = data["url"];
+                console.log(data["url"], objs.advUrl)
             }
 
             if (data["cash"] != null) {
@@ -59,6 +60,7 @@ export default class Socket {
             if (data["advs"] != null) {
                 objs.advs = data["advs"];
             }     
+
 
 
             if (data["players"] != null) {
