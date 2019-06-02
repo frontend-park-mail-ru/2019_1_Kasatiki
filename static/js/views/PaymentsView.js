@@ -16,7 +16,7 @@ export default class PaymentsView extends BaseView {
         let that = this;
         NetworkHandler.doGet({
             callback(data) {
-                console.log('data', data, typeof(data));
+                console.log('data',data);
                 if (typeof(data) === 'object') {
                     that.root.innerHTML = that.PaymentsComponent.render(data);
                 } else {

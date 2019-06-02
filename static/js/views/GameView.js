@@ -9,7 +9,8 @@ export default class GameView extends BaseView {
     }
 
     show() {
-        this.root.innerHTML = '<canvas class="game"></canvas>';
+        this.root.innerHTML = `<canvas class="game"></canvas>
+                               <button class="game-back" href="/"></back>`;
         this.game.gameStart();
     }
 

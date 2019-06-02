@@ -2,7 +2,7 @@ export default class Socket {
     constructor(
         hostName = location.host,
     ) {
-        this.socket = new WebSocket("wss://" + hostName + "/api/game/start");
+        this.socket = new WebSocket("ws://" + hostName + "/api/game/start");
         this.socketOpen = false;
 
         this.mapChange = true;
@@ -46,9 +46,17 @@ export default class Socket {
                 console.log(data)            
                 console.log(objs.map.map);
             }
+
+            if (data["pause"] != null) {
+                objs.advUrl = data["url"];
+            }
     
             if (data["bullets"] != null) {
                 objs.bullets = data["bullets"]
+            }
+        
+            if (data['advs'] != null) {
+                objs.advs = data['advs'];
             }
         
             if (data["players"] != null) {

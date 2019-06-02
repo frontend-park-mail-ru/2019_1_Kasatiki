@@ -1,21 +1,23 @@
 import Viewport from './viewport.js';
 import startListen from './eventListeners.js';
-import Socket from '../game/ws.js';
+import Socket from './ws.js';
 import Config from './config.js';
 import Objects from './objects.js';
 
 export default class Game {
     constructor() {
         this.keyMap = {
-            up : false,
-            left : false,
-            down : false,
+            up    : false,
+            left  : false,
+            down  : false,
             right : false,
         
-            shot: false,
-            angle: 0,
+            shot  : false,
+            angle : 0,
         
-            zoom: false,
+            zoom  : false,
+
+            pause : false,
         }
 
         this.cfg;
@@ -43,6 +45,8 @@ export default class Game {
         this.viewport.update(this.objs.player.x, this.objs.player.y, this.keyMap.zoom, {val : this.objs.map.tileSize});
     
         this.objs.drawPlayers(this.viewport);
+        this.objs.drawAdvs(this.viewport);
+        this.objs.drawBullets(this.viewport);
     
         let json = JSON.stringify(this.keyMap);
     
@@ -50,5 +54,24 @@ export default class Game {
             this.ws.socket.send(json);
         }
         requestAnimationFrame(() => this.loop());
+    }
+    
+    _showAdv() {
+        let advFrame = document.querySelector('.advframe');
+
+        if (advFrame == undefined) {
+            advFrame = document.createElement('iframe');
+            advFrame.className = 'advframe';
+            advFrame.src = this.objs.advUrl;
+            console.log(this.objs.advUrl, advFrame.href)
+            document.body.appendChild(advFrame);
+        } else {
+            advFrame.href = this.objs.advUrl;
+        }
+
+        setTimeout(() => {
+            advFrame.remove();
+            this.objs.pause = false;
+        }, 5000);
     }
 }

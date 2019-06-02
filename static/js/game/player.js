@@ -17,19 +17,4 @@ export default class Player {
         this.ctx.fillStyle = '#45FF70';
         this.ctx.fillRect(Math.round(this.x - viewport.x - viewport.zoom), Math.round(this.y - viewport.y - viewport.zoom), viewport.tileSize, viewport.tileSize);
     }
-
-    // move(keyMap) {
-    //     if (keyMap.up) {
-    //         this.y -= this.v;
-    //     }
-    //     if (keyMap.down) {
-    //         this.y += this.v;
-    //     }
-    //     if (keyMap.left) {
-    //         this.x -= this.v;
-    //     }
-    //     if (keyMap.right) {
-    //         this.x += this.v;
-    //     }
-    // }
 }

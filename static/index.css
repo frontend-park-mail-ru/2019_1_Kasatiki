@@ -1315,10 +1315,36 @@
   width: 100%;
   height: 70%; }
 
+@keyframes slide-right {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px); }
+  100% {
+    opacity: 1;
+    transform: translateX(0); } }
 .game {
   width: 800px;
   height: 800px;
   margin: auto auto auto auto; }
+
+.advframe {
+  width: 800px;
+  height: 800px;
+  position: absolute;
+  margin: auto auto auto auto; }
+
+.game-back {
+  font-size: 25px;
+  width: 49.5%;
+  height: 50px;
+  border-radius: 5px;
+  border: solid red 1px;
+  color: red;
+  background: rgba(255, 255, 255, 0.5);
+  transition: 0.2s linear;
+  outline: none;
+  width: 50px;
+  height: 50px; }
 
 html, body {
   display: flex;

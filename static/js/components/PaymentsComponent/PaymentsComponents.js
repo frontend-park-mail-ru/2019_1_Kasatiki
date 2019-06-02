@@ -5,8 +5,7 @@ export default class PaymentsComponent {
      */
     render(data) {
         let templateScript = ``;
-		if (typeof(data) == 'object') {
-        // if (true) {
+        if (data) {
 			templateScript = `
                 <div class="payments__status-section">
                     <div class="payments__status-section-container"></div>
@@ -29,19 +28,11 @@ export default class PaymentsComponent {
             `;
 		} else {
 			templateScript = `
-<<<<<<< Updated upstream
                 <div class="payments_unreg">
                     <h1 class="payments__title">Payment</h1>
                     <div class="payments__btns-section">
                         <button href="/signup" class="payments__input-btn" data-title="SIGNUP" data-section="signup"><i href="/signup" class="fas fa-user-plus"></i></button>
                         <button href="/login" class="payments__input-btn" data-title="LOGIN" data-section="login"><i href="/login" class="fas fa-sign-in-alt"></i></button>
-=======
-                <div class="payments__status-section">
-                    <h1 class="chose__title">Payment</h1>
-                    <div class="main-bar">
-                        <button href="/signup" class="main-bar__item chose_btn_pay" data-title="SIGNUP" data-section="signup"><i href="/signup" class="fas fa-user-plus"></i></button>
-                        <button href="/login" class="main-bar__item chose_btn_pay" data-title="LOGIN" data-section="login"><i href="/login" class="fas fa-sign-in-alt"></i></button>
->>>>>>> Stashed changes
                     </div> 
                     <h3 class="payments__title">login or signup please</h3>
                 </div>

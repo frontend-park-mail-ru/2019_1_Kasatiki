@@ -23,6 +23,8 @@ export default class Objects {
             x : 0,
             y : 0,
         }
+
+        this.advUrl = 'https://vk.com/feed';
     }
 
     drawObjs(viewport) {
@@ -48,5 +50,23 @@ export default class Objects {
     drawEnemy(viewport) {
         this.map.ctx.fillStyle = '#F52B00';
         this.map.ctx.fillRect(Math.round(this.enemy.x - viewport.x - viewport.zoom), Math.round(this.enemy.y - viewport.y - viewport.zoom), viewport.tileSize, viewport.tileSize);
+    }
+
+    drawAdvs(viewport) {
+        if (this.objs.advs.length > 1) {
+            for (let i = 0; i < this.objs.advs.length; i++) {
+                this.map.ctx.fillStyle = '#ffffff';
+                this.map.ctx.fillRect(Math.round(this.objs.advs[i].object.x - viewport.x), Math.round(this.objs.advs[i].object.y - viewport.y), viewport.tileSize, viewport.tileSize);
+            }
+        }
+    }
+
+    drawBullets(viewport) {
+        if (this.objs.bullets.length != 0) {
+            for (let i = 0; i < this.objs.bullets.length; i++) {
+                this.map.ctx.fillStyle = '#ffff00';
+                this.map.ctx.fillRect(this.objs.bullets[i].object.x - viewport.x, this.objs.bullets[i].object.y - viewport.y, 5, 5);
+            }
+        }
     }
 }
