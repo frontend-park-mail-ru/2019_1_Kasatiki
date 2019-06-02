@@ -58,7 +58,7 @@ export default class Game {
         this.objs.drawBullets(this.viewport);
         this.objs.drawInterface(this.viewport, this.keyMap.zoom);
     
-        if (this.objs.advUrl) {
+        if (this.objs.advUrl != '') {
             this._showAdv();
         }
 
