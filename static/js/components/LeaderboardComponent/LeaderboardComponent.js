@@ -82,7 +82,9 @@ export default class LeaderboardComponent {
 			<div class="board">
 				{{#each .}}
 				<div class="board__player">
-					<img width="50" heigth="50" src="{{imgurl}} alt="avatar">
+					<div class="board__player-avatar-section">
+						<img class="board__player-avatar-section-img" src="{{imgurl}}" alt="avatar">
+					</div>
 					<h3 class="board__player-nickname">{{nickname}}</h3>
 					<h3 class="board__player-points">{{points}}</h3>
 				</div>
