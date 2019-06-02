@@ -557,7 +557,7 @@
     height: 38%; }
 
   .profile-button {
-    width: 40%;
+    width: 90%;
     height: 25px;
     margin: 5%;
     font-size: 15px;
@@ -637,7 +637,7 @@
 
   /* Элементы */
   .profile-button {
-    width: 40%;
+    width: 90%;
     height: 25px;
     margin-top: 10%;
     margin-left: 5%;

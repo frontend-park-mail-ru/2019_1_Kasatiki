@@ -18,7 +18,6 @@ export default class MenuComponent {
                         <h4 class="profile-score">{{points}} $</h4>
                     </div>
                     <div class="menu__profile-buttons-section" id="menu__profile-buttons-section">
-                        <button class="profile-button">Edit</button>
                         <button href="/logout" class="profile-button">Logout</button>
                     </div>
                 </div>
