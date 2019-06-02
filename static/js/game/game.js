@@ -18,6 +18,7 @@ export default class Game {
             zoom  : false,
 
             pause : false,
+            close : false,
         }
 
         this.cfg;
@@ -40,9 +41,11 @@ export default class Game {
         const gameBackBtn = document.querySelector('.game-back');
         gameBackBtn.addEventListener('click', () => {
             console.log('close')
-            this.ws.socket.send({
-                close : true,
-            })
+            this.keyMap.close = true;
+            let json = JSON.stringify(this.keyMap);
+            if (this.ws.socketOpen) {
+                this.ws.socket.send(json);
+            }
         })
 
         // this.objs.map.setCanvasWH(this.viewport.gameScreenH, this.viewport.gameScreenW);
