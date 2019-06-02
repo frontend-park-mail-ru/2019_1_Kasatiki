@@ -78,7 +78,7 @@ export default class PaymentsView extends BaseView {
                         callback(data) {
                             console.log('data',data, points);
                             if (typeof(data) === 'object') {
-                                points.innerText = 'Balance' + data['points'] + '$';
+                                points.innerText = 'Balance ' + data['points'] + '$';
                             }
                         },
                         path: '/api/balance',
