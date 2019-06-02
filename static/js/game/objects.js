@@ -6,8 +6,8 @@ export default class Objects {
         cfg,
         vp
     ) {
-        this.bullets;
-        this.advs;
+        this.bullets = [];
+        this.advs = [];
         
         this.cfg = cfg;
 
