@@ -34,23 +34,11 @@ export default class MenuView extends BaseView {
         NetworkHandler.doGet({
             // eslint-disable-next-line no-unused-vars
             callback(data) {
-                let permissionsObj = navigator.permissions.query({name:'geolocation'})
-                .then(function(result) {
-                    if (result.state === 'granted') {
-                      showMap();
-                    } else if (result.state === 'prompt') {
-                      showButtonToEnableMap();
-                    }
-                });
-                console.log('menu view', permissionsObj);
-                // alert(per.get_value());
                 if (typeof(data) == 'object') {
                     that._renderMenu(data);
                 } else {
                     that.root.innerHTML = that.MenuComponent.render(false);
                 }   
-
-
             },
             path: '/api/isauth',
         });

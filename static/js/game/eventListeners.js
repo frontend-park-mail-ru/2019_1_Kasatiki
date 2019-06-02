@@ -4,6 +4,7 @@ export default function startListen(keyMap, canvas) {
     document.addEventListener('mouseup', mouseUp, false);
     document.addEventListener('mousedown', mouseDown, false);
 
+
     // Позиция курсора относительно вьюпорта (ширины/высоты канваса)
     let bounds = canvas.getBoundingClientRect();
 

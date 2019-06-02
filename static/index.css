@@ -1346,6 +1346,13 @@
   width: 50px;
   height: 50px; }
 
+.game-back:hover {
+  font-size: 30px;
+  border: solid white 1px;
+  background-color: red;
+  color: white;
+  transition: 0.2s linear; }
+
 html, body {
   display: flex;
   flex-wrap: wrap;

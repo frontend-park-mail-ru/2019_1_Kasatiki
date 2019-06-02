@@ -7,6 +7,9 @@ export default class Player {
 
         this.id = 1;
 
+        this.hp = 80;
+        this.hpc = 100;
+
         this.v = 5;
 
         this.c = 0.2;

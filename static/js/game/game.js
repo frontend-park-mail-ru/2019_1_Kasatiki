@@ -36,6 +36,15 @@ export default class Game {
         this.objs.map._createMap();
         this.ws.startServe(this.objs);
         startListen(this.keyMap, this.objs.map.canvas);
+
+        const gameBackBtn = document.querySelector('.game-back');
+        gameBackBtn.addEventListener('click', () => {
+            console.log('close')
+            this.ws.socket.send({
+                close : true,
+            })
+        })
+
         // this.objs.map.setCanvasWH(this.viewport.gameScreenH, this.viewport.gameScreenW);
         requestAnimationFrame(() => this.loop());
     }
@@ -47,6 +56,7 @@ export default class Game {
         this.objs.drawPlayers(this.viewport);
         this.objs.drawAdvs(this.viewport);
         this.objs.drawBullets(this.viewport);
+        this.objs.drawInterface(this.viewport, this.keyMap.zoom);
     
         let json = JSON.stringify(this.keyMap);
     
@@ -73,5 +83,9 @@ export default class Game {
             advFrame.remove();
             this.objs.pause = false;
         }, 5000);
+    }
+
+    _drawInterface() {
+        
     }
 }

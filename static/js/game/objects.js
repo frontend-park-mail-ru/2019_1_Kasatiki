@@ -11,13 +11,19 @@ export default class Objects {
         
         this.cfg = cfg;
 
+        this.opacity = 1;
+
+        this.score = 50;
+        this.backImg = new Image(30, 30);
+        this.backImg.src = '../../icons/cross.png';
+
         this.map = new Map();
         this.map.setCanvasWH(vp.gameScreenW * vp.tileSize, vp.gameScreenH * vp.tileSize);
 
         this.player = new Player(this.map.mapSize * vp.tileSize / 2, this.map.mapSize * vp.tileSize / 2, this.map.ctx);
         this.enemy = {
-            x : 0,
-            y : 0,
+            x : 2700,
+            y : 2500,
         }
 
         this.advUrl = 'https://vk.com/feed';
@@ -29,13 +35,6 @@ export default class Objects {
 
         // Отрисовываем карту
         this.map.drawMap(viewport);
-
-        // this.objs.forEach( obj => {
-        //     obj.forEach( ess => {
-        //         this.map.ctx.fillStyle = cfg.color(ess[obj]);
-        //         this.map.ctx.fillRect(ess.object.x - this,map.viewport.x, ess.object.y - this,map.viewport.x, this.map.tileSize, this.map.tileSize);
-        //     })
-        // })
     }
 
     drawPlayers(viewport) {
@@ -52,7 +51,7 @@ export default class Objects {
         if (this.advs.length > 1) {
             for (let i = 0; i < this.advs.length; i++) {
                 this.map.ctx.fillStyle = '#ffffff';
-                this.map.ctx.fillRect(Math.round(this.advs[i].object.x - viewport.x), Math.round(this.advs[i].object.y - viewport.y), viewport.tileSize, viewport.tileSize);
+                this.map.ctx.fillRect(Math.round(this.advs[i].object.x - viewport.x - viewport.zoom), Math.round(this.advs[i].object.y - viewport.y - viewport.zoom), viewport.tileSize, viewport.tileSize);
             }
         }
     }
@@ -61,8 +60,38 @@ export default class Objects {
         if (this.bullets.length != 0) {
             for (let i = 0; i < this.bullets.length; i++) {
                 this.map.ctx.fillStyle = '#ffff00';
-                this.map.ctx.fillRect(this.bullets[i].object.x - viewport.x, this.bullets[i].object.y - viewport.y, 5, 5);
+                if (viewport.tileSize == viewport.baseTileSize) {
+                    this.map.ctx.fillRect(this.bullets[i].object.x - viewport.x - viewport.zoom, this.bullets[i].object.y - viewport.y - viewport.zoom, 5, 5);
+                } else {
+                    this.map.ctx.fillRect(this.bullets[i].object.x - viewport.x - viewport.zoom - (viewport.baseTileSize - viewport.tileSize) / 2, this.bullets[i].object.y - viewport.y - viewport.zoom - (viewport.baseTileSize - viewport.tileSize) / 2, 5, 5);
+                }
             }
         }
+    }
+
+    drawInterface(viewport, zoom) {
+        if (zoom) {
+            if (this.opacity > 0) {
+                this.opacity -= 0.05;
+            } 
+        } else {
+            if (this.opacity < 1) {
+                this.opacity += 0.05;
+            }
+        }
+
+        // Render hp bar
+        this.map.ctx.fillStyle = 'rgba(255, 60, 60, ' + this.opacity + ')';
+        this.map.ctx.fillRect(viewport.baseTileSize / 2, viewport.baseTileSize / 2, viewport.baseTileSize * 5 * (this.player.hp / this.player.hpc) / 2, viewport.baseTileSize / 2);
+        this.map.ctx.strokeStyle = 'rgba(0, 0, 0, ' + this.opacity + ')';
+        this.map.ctx.strokeRect(viewport.baseTileSize / 2, viewport.baseTileSize / 2, viewport.baseTileSize * 5 /2, viewport.baseTileSize / 2);
+
+        // Render score
+        this.map.ctx.font = '30px san-serif';
+        this.map.ctx.fillStyle = 'rgba(0, 0, 0, ' + this.opacity + ')';
+        this.map.ctx.fillText(this.score.toString(), viewport.baseTileSize * 8,viewport.baseTileSize);
+
+        // Render back button
+        this.map.ctx.drawImage(this.backImg, viewport.baseTileSize * 15, viewport.baseTileSize / 2); 
     }
 }

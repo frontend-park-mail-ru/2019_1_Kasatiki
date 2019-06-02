@@ -2,7 +2,7 @@ export default class Socket {
     constructor(
         hostName = location.host,
     ) {
-        this.socket = new WebSocket("wss://" + hostName + "/api/game/start");
+        this.socket = new WebSocket("ws://" + hostName + "/api/game/start");
         this.socketOpen = false;
 
         this.mapChange = true;
@@ -46,8 +46,6 @@ export default class Socket {
                 console.log(data)            
                 console.log(objs.map.map);
             }
-
-            console.log(data);
             
             if (data["pause"] != null) {
                 objs.advUrl = data["url"];
@@ -60,11 +58,11 @@ export default class Socket {
             if (data["advs"] != null) {
                 objs.advs = data["advs"];
             }
-        
+
             if (data["players"] != null) {
                 if (data["players"][0].id == objs.player.id) {
-                    objs.player.x += (data["players"][0].object.x - objs.player.x) * objs.player.c;
-                    objs.player.y += (data["players"][0].object.y - objs.player.y) * objs.player.c;
+                    objs.player.x += data["players"][0].object.x - objs.player.x;
+                    objs.player.y += data["players"][0].object.y - objs.player.y;
             
                     // objs.enemy.x += (data["players"][1].object.x - objs.enemy.x) * objs.player.c;
                     // objs.enemy.y += (data["players"][1].object.y - objs.enemy.y) * objs.player.c;
@@ -72,8 +70,8 @@ export default class Socket {
                     // console.log("enemy: ", data["players"][1].object.x, data["players"][1].object.y);
                     // }ss
                 } else {
-                    objs.player.x += (data["players"][1].object.x - objs.player.x) * objs.player.c;
-                    objs.player.y += (data["players"][1].object.y - objs.player.y) * objs.player.c;
+                    objs.player.x += data["players"][1].object.x - objs.player.x;
+                    objs.player.y += data["players"][1].object.y - objs.player.y
             
                     // objs.enemy.x += (data["players"][0].object.x - objs.enemy.x) * objs.player.c;
                     // objs.enemy.y += (data["players"][0].object.y - objs.enemy.y) * objs.player.c;
@@ -81,6 +79,27 @@ export default class Socket {
                     // console.log("player: ", data["players"][1].object.x, data["players"][1].object.y);
                     // console.log("enemy: ", data["players"][0].object.x, data["players"][0].object.y);
                 }
+
+            // if (data["players"] != null) {
+            //     if (data["players"][0].id == objs.player.id) {
+            //         objs.player.x += (data["players"][0].object.x - objs.player.x) * objs.player.c;
+            //         objs.player.y += (data["players"][0].object.y - objs.player.y) * objs.player.c;
+            
+            //         // objs.enemy.x += (data["players"][1].object.x - objs.enemy.x) * objs.player.c;
+            //         // objs.enemy.y += (data["players"][1].object.y - objs.enemy.y) * objs.player.c;
+            //         // console.log("player: ", data["players"][0].object.x, data["players"][0].object.y);
+            //         // console.log("enemy: ", data["players"][1].object.x, data["players"][1].object.y);
+            //         // }ss
+            //     } else {
+            //         objs.player.x += (data["players"][1].object.x - objs.player.x) * objs.player.c;
+            //         objs.player.y += (data["players"][1].object.y - objs.player.y) * objs.player.c;
+            
+            //         // objs.enemy.x += (data["players"][0].object.x - objs.enemy.x) * objs.player.c;
+            //         // objs.enemy.y += (data["players"][0].object.y - objs.enemy.y) * objs.player.c;
+            
+            //         // console.log("player: ", data["players"][1].object.x, data["players"][1].object.y);
+            //         // console.log("enemy: ", data["players"][0].object.x, data["players"][0].object.y);
+            //     }
             }
         });
         

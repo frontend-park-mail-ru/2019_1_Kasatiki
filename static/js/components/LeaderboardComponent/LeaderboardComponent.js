@@ -6,8 +6,8 @@ export default class LeaderboardComponent {
 	 */
 	constructor(
 		parentElement = document.body,
-		usersPerPage = 5,
-		totalPages = 5,
+		usersPerPage = 6,
+		totalPages = 20,
 	) {
 		// Поля таблицы
 		this._parentElement = parentElement;
@@ -84,7 +84,7 @@ export default class LeaderboardComponent {
 				<div class="board__player">
 					<h3 class="board__player-place">{{ID}}</h3>
 					<h3 class="board__player-nickname">{{nickname}}</h3>
-					<h3 class="board__player-points">{{Points}}</h3>
+					<h3 class="board__player-points">{{points}}</h3>
 				</div>
 				{{/each}} 
 			</div>
