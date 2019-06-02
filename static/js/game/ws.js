@@ -44,7 +44,7 @@ export default class Socket {
                 // console.log(objs.map.map);
             }
             
-            if (data["pause"] != null) {
+            if (data["url"] != '') {
                 objs.advUrl = data["url"];
             }
 
@@ -56,7 +56,7 @@ export default class Socket {
                 objs.bullets = data["bullets"]
             }
         
-            if (data["advs"] != '') {
+            if (data["advs"] != null) {
                 objs.advs = data["advs"];
             }     
 
