@@ -73,8 +73,16 @@ export default class PaymentsView extends BaseView {
                     status.innerText = 'Success payment';
                     statusSection.appendChild(status);
 
-                    let balance = document.getElementById('payments__points');
-                    balance.innerText = 'Balance' + data['points'] + '$';
+                    let points = document.getElementById('payments__points');
+                    NetworkHandler.doGet({
+                        callback(data) {
+                            console.log('data',data);
+                            if (typeof(data) === 'object') {
+                                points.innerHTML = 'Balance' + data['points'] + '$';
+                            }
+                        },
+                        path: '/api/balance',
+                    });
                     // setTimeout(() => {
                     //     statusSection.children[0].remove();
                     // }, 3000);
