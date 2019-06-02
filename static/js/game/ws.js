@@ -54,11 +54,11 @@ export default class Socket {
             }
     
             if (data["bullets"] != null) {
-                objs.bullets = data["bullets"]
+                objs["bullets"] = data["bullets"]
             }
         
             if (data["advs"] != null) {
-                objs.advs = data["advs"];
+                objs["advs"] = data["advs"];
             }
         
             if (data["players"] != null) {
