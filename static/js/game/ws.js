@@ -57,8 +57,8 @@ export default class Socket {
                 objs.bullets = data["bullets"]
             }
         
-            if (data['advs'] != null) {
-                objs.advs = data['advs'];
+            if (data["advs"] != null) {
+                objs.advs = data["advs"];
             }
         
             if (data["players"] != null) {
@@ -66,8 +66,8 @@ export default class Socket {
                     objs.player.x += (data["players"][0].object.x - objs.player.x) * objs.player.c;
                     objs.player.y += (data["players"][0].object.y - objs.player.y) * objs.player.c;
             
-                    objs.enemy.x += (data["players"][1].object.x - objs.enemy.x) * objs.player.c;
-                    objs.enemy.y += (data["players"][1].object.y - objs.enemy.y) * objs.player.c;
+                    // objs.enemy.x += (data["players"][1].object.x - objs.enemy.x) * objs.player.c;
+                    // objs.enemy.y += (data["players"][1].object.y - objs.enemy.y) * objs.player.c;
                     // console.log("player: ", data["players"][0].object.x, data["players"][0].object.y);
                     // console.log("enemy: ", data["players"][1].object.x, data["players"][1].object.y);
                     // }ss
@@ -75,8 +75,8 @@ export default class Socket {
                     objs.player.x += (data["players"][1].object.x - objs.player.x) * objs.player.c;
                     objs.player.y += (data["players"][1].object.y - objs.player.y) * objs.player.c;
             
-                    objs.enemy.x += (data["players"][0].object.x - objs.enemy.x) * objs.player.c;
-                    objs.enemy.y += (data["players"][0].object.y - objs.enemy.y) * objs.player.c;
+                    // objs.enemy.x += (data["players"][0].object.x - objs.enemy.x) * objs.player.c;
+                    // objs.enemy.y += (data["players"][0].object.y - objs.enemy.y) * objs.player.c;
             
                     // console.log("player: ", data["players"][1].object.x, data["players"][1].object.y);
                     // console.log("enemy: ", data["players"][0].object.x, data["players"][0].object.y);
