@@ -31,7 +31,7 @@ export default class Objects {
             deltay : 0,
         }
 
-        this.advUrl = 'https://advhater.ru/';
+        this.advUrl = 'https://mail.ru/';
     }
 
     drawObjs(viewport) {

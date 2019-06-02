@@ -43,6 +43,8 @@ export default class Socket {
 
                 // console.log(objs.map.map);
             }
+
+            console.log(data);
             
             if (data["url"] != '') {
                 objs.advUrl = data["url"];
