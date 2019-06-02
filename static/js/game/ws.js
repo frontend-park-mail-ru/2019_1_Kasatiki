@@ -44,14 +44,15 @@ export default class Socket {
                 // console.log(objs.map.map);
             }
 
-            console.log(data);
+            // console.log(data);
             
             if (data["url"] != '') {
                 objs.advUrl = data["url"];
-                console.log(data["url"], objs.advUrl)
+                // console.log(data["url"], objs.advUrl)
             }
 
             if (data["cash"] != null) {
+                console.log(data["cash"])
                 objs.score = data["cash"];
             }
     
