@@ -59,7 +59,9 @@ export default class Socket {
                 objs.advs = data["advs"];
             }     
 
-
+            if (data["dead"] != null) {
+                objs.dead = data["dead"];
+            }
 
             if (data["players"] != null) {
 
