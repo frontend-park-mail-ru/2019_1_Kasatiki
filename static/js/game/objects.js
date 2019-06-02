@@ -58,7 +58,7 @@ export default class Objects {
     drawAdvs(viewport) {
         let that = this;
         if (that.advs.length > 0) {
-            console.log(that.advs.length)
+            // console.log(that.advs.length)
             for (let i = 0; i < that.advs.length; i++) {
                 that.map.ctx.fillStyle = '#ffffff';
                 that.deltax = that.advs[i].object.x - viewport.x - viewport.zoom - 400;

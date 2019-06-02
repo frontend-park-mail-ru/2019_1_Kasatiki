@@ -56,11 +56,9 @@ export default class Socket {
                 objs.bullets = data["bullets"]
             }
         
-            if (data["advs"] != null) {
+            if (data["advs"] != '') {
                 objs.advs = data["advs"];
-                // console.log(objs.advs);
-            }
-            console.log(data)            
+            }     
 
 
             if (data["players"] != null) {
