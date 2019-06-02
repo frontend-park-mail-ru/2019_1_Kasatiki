@@ -4,6 +4,8 @@ import Socket from './ws.js';
 import Config from './config.js';
 import Objects from './objects.js'; 
 
+import EndView from '../views/EndView.js'
+
 export default class Game {
     constructor() {
         this.keyMap = {
@@ -21,7 +23,9 @@ export default class Game {
             close : false,
         }
 
-        this.end = false;
+        this.endView = new EndView;
+
+        this.dead = false;
 
         this.cfg;
         this.viewport;
@@ -55,6 +59,10 @@ export default class Game {
     }
 
     loop() {
+        if (this.dead) {
+            this.endView.show(this.score)
+        }
+
         this.objs.drawObjs(this.viewport);    
         this.viewport.update(this.objs.player.x, this.objs.player.y, this.keyMap.zoom, {val : this.objs.map.tileSize});
     
