@@ -2,7 +2,7 @@ import Viewport from './viewport.js';
 import startListen from './eventListeners.js';
 import Socket from './ws.js';
 import Config from './config.js';
-import Objects from './objects.js';
+import Objects from './objects.js'; 
 
 export default class Game {
     constructor() {
@@ -20,6 +20,8 @@ export default class Game {
             pause : false,
             close : false,
         }
+
+        this.end = false;
 
         this.cfg;
         this.viewport;
