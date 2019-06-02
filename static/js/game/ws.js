@@ -18,8 +18,6 @@ export default class Socket {
     }
 
     startServe(objs) {
-        this._setCookies();
-
         const that = this;
 
         this.socket.addEventListener("open", (event) => {
