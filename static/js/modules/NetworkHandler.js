@@ -32,7 +32,7 @@ export default class NetworkHandler {
 				// Для "непростых запросов"
 				// 'Origin' : '',
 			},
-			credentials: "same-origin",
+			// credentials: "same-origin",
 			// credentials : "include",
 			// mode : 'cors',
 			// cache : 'default',
